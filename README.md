@@ -8,6 +8,8 @@
 
 PACE 工作目录：`/storage/scratch1/1/gliu386/VLA_Startup`。GitHub 备份：[mashiro222/VLA_Startup](https://github.com/mashiro222/VLA_Startup)。
 
+用 VS Code 阅读时，通过 **File → Open Folder** 只打开上面这个项目目录，不要把整个 home 或 scratch 作为工作区。本仓库的 `.vscode/settings.json` 会减少大目录监听和 Python 索引；若反复 reconnect，见 [VS Code 连接排查](docs/troubleshooting.md#vscode-reconnect)。
+
 | 内容 | 位置 | 管理方式 | 上传 GitHub |
 |---|---|---|---|
 | 自己的评测代码、配置、文档 | `src/`、`scripts/`、`config/`、`docs/` | Git | 是 |

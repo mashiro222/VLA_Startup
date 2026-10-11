@@ -1,0 +1,19 @@
+{
+  "files.watcherExclude": {
+    "**/.runtime/**": true,
+    "**/.tools/**": true,
+    "**/.cache/**": true,
+    "**/__pycache__/**": true,
+    "**/runs/**": true,
+    "**/logs/**": true
+  },
+  "search.exclude": {
+    "**/.runtime/**": true,
+    "**/.tools/**": true,
+    "**/.cache/**": true,
+    "**/runs/**": true,
+    "**/logs/**": true
+  },
+  "python.analysis.indexing": false,
+  "python.analysis.diagnosticMode": "openFilesOnly"
+}

@@ -1,5 +1,54 @@
 # 环境与作业排查
 
+<a id="vscode-reconnect"></a>
+
+## VS Code 每隔几秒 reconnect
+
+2026-10-11 的远端检查发现两类直接证据：
+
+- `~/.vscode-server/data/logs/20261011T193953/remoteagent.log` 和 `20261011T194023/remoteagent.log` 记录文件监听器被 `SIGKILL`；`20261011T194036/remoteagent.log` 记录扩展进程被 `SIGKILL`，终端服务也异常退出。
+- 当时 `login-phoenix-gnr-3` 上当前账号的 cgroup 限额 `memory.max=4294967296`（4 GiB），`memory.events` 为 `oom=26`、`oom_kill=16`。检查时用量约 3.0 GiB，同一账号下仍有两套 VS Code Server，以及 Codex 进程。限额由该节点上的账号进程共同使用，并非每个 VS Code 窗口各有 4 GiB。
+
+这些证据强烈支持内存压力造成服务退出。`oom_kill` 是该 cgroup 的累计值，不代表 16 次都来自 VS Code；截图终端是 `gnr-1`，当前检查在 `gnr-3`，且无权读取内核日志，因此不能把每次断线都精确归因到同一个节点或进程。这里的 4 GiB 是实测值，不是对 PACE 所有节点的通用承诺。计费作业申请的 64 GB 内存不会增加登录节点的额度。
+
+先按以下顺序处理，无需提交 GPU 作业：
+
+1. 在 VS Code 中关闭多余的 PACE 远程窗口。重新连接后，用 **File → Open Folder** 打开 `/storage/scratch1/1/gliu386/VLA_Startup`。在 home 的 Explorer 中展开这个目录，不等于更换工作区；此时项目的 `.vscode/settings.json` 也不会作为工作区设置生效。
+2. 仓库已加入监听和搜索排除项，跳过 `.runtime/`、`.tools/`、缓存和原始运行输出，并关闭 Pylance 全项目索引、只诊断打开的文件。这会减少扫描负担；对自行扫描文件的第三方扩展不保证有效。文件未删除，Explorer 仍可展开；上游源码仍可按 [code-map.md](code-map.md) 直接打开。默认全局搜索不包含 `.runtime/`，需要搜索上游源码时可临时关闭搜索面板的排除/忽略开关。以后主动修改 `.runtime/` 内源码时，要留意这些目录的文件变更监听被关闭。
+3. 如果仍断线，在远程扩展列表中暂时禁用当前不用的 AI/语言扩展，特别是先对 **GitHub Copilot Chat** 做排查。上述日志还记录 `github.copilot-chat-0.42.3` 的 `PendingMigrationError: navigator is now a global in nodejs`；这是另一项扩展兼容性线索，不能单凭它认定 OOM 的来源。只查看文档、代码和表格无需启动全部扩展。
+4. 普通窗口关闭后，远端服务可能继续保留。如果需要清理残留服务，先保存编辑、确认该 VS Code 的集成终端没有要保留的任务，再在命令面板执行 **Remote-SSH: Kill VS Code Server on Host...**，然后只重新打开一个项目窗口。此操作会中断对应服务的终端和依附其运行的任务，不能把它当作无影响的刷新操作。本次诊断没有替用户执行这一步。
+
+在发生问题的那个 VS Code 终端里，可以只读检查该节点的用量与累计 OOM 计数：
+
+```bash
+hostname
+cat /sys/fs/cgroup/user.slice/user-$(id -u).slice/memory.max
+cat /sys/fs/cgroup/user.slice/user-$(id -u).slice/memory.current
+cat /sys/fs/cgroup/user.slice/user-$(id -u).slice/memory.events
+ps -u "$(id -u)" -o pid,ppid,rss,etime,comm --sort=-rss | head -20
+```
+
+内存值单位为字节，`ps` 的 RSS 单位为 KiB。如果复现前后 `oom_kill` 增长，说明期间该账号又有进程因内存不足被结束。RSS 相加不等于 cgroup 用量，后者还包括文件缓存和内核内存。没有增长也不能排除网络或其他节点的问题。见 [Linux cgroup v2 文档](https://www.kernel.org/doc/html/latest/admin-guide/cgroup-v2.html) 和 [VS Code 文件监听说明](https://github.com/microsoft/vscode/wiki/File-Watcher-Issues)。
+
+如果减少内存占用后仍重连，再看 **View → Output → Remote - SSH** 的客户端日志。Phoenix 通用登录入口可能分配不同节点；VS Code 官方说明，两次 SSH 连接落到不同节点会导致服务/隧道不匹配。日志中的 `Unknown reconnection token` 也可能只是服务重启的后果，不能单凭它认定负载均衡故障。
+
+macOS 可在**本机 Mac**（不是 PACE）的 `~/.ssh/config` 中，将下列选项合并到实际使用的 PACE Host 段；保留原有身份认证设置。如果平时连接别名，例如 `pace`，应编辑该别名对应的段：
+
+```sshconfig
+Host login-phoenix.pace.gatech.edu
+    HostName login-phoenix.pace.gatech.edu
+    User gliu386
+    ControlMaster auto
+    ControlPath ~/.ssh/sockets/%r@%h-%p
+    ControlPersist 600
+    ServerAliveInterval 30
+    ServerAliveCountMax 3
+```
+
+然后在 Mac 终端运行 `mkdir -p ~/.ssh/sockets`，重新建立远程连接。`ControlMaster` 让多个 SSH 会话复用同一连接，减少节点不一致的问题；keepalive 不能解决内存不足。配置依据：[VS Code 官方 Remote-SSH 排查文档](https://code.visualstudio.com/docs/remote/troubleshooting#_connecting-to-systems-that-dynamically-assign-machines-per-connection)。本仓库不能修改你 Mac 上的配置。
+
+## 评测环境与作业
+
 先看 `logs/RUN_ID-JOB_ID.out`，模型侧细节看 `runs/RUN_ID/server-JOB_ID.log`。无需 W&B 账号。
 
 | 现象 | 处理 |
