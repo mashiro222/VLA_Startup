@@ -1,0 +1,16 @@
+{
+  "asset_archive": {
+    "repo": "Sylvest/LIBERO-plus",
+    "revision": "dd2bd61b7d9a6fef1abc52d606e983b41886a149",
+    "file": "assets.zip",
+    "bytes": 6395849578,
+    "sha256": "96764a4bfbdaea98d4411598caeab235458318fe0f549611b93d1a323027b3cf"
+  },
+  "extracted_files": 448799,
+  "uncompressed_bytes": 8953192654,
+  "verification": "Archive SHA256 and every extracted file ZIP CRC verified",
+  "checkpoint_objects": 16,
+  "checkpoint_bytes": 12439085481,
+  "checkpoint_verification": "Pinned generation, size and CRC32C for every object",
+  "model_inference_executed": false
+}

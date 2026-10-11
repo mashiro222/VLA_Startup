@@ -14,7 +14,7 @@ import unittest
 from unittest.mock import patch
 
 from test_results import plan, records
-from vla_startup.journal import append
+from vla_startup.journal import append, read_records
 
 
 @unittest.skipUnless(importlib.util.find_spec('matplotlib'), 'Run with simulation Python for plot checks')
@@ -35,14 +35,25 @@ class ReportTests(unittest.TestCase):
             rows = records(manifest)[:1]
             for row in rows:
                 append(run / 'episodes.jsonl', row)
-            with patch.object(report, 'ROOT', root), patch.object(sys, 'argv', ['report.py', 'fixture']):
+            original_summarize = report.summarize
+
+            def append_after_snapshot(*args, **kwargs):
+                result = original_summarize(*args, **kwargs)
+                # Model the evaluator committing another episode mid-export.
+                append(run / 'episodes.jsonl', records(manifest)[1])
+                return result
+
+            with patch.object(report, 'ROOT', root), patch.object(sys, 'argv', ['report.py', 'fixture']), \
+                    patch.object(report, 'summarize', side_effect=append_after_snapshot):
                 report.main()
+            self.assertEqual(len(read_records(run / 'episodes.jsonl')), 2)
             output = root / 'reports/fixture'
             with (output / 'summary.csv').open() as stream:
                 totals = next(csv.DictReader(stream))
             self.assertEqual(totals['missing'], '2')
             self.assertEqual(totals['success_percent_full'], '')
             self.assertEqual(json.loads((output / 'summary.json').read_text())['complete'], False)
+            self.assertIn('Completed: 1 / 3', (output / 'summary.md').read_text())
             with gzip.open(output / 'episodes.jsonl.gz', 'rt') as stream:
                 self.assertEqual([json.loads(line) for line in stream], rows)
             for name in ('cumulative_success.png', 'success_by_group.png'):

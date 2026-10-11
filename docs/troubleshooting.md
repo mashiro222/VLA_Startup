@@ -19,6 +19,8 @@
 
 只读检查安装包和配置不创建 MuJoCo 场景、不加载模型。真正的 rollout 留给 GPU smoke 作业，避免在登录节点运行评测。
 
+`preflight.py --imports` 在共享存储冷缓存时可能需要数分钟读取大型依赖。它会打印当前导入阶段；环境导入本身不等于模型推理。检查器和作业入口都把 Matplotlib 等缓存放在项目的 `.runtime/cache/`，不要求 home 目录可写。
+
 由于 `robosuite==1.4.0` 在多用户环境中默认写共享 `/tmp/robosuite.log`，本项目只修改它的日志文件位置。补丁随 setup 可重复应用并记录在 Git 中，不改物理仿真、动作或 benchmark 源码。
 
 `episodes.jsonl` 以完整换行作为提交边界；被杀死时未写完的末行在续跑时截断重做。已有完整行损坏、重复任务、顺序变化或指纹不符会报错，不能默默跳过。备份的 `reports/RUN_ID/episodes.jsonl.gz` 可解压回新建的 `runs/RUN_ID/episodes.jsonl`，连同原 `manifest.json`、`run_config.json` 恢复；必须重建同版本环境和代码后再续跑。

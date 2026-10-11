@@ -10,12 +10,21 @@
       "sha256": "a65fc8cabb42991063f72793fc7660180c7996a5aabb65ce135fd2a8551678ac"
     },
     "tests.log": {
-      "sha256": "637baf205bd51c10e9402c674b9d5aba66cbff4adcd3293ae274af9e4517d89d"
+      "sha256": "241c6ea64a472862ca405696f2a4e555726b51dcb0617417649b1cdfa36bab0c"
     },
     "video-check.log": {
       "sha256": "557b7f9939bcfdef340bfc57927904d1fcd5cdc7b684d06578f81ce1adf9d985"
+    },
+    "final-preflight.log": {
+      "sha256": "fbfa9387348c783de3427cddf872b98d829ec739d30448b67068a9c0a4a72e46"
+    },
+    "extraction.log": {
+      "sha256": "2698b44cffd812aa0e6ad71c3b218c6d39167a9934faa5b8970a621cd1a2116d"
     }
   },
   "unit_tests_passed": 13,
-  "scope": "CPU import, adapter, data/metadata, reporting and syntax checks; no model inference"
+  "scope": "CPU import, adapter, data/metadata, reporting and syntax checks; no model inference",
+  "final_preflight_passed": true,
+  "smoke_submission_dry_runs_passed": true,
+  "slurm_jobs_submitted": 0
 }

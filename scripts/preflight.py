@@ -54,8 +54,15 @@ def main():
         if rebuilt != manifest:
             failures.append('Run manifest differs from current source data')
     if args.imports and not failures:
+        import_env = dict(os.environ, MPLCONFIGDIR=str(runtime / 'cache/matplotlib'),
+                          XDG_CACHE_HOME=str(runtime / 'cache/xdg'),
+                          NUMBA_CACHE_DIR=str(runtime / 'cache/numba'),
+                          HF_HOME=str(runtime / 'cache/huggingface'),
+                          WANDB_MODE='disabled', HF_HUB_DISABLE_TELEMETRY='1',
+                          OMP_NUM_THREADS='1', OPENBLAS_NUM_THREADS='1')
         for mode in ('clean', 'plus'):
-            env = dict(os.environ)
+            print(f'Checking simulation imports: {mode}', flush=True)
+            env = dict(import_env)
             native = runtime / 'native-7.1.1/squashfs-root/usr'
             env.update(PYTHONPATH=f"{runtime / 'repos' / ('libero_' + mode)}:{runtime / 'repos/openpi/packages/openpi-client/src'}:{ROOT / 'src'}",
                        LIBERO_CONFIG_PATH=str(runtime / 'config' / mode),
@@ -65,7 +72,8 @@ def main():
                             'from libero.libero import benchmark; from libero.libero.envs import OffScreenRenderEnv; '
                             'from openpi_client import image_tools; '
                             'from wand.image import Image; print("Simulation imports OK")'], check=True, env=env)
-        env = dict(os.environ, JAX_PLATFORMS='cpu', OPENPI_DATA_HOME=str(runtime / 'cache/openpi'))
+        print('Checking OpenPI imports in CPU mode; no weights will be loaded', flush=True)
+        env = dict(import_env, JAX_PLATFORMS='cpu', OPENPI_DATA_HOME=str(runtime / 'cache/openpi'))
         subprocess.run([str(runtime / 'server/bin/python'), '-c',
                         'from openpi.training.config import get_config; c=get_config("pi05_libero"); '
                         'assert c.model.action_horizon == 10; print("OpenPI config imports OK; weights not loaded")'],

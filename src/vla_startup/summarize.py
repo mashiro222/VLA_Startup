@@ -57,16 +57,9 @@ def summarize(manifest, records, references):
                                'Partial coverage, diagnostic subset, or changed protocol: do not claim a benchmark reproduction.')}
 
 
-def main():
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('run_dir', type=Path)
-    args = parser.parse_args()
-    manifest = json.loads((args.run_dir / 'manifest.json').read_text())
-    records = read_records(args.run_dir / 'episodes.jsonl')
-    result = summarize(manifest, records, json.loads((ROOT / 'config/references.json').read_text()))
-    (args.run_dir / 'summary.json').write_text(json.dumps(result, indent=2) + '\n')
-    lines = [f"# {manifest['profile']}", '', result['interpretation'], '',
-             f"Completed: {len(records)} / {manifest['expected_episodes']}",
+def markdown(result):
+    lines = [f"# {result['profile']}", '', result['interpretation'], '',
+             f"Completed: {result['totals']['completed']} / {result['totals']['expected']}",
              f"Successes: {result['totals']['successes']}", '',
              '| Group | Completed / expected | Successes | Success rate (completed) |',
              '|---|---:|---:|---:|']
@@ -79,8 +72,19 @@ def main():
         lines += ['', '| Group | Ours | Reference | Difference (pp) |', '|---|---:|---:|---:|']
         for row in result['comparisons']:
             lines.append(f"| {row['group']} | {row['ours_percent']:.2f}% | {row['reference_percent']:.2f}% | {row['difference_percentage_points']:+.2f} |")
-    lines += ['', f"Reference: {result['reference']['source']}", '']
-    (args.run_dir / 'summary.md').write_text('\n'.join(lines))
+    lines += ['', f"Reference: {result['reference'].get('source', 'Unspecified')}", '']
+    return '\n'.join(lines)
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('run_dir', type=Path)
+    args = parser.parse_args()
+    manifest = json.loads((args.run_dir / 'manifest.json').read_text())
+    records = read_records(args.run_dir / 'episodes.jsonl')
+    result = summarize(manifest, records, json.loads((ROOT / 'config/references.json').read_text()))
+    (args.run_dir / 'summary.json').write_text(json.dumps(result, indent=2) + '\n')
+    (args.run_dir / 'summary.md').write_text(markdown(result))
     print(json.dumps(result['totals'], indent=2))
 
 

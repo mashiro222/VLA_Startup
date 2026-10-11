@@ -71,7 +71,7 @@ bash scripts/submit.sh prompt-check-001
 
 ## 怎样跟读 model 的运行
 
-先读本项目 `evaluate.py → server.py`，再打开 `.runtime/repos/openpi/` 下的文件：
+先读本项目 `evaluate.py → server.py`，再打开 `.runtime/repos/openpi/` 下的文件。读取 `training/config.py` 和 checkpoint 辅助函数只是复用配置与参数加载代码，不会启动训练：
 
 | 路径（相对于 OpenPI） | 入口与作用 |
 |---|---|

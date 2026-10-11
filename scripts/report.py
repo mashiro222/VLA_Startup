@@ -12,7 +12,7 @@ import sys
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'src'))
 from vla_startup.journal import read_records, validate_prefix
-from vla_startup.summarize import summarize
+from vla_startup.summarize import markdown, summarize
 
 
 def main():
@@ -30,12 +30,13 @@ def main():
         raise ValueError('No completed episodes; refusing to generate empty or synthetic result plots')
     output = ROOT / 'reports' / args.run_id
     output.mkdir(parents=True, exist_ok=True)
-    for name in ('manifest.json', 'run_config.json', 'summary.md', 'errors.jsonl'):
+    for name in ('manifest.json', 'run_config.json', 'errors.jsonl'):
         if (run / name).exists():
             shutil.copy2(run / name, output / name)
     for path in run.glob('provenance-*.json'):
         shutil.copy2(path, output / path.name)
     (output / 'summary.json').write_text(json.dumps(result, indent=2) + '\n')
+    (output / 'summary.md').write_text(markdown(result))
     fields = ['episode_key', 'suite', 'task_id', 'name', 'base_task', 'category', 'difficulty',
               'episode', 'success', 'steps', 'elapsed_seconds', 'inference_calls', 'inference_seconds', 'prompt']
     with (output / 'episodes.csv').open('w', newline='') as stream:
@@ -54,8 +55,10 @@ def main():
     # Keep RNG states in a compressed journal so resumption and auditing remain possible.
     with (output / 'episodes.jsonl.gz').open('wb') as raw:
         with gzip.GzipFile(filename='', mode='wb', fileobj=raw, mtime=0) as zipped:
-            with (run / 'episodes.jsonl').open('rb') as source:
-                shutil.copyfileobj(source, zipped)
+            # Use exactly the same completed-record snapshot as tables/plots.
+            # A running job may append more episodes while this report is made.
+            for record in records:
+                zipped.write((json.dumps(record, separators=(',', ':'), allow_nan=False) + '\n').encode())
     import matplotlib
     matplotlib.use('Agg')
     import matplotlib.pyplot as plt
