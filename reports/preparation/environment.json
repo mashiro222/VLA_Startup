@@ -1,0 +1,59 @@
+{
+  "date": "2026-10-11",
+  "gpu_inference_executed": false,
+  "slurm_jobs_submitted": 0,
+  "environments": {
+    "server": {
+      "python": "3.11.17",
+      "packages": {
+        "openpi": "0.1.0",
+        "jax": "0.5.3",
+        "jaxlib": "0.5.3",
+        "flax": "0.10.2",
+        "torch": "2.7.1",
+        "transformers": "4.53.2",
+        "websockets": "15.0.1"
+      }
+    },
+    "sim": {
+      "python": "3.10.22",
+      "packages": {
+        "numpy": "1.26.4",
+        "mujoco": "3.2.3",
+        "robosuite": "1.4.0",
+        "robomimic": "0.2.0",
+        "torch": "2.5.1+cpu",
+        "Wand": "0.6.13",
+        "matplotlib": "3.9.2",
+        "websockets": "14.2"
+      }
+    }
+  },
+  "plans": {
+    "smoke-clean": {
+      "tasks": 4,
+      "expected_episodes": 4,
+      "sha256": "1ee2fcfeb326794d098ea3df717c3d203e7d38cf76cfd5718fe8fc5b4e4b68d9"
+    },
+    "smoke-plus": {
+      "tasks": 7,
+      "expected_episodes": 7,
+      "sha256": "053603379828668ae38135f6ad931c9722d91725cd8f79bbf7dc4156e154fc34"
+    },
+    "pilot-plus": {
+      "tasks": 56,
+      "expected_episodes": 56,
+      "sha256": "f43074ab1eb6894413a0e7bd3a5316b552ab6ea2dd58d930ffc0b1cf75b74383"
+    },
+    "full-clean": {
+      "tasks": 40,
+      "expected_episodes": 2000,
+      "sha256": "241eee60f0407473e84f5b60733f235621c43f8345a9a600f870c56c1db99b53"
+    },
+    "full-plus": {
+      "tasks": 10030,
+      "expected_episodes": 10030,
+      "sha256": "92b481eeb80cc96f064b64cdaf8d29683b10f808b536ddd3d4b34fb8ae307bfb"
+    }
+  }
+}

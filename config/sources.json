@@ -1,0 +1,8 @@
+{
+  "openpi": {"url": "https://github.com/Physical-Intelligence/openpi.git", "commit": "215abfb217dbac7d5f1273282331b9b1866c0479"},
+  "libero_plus": {"url": "https://github.com/sylvestf/LIBERO-plus.git", "commit": "4976dc30028e805ff8094b55501d532c48fec182"},
+  "libero_clean": {"url": "https://github.com/Lifelong-Robot-Learning/LIBERO.git", "commit": "f78abd68ee283de9f9be3c8f7e2a9ad60246e95c"},
+  "checkpoint": "gs://openpi-assets/checkpoints/pi05_libero/",
+  "assets": {"repo": "Sylvest/LIBERO-plus", "revision": "dd2bd61b7d9a6fef1abc52d606e983b41886a149", "file": "assets.zip", "bytes": 6395849578, "sha256": "96764a4bfbdaea98d4411598caeab235458318fe0f549611b93d1a323027b3cf"},
+  "uv_version": "0.13.0"
+}

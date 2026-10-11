@@ -1,0 +1,13 @@
+{
+  "num_steps": 10,
+  "replan_steps": 5,
+  "wait_steps": 10,
+  "render_resolution": 256,
+  "policy_resolution": 224,
+  "horizons": {
+    "libero_spatial": 220,
+    "libero_object": 280,
+    "libero_goal": 300,
+    "libero_10": 520
+  }
+}

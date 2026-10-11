@@ -1,0 +1,32 @@
+# Simulation environment is separate from the OpenPI/JAX environment.
+# robosuite 1.4.0 follows LIBERO-Plus; MuJoCo follows the public pi05 report #65.
+numpy==1.26.4
+mujoco==3.2.3
+robosuite==1.4.0
+robomimic==0.2.0
+bddl==1.0.1
+gym==0.25.2
+torch==2.5.1+cpu
+torchvision==0.20.1+cpu
+opencv-python==4.10.0.84
+scikit-image==0.24.0
+Wand==0.6.13
+Pillow==10.4.0
+imageio==2.36.1
+imageio-ffmpeg==0.5.1
+matplotlib==3.9.2
+numba==0.60.0
+scipy==1.14.1
+easydict==1.13
+cloudpickle==3.1.0
+einops==0.8.0
+PyYAML==6.0.2
+websockets==14.2
+msgpack==1.1.0
+dm-tree==0.1.8
+typing-extensions==4.12.2
+packaging==24.2
+termcolor==2.5.0
+future==1.0.0
+h5py==3.12.1
+google-crc32c==1.7.1

@@ -1,0 +1,21 @@
+{
+  "checks": {
+    "server-import-check.log": {
+      "sha256": "983419c5cc407a44c3cc45c50a8ce8a5483b8d6cbd434cd73d2ad8220bf90b90"
+    },
+    "model-adapter-check.log": {
+      "sha256": "69c488b34a47ab7c79cf8eb8dc2b7679dce0bdd004a2e2c1eb01466c8d13bab0"
+    },
+    "clean-import-check.log": {
+      "sha256": "a65fc8cabb42991063f72793fc7660180c7996a5aabb65ce135fd2a8551678ac"
+    },
+    "tests.log": {
+      "sha256": "637baf205bd51c10e9402c674b9d5aba66cbff4adcd3293ae274af9e4517d89d"
+    },
+    "video-check.log": {
+      "sha256": "557b7f9939bcfdef340bfc57927904d1fcd5cdc7b684d06578f81ce1adf9d985"
+    }
+  },
+  "unit_tests_passed": 13,
+  "scope": "CPU import, adapter, data/metadata, reporting and syntax checks; no model inference"
+}

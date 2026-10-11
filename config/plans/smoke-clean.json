@@ -1,0 +1,97 @@
+{
+  "schema_version": 1,
+  "profile": "smoke-clean",
+  "benchmark": "clean",
+  "seed": 7,
+  "prompt_mode": "upstream",
+  "evaluation": {
+    "num_steps": 10,
+    "replan_steps": 5,
+    "wait_steps": 10,
+    "render_resolution": 256,
+    "policy_resolution": 224,
+    "horizons": {
+      "libero_spatial": 220,
+      "libero_object": 280,
+      "libero_goal": 300,
+      "libero_10": 520
+    }
+  },
+  "trials_per_task": 1,
+  "expected_episodes": 4,
+  "tasks": [
+    {
+      "suite": "libero_spatial",
+      "task_id": 0,
+      "name": "pick_up_the_black_bowl_between_the_plate_and_the_ramekin_and_place_it_on_the_plate",
+      "base_task": "pick_up_the_black_bowl_between_the_plate_and_the_ramekin_and_place_it_on_the_plate",
+      "category": "Clean",
+      "difficulty": null,
+      "classification_id": null,
+      "bddl": "libero_spatial/pick_up_the_black_bowl_between_the_plate_and_the_ramekin_and_place_it_on_the_plate.bddl",
+      "init_file": "libero_spatial/pick_up_the_black_bowl_between_the_plate_and_the_ramekin_and_place_it_on_the_plate.pruned_init",
+      "max_steps": 220
+    },
+    {
+      "suite": "libero_object",
+      "task_id": 0,
+      "name": "pick_up_the_alphabet_soup_and_place_it_in_the_basket",
+      "base_task": "pick_up_the_alphabet_soup_and_place_it_in_the_basket",
+      "category": "Clean",
+      "difficulty": null,
+      "classification_id": null,
+      "bddl": "libero_object/pick_up_the_alphabet_soup_and_place_it_in_the_basket.bddl",
+      "init_file": "libero_object/pick_up_the_alphabet_soup_and_place_it_in_the_basket.pruned_init",
+      "max_steps": 280
+    },
+    {
+      "suite": "libero_goal",
+      "task_id": 0,
+      "name": "open_the_middle_drawer_of_the_cabinet",
+      "base_task": "open_the_middle_drawer_of_the_cabinet",
+      "category": "Clean",
+      "difficulty": null,
+      "classification_id": null,
+      "bddl": "libero_goal/open_the_middle_drawer_of_the_cabinet.bddl",
+      "init_file": "libero_goal/open_the_middle_drawer_of_the_cabinet.pruned_init",
+      "max_steps": 300
+    },
+    {
+      "suite": "libero_10",
+      "task_id": 0,
+      "name": "LIVING_ROOM_SCENE2_put_both_the_alphabet_soup_and_the_tomato_sauce_in_the_basket",
+      "base_task": "LIVING_ROOM_SCENE2_put_both_the_alphabet_soup_and_the_tomato_sauce_in_the_basket",
+      "category": "Clean",
+      "difficulty": null,
+      "classification_id": null,
+      "bddl": "libero_10/LIVING_ROOM_SCENE2_put_both_the_alphabet_soup_and_the_tomato_sauce_in_the_basket.bddl",
+      "init_file": "libero_10/LIVING_ROOM_SCENE2_put_both_the_alphabet_soup_and_the_tomato_sauce_in_the_basket.pruned_init",
+      "max_steps": 520
+    }
+  ],
+  "sources": {
+    "openpi": {
+      "url": "https://github.com/Physical-Intelligence/openpi.git",
+      "commit": "215abfb217dbac7d5f1273282331b9b1866c0479"
+    },
+    "libero_plus": {
+      "url": "https://github.com/sylvestf/LIBERO-plus.git",
+      "commit": "4976dc30028e805ff8094b55501d532c48fec182"
+    },
+    "libero_clean": {
+      "url": "https://github.com/Lifelong-Robot-Learning/LIBERO.git",
+      "commit": "f78abd68ee283de9f9be3c8f7e2a9ad60246e95c"
+    },
+    "checkpoint": "gs://openpi-assets/checkpoints/pi05_libero/",
+    "assets": {
+      "repo": "Sylvest/LIBERO-plus",
+      "revision": "dd2bd61b7d9a6fef1abc52d606e983b41886a149",
+      "file": "assets.zip",
+      "bytes": 6395849578,
+      "sha256": "96764a4bfbdaea98d4411598caeab235458318fe0f549611b93d1a323027b3cf"
+    },
+    "uv_version": "0.13.0"
+  },
+  "selection": "diagnostic subset",
+  "manifest_sha256": "1ee2fcfeb326794d098ea3df717c3d203e7d38cf76cfd5718fe8fc5b4e4b68d9"
+}

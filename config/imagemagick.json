@@ -1,0 +1,6 @@
+{
+  "version": "7.1.1-28",
+  "url": "https://github.com/ImageMagick/ImageMagick/releases/download/7.1.1-28/ImageMagick--gcc-x86_64.AppImage",
+  "sha256": "b97e682956dc5b6c6649786b23ae1b9567c89567cff9716c66f38aa31fbd9c06",
+  "note": "Official upstream portable release. Digest recorded from the retrieved release and enforced on subsequent installations. Latest 7.1.2-33 requires GLIBC_2.35, unavailable on this PACE host."
+}

@@ -1,0 +1,18 @@
+{
+  "clean": {
+    "source": "https://github.com/Physical-Intelligence/openpi/blob/215abfb217dbac7d5f1273282331b9b1866c0479/examples/libero/README.md",
+    "status": "official OpenPI; original LIBERO only",
+    "checkpoint": "gs://openpi-assets/checkpoints/pi05_libero/",
+    "suite_percent": {"libero_spatial": 98.8, "libero_object": 98.2, "libero_goal": 98.0, "libero_10": 92.4},
+    "overall_percent": 96.85,
+    "episodes": 2000
+  },
+  "plus": {
+    "source": "https://github.com/sylvestf/LIBERO-plus/issues/57",
+    "status": "community self-report by Skywalker-yqz, 2026-07-13; incomplete protocol, not an official pi0.5 leaderboard score",
+    "checkpoint": "gs://openpi-assets/checkpoints/pi05_libero/",
+    "category_percent": {"Camera Viewpoints": 67.3, "Robot Initial States": 78.8, "Language Instructions": 86.3, "Light Conditions": 95.8, "Background Textures": 93.8, "Sensor Noise": 87.3, "Objects Layout": 86.4},
+    "overall_percent": 84.2,
+    "episodes": 10030
+  }
+}
