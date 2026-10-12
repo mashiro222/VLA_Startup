@@ -2,9 +2,9 @@
 
 使用官方 `pi05_libero` checkpoint 做闭环推理，不进行训练或 fine-tuning。先用少量 episode 检查链路，再做原版 LIBERO 对照及 LIBERO-Plus 鲁棒性评测。smoke 使用一张 A100，完整评测可选择最多四个单卡 worker；结果保存在本地，用 CSV、Markdown、JSON 和 PNG 查看，不使用 W&B。
 
-初始环境准备阶段停在计费提交之前。随后用户自行提交的两份 smoke 均已正常完成：原版（`13965730`）4/4 成功；Plus（`13966714`）7/7 条记录完整、6 次成功、1 次任务失败，没有程序异常。它们验证了代表性用例，不代表完整 benchmark 成绩或全量无 bug。检查记录见 [docs/validation.md](docs/validation.md)，实际结果见 [smoke-clean 报告](reports/smoke-clean-001/summary.md)和 [smoke-plus 报告](reports/smoke-plus-001/summary.md)。四卡 full-plus 已准备，尚未提交。
+初始环境准备阶段停在计费提交之前。随后用户自行提交的两份 smoke 均已正常完成：原版（`13965730`）4/4 成功；Plus（`13966714`）7/7 条记录完整、6 次成功、1 次任务失败，没有程序异常。它们验证了代表性用例，不代表完整 benchmark 成绩或全量无 bug。检查记录见 [docs/validation.md](docs/validation.md)，实际结果见 [smoke-clean 报告](reports/smoke-clean-001/summary.md)和 [smoke-plus 报告](reports/smoke-plus-001/summary.md)。用户已提交四卡 full-plus 数组 `13967217`；新的 full-clean 安排见 [2026-10-12 提交与检查说明](docs/full-clean-2026-10-12.md)。
 
-需要查看账号全部作业，或在 smoke-plus 检查后手动运行四卡 full：见 [四卡评测与作业查询说明](docs/overnight.md)。四卡入口独立于下文的单卡入口，不会自动提交或取消作业。
+需要查看账号全部作业或理解四卡方案：见 [四卡评测与作业查询说明](docs/overnight.md)。四卡入口独立于下文的单卡入口，不会自动提交或取消作业。
 
 ## 1. 当前目录与环境
 
@@ -75,7 +75,7 @@ smoke 的通过条件是模型与环境成功运行、所有选定 episode 都�
 | `full-clean` | 原版 40 个任务，每个 50 次 | 2,000 | 24 小时 | 对照 OpenPI 官方结果 |
 | `full-plus` | 所有 10,030 个变体，每个一次 | 10,030 | 24 小时 | 完整 Plus 鲁棒性评测 |
 
-时限是作业上限，**不是运行耗时承诺**。pilot 可以帮助估计速度，但不是必须步骤。当前按 full-plus 优先的安排，先等 Plus smoke 检查完成，再使用[四卡 full-plus 入口](docs/overnight.md#运行命令)，不先运行 full-clean。七条 smoke 只能验证代表性用例，不能保证全量无异常。下面保留单卡 pilot/full 的备选流程，不要与四卡数组重复提交。
+时限是作业上限，**不是运行耗时承诺**。pilot 可以帮助估计速度，但不是必须步骤。当前按 full-plus 优先，Plus smoke 检查通过后已提交[四卡 full-plus 数组](docs/overnight.md#运行命令)；full-clean 的最新安排见[2026-10-12 说明](docs/full-clean-2026-10-12.md)。七条 smoke 只能验证代表性用例，不能保证全量无异常。下面保留单卡 pilot/full 的备选流程，不要与四卡数组重复提交。
 
 ```bash
 bash scripts/prepare.sh pilot-plus pilot-plus-001
@@ -91,7 +91,7 @@ bash scripts/submit.sh full-plus-001
 # 以上两份完整作业尚未提交；各自加 --submit 才会提交。
 ```
 
-粗略时间估计：`预计剩余小时 ≈ 剩余 episode × pilot 平均 episode 秒数 / 3600`，并预留模型启动、JIT、任务切换时间。不同任务 horizon、失败率会影响耗时，56 次 pilot 也不一定代表全部变体。按组内当期 PACE 计费规则换算 credit；本仓库不编造价格。先完成当前作业再提交下一份，避免无意并行计费。
+粗略时间估计：`预计剩余小时 ≈ 剩余 episode × pilot 平均 episode 秒数 / 3600`，并预留模型启动、JIT、任务切换时间。不同任务 horizon、失败率会影响耗时，56 次 pilot 也不一定代表全部变体。按组内当期 PACE 计费规则换算 credit；本仓库不编造价格。2026-10-12 用户允许 full-plus 与 full-clean 两份四卡数组并行，最多同时 8 张 GPU。
 
 修改资源请写入忽略的 `config/local.env`。仅改时限可用：
 

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# One array, at most four GPUs in total. Only --submit calls sbatch.
+# One array, at most four one-GPU workers. Only --submit calls sbatch.
 set -euo pipefail
 source "$(dirname "$0")/common.sh"
 batch_id="${1:?Usage: bash scripts/submit_parallel.sh BATCH_ID [--submit]}"
@@ -9,8 +9,18 @@ mode="${2:---dry-run}"
 [[ "$mode" == --dry-run || "$mode" == --submit ]] || exit 2
 source "$ROOT/config/pace.env"
 if [[ -f "$ROOT/config/local.env" ]]; then source "$ROOT/config/local.env"; fi
-if [[ "$GRES" != gpu:a100:1 ]]; then
-    printf 'This array requires GRES=gpu:a100:1; each worker uses exactly one GPU.\n' >&2
+case "${VLA_GPU_TYPE:-}" in
+    '') ;;
+    a100) PARTITION=gpu-a100; GRES=gpu:a100:1 ;;
+    h100) PARTITION=gpu-h100; GRES=gpu:h100:1 ;;
+    *) printf 'VLA_GPU_TYPE must be a100 or h100.\n' >&2; exit 2 ;;
+esac
+case "$PARTITION:$GRES" in
+    gpu-a100:gpu:a100:1|gpu-h100:gpu:h100:1) ;;
+    *) printf 'Use a matching A100 or H100 partition and one GPU per worker.\n' >&2; exit 2 ;;
+esac
+if [[ -n "${VLA_AFTERANY_JOB_ID:-}" && ! "$VLA_AFTERANY_JOB_ID" =~ ^[0-9]+$ ]]; then
+    printf 'VLA_AFTERANY_JOB_ID must be a numeric Slurm array job ID.\n' >&2
     exit 2
 fi
 python3 "$ROOT/scripts/preflight.py"
@@ -22,8 +32,13 @@ if [[ -z "$remaining" ]]; then
     exit 0
 fi
 mkdir -p "$ROOT/logs"
+dependency=()
+if [[ -n "${VLA_AFTERANY_JOB_ID:-}" ]]; then
+    dependency=("--dependency=afterany:$VLA_AFTERANY_JOB_ID")
+fi
 cmd=(sbatch --account="$ACCOUNT" --partition="$PARTITION" --qos="$QOS" \
     --gres="$GRES" --cpus-per-task="$CPUS" --mem="$MEMORY" --time="${TIME_LIMIT:-12:00:00}" \
+    "${dependency[@]}" \
     --array="$remaining%$workers" --job-name="pi05-$batch_id" \
     --chdir="$ROOT" --output="$ROOT/logs/$batch_id-%A_%a.out" \
     "$ROOT/slurm/parallel.sbatch" "$batch_id" \

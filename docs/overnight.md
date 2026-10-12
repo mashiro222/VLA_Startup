@@ -1,8 +1,8 @@
 # 四张 A100 优先运行 full-plus
 
-先单独完成并检查 `smoke-plus-001`，再由你决定是否提交本方案。下面的脚本不自动接续 smoke、不取消任何作业；默认仅预览，只有 `--submit` 才创建计费作业。
+本页记录 full-plus 设计、排队试算与通用四卡操作。**最新作业状态和 full-clean H100 方案请先看 [2026-10-12 提交与检查说明](full-clean-2026-10-12.md)。**下面的脚本不自动接续 smoke、不取消任何作业；默认仅预览，只有 `--submit` 才创建计费作业。
 
-当前检查已完成：2026-10-11 的 Plus smoke 作业 `13966714` 正常退出（0:0），14 分 32 秒，七类共 7/7 条有效记录、6 次成功、1 次任务失败，没有程序异常。见 [真实报告](../reports/smoke-plus-001/summary.md)和 [检查记录](validation.md)。四卡 full-plus 计划 `fullplus-4gpu-001` 已准备并通过 smoke gate，尚未提交。
+2026-10-11 的 Plus smoke 作业 `13966714` 正常退出（0:0），14 分 32 秒，七类共 7/7 条有效记录、6 次成功、1 次任务失败，没有程序异常。见 [真实报告](../reports/smoke-plus-001/summary.md)和 [检查记录](validation.md)。四卡 full-plus 计划 `fullplus-4gpu-001` 已准备并通过 smoke gate，用户随后提交为 Slurm 数组 `13967217`。
 
 ## 查看 gliu386 的全部作业
 
@@ -76,7 +76,7 @@ scontrol show partition gpu-a100
 
 ## 四卡具体跑什么
 
-当前优先方案一次提交一个数组，最多 4 个 worker 同时执行，只跑 full-plus。每个 worker 申请 **1 张** A100，可以位于不同节点，无需一台机器同时空出 4 张卡。不要把 `GRES` 改成 4，那会变成每个 worker 申请 4 张卡。
+这个数组最多 4 个 worker 同时执行，只跑 full-plus。每个 worker 申请 **1 张** A100，可以位于不同节点，无需一台机器同时空出 4 张卡。不要把 `GRES` 改成 4，那会变成每个 worker 申请 4 张卡。2026-10-12 用户另行批准一份最多 4 张 H100 的 full-clean 数组与它重叠运行，因此两份合计可达 8 张 GPU。
 
 | Worker | full-plus | 每个 worker 的资源 |
 |---|---:|---|
@@ -108,7 +108,7 @@ python3 scripts/parallel.py prepare fullplus-4gpu-001 --workers 4 --benchmarks p
 TIME_LIMIT=24:00:00 bash scripts/submit_parallel.sh fullplus-4gpu-001
 ```
 
-**等 smoke-plus 结束并检查报告后**，明确决定使用 credit 时执行一次：
+smoke-plus 结束并检查报告后，用户已经执行了一次 full-plus 的计费提交。下面保留提交命令作为复现或超时续跑参考；活动数组存在时不要重复提交：
 
 ```bash
 TIME_LIMIT=24:00:00 bash scripts/submit_parallel.sh fullplus-4gpu-001 --submit
@@ -123,7 +123,7 @@ TIME_LIMIT=08:00:00 bash scripts/submit_parallel.sh fullplus-4gpu-001
 TIME_LIMIT=08:00:00 bash scripts/submit_parallel.sh fullplus-4gpu-001 --submit
 ```
 
-缩短时限不能保证更早排到卡，并可能需要明天续跑。不要另外重复提交一份单卡 full-plus。等 full-plus 完成后，可以使用 `python3 scripts/parallel.py prepare fullclean-4gpu-001 --workers 4 --benchmarks clean` 准备原版，随后用同一提交入口预览/提交；避免两个数组同时运行超过当前约定的四卡总上限。
+缩短时限不能保证更早排到卡，并可能需要续跑。不要另外重复提交一份单卡 full-plus。原版 `fullclean-4gpu-001` 现已准备；用户此次允许两份数组总计最多 8 张 GPU 同时运行，具体 H100 提交方式见[最新说明](full-clean-2026-10-12.md)。
 
 `--benchmarks both` 保留原来的每片 clean 后接 plus 模式，需要两套 smoke 都通过；它会推迟 full-plus 的完成，不是当前的优先方案。
 
@@ -167,4 +167,4 @@ bash scripts/publish_results.sh fullplus-4gpu-001-full-plus
 - `tests/test_parallel.py`：分片覆盖和错误合并拒绝测试。
 - `tests/test_submission.py`：使用假的 Slurm 命令测试默认不提交、smoke gate、重复作业、超时不重试。
 
-并行功能已经做本地测试与调度器校验，尚未实际运行四卡 GPU 评测。真实单卡结果见 [smoke-clean 报告](../reports/smoke-clean-001/summary.md)和 [smoke-plus 报告](../reports/smoke-plus-001/summary.md)。
+并行功能已经做本地测试与调度器校验；四卡 full 运行结果尚待作业完成。真实单卡结果见 [smoke-clean 报告](../reports/smoke-clean-001/summary.md)和 [smoke-plus 报告](../reports/smoke-plus-001/summary.md)。

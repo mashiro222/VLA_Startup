@@ -20,7 +20,7 @@ class SubmissionTests(unittest.TestCase):
         for name in ('common.sh', 'submit_parallel.sh'):
             shutil.copy2(ROOT / 'scripts' / name, self.root / 'scripts' / name)
         (self.root / 'config/pace.env').write_text(
-            'ACCOUNT=test\nPARTITION=test\nQOS=test\nGRES=gpu:a100:1\nCPUS=8\nMEMORY=64G\n')
+            'ACCOUNT=test\nPARTITION=gpu-a100\nQOS=test\nGRES=gpu:a100:1\nCPUS=8\nMEMORY=64G\n')
         (self.root / 'runs/batch/batch.json').write_text(json.dumps({'workers': 4}))
         (self.root / 'scripts/preflight.py').write_text('pass\n')
         (self.root / 'scripts/parallel.py').write_text(
@@ -64,6 +64,27 @@ class SubmissionTests(unittest.TestCase):
         self.assertIn('--time=08:00:00', args)
         self.assertFalse(any(a.startswith('--dependency') for a in args))
         self.assertEqual(self.calls.read_text(), 'call\n')
+
+    def test_h100_override_requests_one_h100_per_worker(self):
+        result = self.run_script(VLA_GPU_TYPE='h100')
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn('--partition=gpu-h100', result.stdout)
+        self.assertIn('--gres=gpu:h100:1', result.stdout)
+        self.assertFalse(self.capture.exists())
+
+    def test_dependency_waits_for_whole_existing_array(self):
+        result = self.run_script('--submit', VLA_GPU_TYPE='h100',
+                                 VLA_AFTERANY_JOB_ID='13967217')
+        self.assertEqual(result.returncode, 0, result.stderr)
+        args = self.capture.read_text().splitlines()
+        self.assertIn('--dependency=afterany:13967217', args)
+        self.assertIn('--partition=gpu-h100', args)
+        self.assertIn('--gres=gpu:h100:1', args)
+
+    def test_invalid_dependency_is_rejected_before_submission(self):
+        result = self.run_script('--submit', VLA_AFTERANY_JOB_ID='13967217_0')
+        self.assertNotEqual(result.returncode, 0)
+        self.assertFalse(self.capture.exists())
 
     def test_sbatch_timeout_is_not_automatically_retried(self):
         result = self.run_script('--submit', FAKE_SUBMIT_CODE='1')

@@ -1,0 +1,66 @@
+[
+  {
+    "gpu": "a100",
+    "workers": 1,
+    "hours": 12,
+    "time": "2026-10-12T08:13:37.012745-04:00",
+    "exit": 0,
+    "output": "sbatch: Job 13974391 to start at 2026-10-16T17:40:37 a using 8 processors on nodes atl1-1-01-002-16-0 in partition gpu-a100"
+  },
+  {
+    "gpu": "a100",
+    "workers": 2,
+    "hours": 8,
+    "time": "2026-10-12T08:13:37.117728-04:00",
+    "exit": 0,
+    "output": "sbatch: Job 13974392 to start at 2026-10-16T17:40:37 a using 8 processors on nodes atl1-1-01-002-16-0 in partition gpu-a100"
+  },
+  {
+    "gpu": "a100",
+    "workers": 4,
+    "hours": 4,
+    "time": "2026-10-12T08:13:37.204879-04:00",
+    "exit": 0,
+    "output": "sbatch: Job 13974393 to start at 2026-10-16T17:40:37 a using 8 processors on nodes atl1-1-01-002-16-0 in partition gpu-a100"
+  },
+  {
+    "gpu": "a100",
+    "workers": 4,
+    "hours": 8,
+    "time": "2026-10-12T08:13:37.287927-04:00",
+    "exit": 0,
+    "output": "sbatch: Job 13974394 to start at 2026-10-16T17:40:37 a using 8 processors on nodes atl1-1-01-002-16-0 in partition gpu-a100"
+  },
+  {
+    "gpu": "h100",
+    "workers": 1,
+    "hours": 12,
+    "time": "2026-10-12T08:13:37.371796-04:00",
+    "exit": 0,
+    "output": "sbatch: Job 13974395 to start at 2026-10-15T06:09:29 a using 8 processors on nodes atl1-1-03-008-32-0 in partition gpu-h100"
+  },
+  {
+    "gpu": "h100",
+    "workers": 2,
+    "hours": 8,
+    "time": "2026-10-12T08:13:37.454840-04:00",
+    "exit": 0,
+    "output": "sbatch: Job 13974396 to start at 2026-10-15T06:09:29 a using 8 processors on nodes atl1-1-03-008-32-0 in partition gpu-h100"
+  },
+  {
+    "gpu": "h100",
+    "workers": 4,
+    "hours": 4,
+    "time": "2026-10-12T08:13:37.539210-04:00",
+    "exit": 0,
+    "output": "sbatch: Job 13974397 to start at 2026-10-15T06:09:29 a using 8 processors on nodes atl1-1-03-008-32-0 in partition gpu-h100"
+  },
+  {
+    "gpu": "h100",
+    "workers": 4,
+    "hours": 8,
+    "time": "2026-10-12T08:13:37.622802-04:00",
+    "exit": 0,
+    "output": "sbatch: Job 13974398 to start at 2026-10-15T06:09:29 a using 8 processors on nodes atl1-1-03-008-32-0 in partition gpu-h100"
+  }
+]
