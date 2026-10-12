@@ -1,6 +1,6 @@
 # 2026-10-12：full-clean 的提交与检查
 
-当前 `fullplus-4gpu-001` 已由用户提交为 Slurm 数组 `13967217`：4 个 A100 worker，评测 10,030 个 Plus episode。`fullclean-4gpu-001` 已准备并通过本地检查：4 个 H100 worker，每个 1 张 H100、8 CPU、64 GB，评测原版 LIBERO 的 2,000 个 episode，每片 500 个。两批使用不同的 `runs/`、`logs/` 和 `reports/` 目录，不会覆盖结果。用户本次允许最多 8 张 GPU 重叠运行；full-clean 因而**不添加**等待 full-plus 的作业依赖。两批都使用付费账户 `gts-jli741-paid`、`inferno` QoS。
+当前 `fullplus-4gpu-001` 已由用户提交为 Slurm 数组 `13967217`：4 个 A100 worker，评测 10,030 个 Plus episode。`fullclean-4gpu-001` 已于 2026-10-12 08:26 EDT 提交为数组 **`13974531`**：4 个 H100 worker，每个 1 张 H100、8 CPU、64 GB，评测原版 LIBERO 的 2,000 个 episode，每片 500 个。提交后核对四片均为 `PENDING (Priority)`、`Dependency=(null)`。两批使用不同的 `runs/`、`logs/` 和 `reports/` 目录，不会覆盖结果。用户本次允许最多 8 张 GPU 重叠运行；full-clean 因而**不添加**等待 full-plus 的作业依赖。两批都使用付费账户 `gts-jli741-paid`、`inferno` QoS。
 
 2026-10-12 08:13 EDT 的 `sbatch --test-only` 比较记录在 [clean-queue-probe-2026-10-12.json](../reports/preparation/clean-queue-probe-2026-10-12.json)。当时新申请的 H100 1/2/4 worker 均显示首个候选约 10 月 15 日 06:09；A100 则约 10 月 16 日 17:40。**这不是预约时间，也不代表四个成员会同时启动**。已有 full-plus 的候选时间从 10 月 12 日变到 10 月 13 日，说明估计会随调度重算。4 个 H100 是当时被测试的有效选项中较早的候选，选 2 个 H100 并没有显示更早排到，反而会让每卡承担更多 episode。
 
@@ -24,7 +24,7 @@ python3 scripts/parallel.py check fullclean-4gpu-001 --require-smoke
 VLA_GPU_TYPE=h100 TIME_LIMIT=08:00:00 bash scripts/submit_parallel.sh fullclean-4gpu-001
 ```
 
-**只有在确认 full-clean 没有活动作业后**，下面这条才真正提交计费数组。本次用户已特别授权 Codex 代为提交这一份 full-clean；若 Slurm 控制器故障导致 Codex 未提交成功，可以由用户执行它。提交入口会检查同名活动数组，并只请求未完成的分片；遇到通信超时先查队列，不要盲目重试。
+**`13974531` 已提交；现在不要执行下面这条。** 它仅供此数组结束后仍有缺失分片时续跑，或在新批次复现时参考。本次用户已特别授权 Codex 代为提交这一份 full-clean。提交入口会检查同名活动数组，并只请求未完成的分片；遇到通信超时先查队列，不要盲目重试。
 
 ```bash
 VLA_GPU_TYPE=h100 TIME_LIMIT=08:00:00 bash scripts/submit_parallel.sh fullclean-4gpu-001 --submit
@@ -32,11 +32,11 @@ VLA_GPU_TYPE=h100 TIME_LIMIT=08:00:00 bash scripts/submit_parallel.sh fullclean-
 
 若将来改回总共最多 4 张卡，可额外设置 `VLA_AFTERANY_JOB_ID=13967217`，让 clean 在 Plus 整个数组结束后才变为可运行；本次为尽快出结果，不设置它。[Slurm 数组依赖说明](https://slurm.schedmd.com/job_array.html#job-dependencies)确认 `afterany` 等待该数组全部成员结束，不要求它们全部成功。
 
-可用以下命令看作业和日志；将 `CLEAN_JOB_ID` 换成实际返回的数字。`--test-only` 输出的数字不是正式作业 ID。
+可用以下命令看作业和日志。`13974531` 是真实的 full-clean 作业 ID；`--test-only` 输出的数字不是正式作业 ID。
 
 ```bash
 squeue -r -u gliu386 -o '%.18i %.32j %.12T %.12M %R'
-sacct -j CLEAN_JOB_ID --format=JobID,State,ExitCode,Elapsed,AllocTRES,MaxRSS
+sacct -j 13974531 --format=JobID,State,ExitCode,Elapsed,AllocTRES,MaxRSS
 ls -lt logs/fullclean-4gpu-001-*.out
 python3 scripts/parallel.py status fullclean-4gpu-001
 ```

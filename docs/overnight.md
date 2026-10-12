@@ -123,7 +123,7 @@ TIME_LIMIT=08:00:00 bash scripts/submit_parallel.sh fullplus-4gpu-001
 TIME_LIMIT=08:00:00 bash scripts/submit_parallel.sh fullplus-4gpu-001 --submit
 ```
 
-缩短时限不能保证更早排到卡，并可能需要续跑。不要另外重复提交一份单卡 full-plus。原版 `fullclean-4gpu-001` 现已准备；用户此次允许两份数组总计最多 8 张 GPU 同时运行，具体 H100 提交方式见[最新说明](full-clean-2026-10-12.md)。
+缩短时限不能保证更早排到卡，并可能需要续跑。不要另外重复提交一份单卡 full-plus。原版 `fullclean-4gpu-001` 已提交为 H100 数组 `13974531`；用户此次允许两份数组总计最多 8 张 GPU 同时运行，查看方式见[最新说明](full-clean-2026-10-12.md)。
 
 `--benchmarks both` 保留原来的每片 clean 后接 plus 模式，需要两套 smoke 都通过；它会推迟 full-plus 的完成，不是当前的优先方案。
 
