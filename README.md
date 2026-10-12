@@ -2,7 +2,7 @@
 
 使用官方 `pi05_libero` checkpoint 做闭环推理，不进行训练或 fine-tuning。先用少量 episode 检查链路，再做原版 LIBERO 对照及 LIBERO-Plus 鲁棒性评测。smoke 使用一张 A100，完整评测可选择最多四个单卡 worker；结果保存在本地，用 CSV、Markdown、JSON 和 PNG 查看，不使用 W&B。
 
-初始环境准备阶段停在计费提交之前。随后用户自行提交的原版 smoke（`13965730`）已正常完成，4/4 episode 成功；这验证了原版推理链路，不代表完整 benchmark 成绩。检查记录见 [docs/validation.md](docs/validation.md)，实际结果见 [smoke-clean 报告](reports/smoke-clean-001/summary.md)。Plus smoke 与完整评测需分别验证。
+初始环境准备阶段停在计费提交之前。随后用户自行提交的两份 smoke 均已正常完成：原版（`13965730`）4/4 成功；Plus（`13966714`）7/7 条记录完整、6 次成功、1 次任务失败，没有程序异常。它们验证了代表性用例，不代表完整 benchmark 成绩或全量无 bug。检查记录见 [docs/validation.md](docs/validation.md)，实际结果见 [smoke-clean 报告](reports/smoke-clean-001/summary.md)和 [smoke-plus 报告](reports/smoke-plus-001/summary.md)。四卡 full-plus 已准备，尚未提交。
 
 需要查看账号全部作业，或在 smoke-plus 检查后手动运行四卡 full：见 [四卡评测与作业查询说明](docs/overnight.md)。四卡入口独立于下文的单卡入口，不会自动提交或取消作业。
 

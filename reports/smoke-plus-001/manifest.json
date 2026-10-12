@@ -1,0 +1,133 @@
+{
+  "schema_version": 1,
+  "profile": "smoke-plus",
+  "benchmark": "plus",
+  "seed": 7,
+  "prompt_mode": "upstream",
+  "evaluation": {
+    "num_steps": 10,
+    "replan_steps": 5,
+    "wait_steps": 10,
+    "render_resolution": 256,
+    "policy_resolution": 224,
+    "horizons": {
+      "libero_spatial": 220,
+      "libero_object": 280,
+      "libero_goal": 300,
+      "libero_10": 520
+    }
+  },
+  "trials_per_task": 1,
+  "expected_episodes": 7,
+  "tasks": [
+    {
+      "suite": "libero_spatial",
+      "task_id": 254,
+      "name": "pick_up_the_black_bowl_on_the_wooden_cabinet_and_place_it_on_the_plate_tb_12",
+      "base_task": "pick_up_the_black_bowl_on_the_wooden_cabinet_and_place_it_on_the_plate",
+      "category": "Background Textures",
+      "difficulty": 4,
+      "classification_id": 255,
+      "bddl": "libero_spatial/pick_up_the_black_bowl_on_the_wooden_cabinet_and_place_it_on_the_plate_tb_12.bddl",
+      "init_file": "libero_spatial/pick_up_the_black_bowl_on_the_wooden_cabinet_and_place_it_on_the_plate.pruned_init",
+      "max_steps": 220
+    },
+    {
+      "suite": "libero_spatial",
+      "task_id": 485,
+      "name": "pick_up_the_black_bowl_next_to_the_cookie_box_and_place_it_on_the_plate_view_0_0_100_0_0_initstate_497",
+      "base_task": "pick_up_the_black_bowl_next_to_the_cookie_box_and_place_it_on_the_plate",
+      "category": "Robot Initial States",
+      "difficulty": 4,
+      "classification_id": 486,
+      "bddl": "libero_spatial/pick_up_the_black_bowl_next_to_the_cookie_box_and_place_it_on_the_plate.bddl",
+      "init_file": "libero_spatial/pick_up_the_black_bowl_next_to_the_cookie_box_and_place_it_on_the_plate.pruned_init",
+      "max_steps": 220
+    },
+    {
+      "suite": "libero_spatial",
+      "task_id": 799,
+      "name": "pick_up_the_black_bowl_on_the_ramekin_and_place_it_on_the_plate_view_0_0_100_350_356_initstate_0",
+      "base_task": "pick_up_the_black_bowl_on_the_ramekin_and_place_it_on_the_plate",
+      "category": "Camera Viewpoints",
+      "difficulty": 1,
+      "classification_id": 800,
+      "bddl": "libero_spatial/pick_up_the_black_bowl_on_the_ramekin_and_place_it_on_the_plate.bddl",
+      "init_file": "libero_spatial/pick_up_the_black_bowl_on_the_ramekin_and_place_it_on_the_plate.pruned_init",
+      "max_steps": 220
+    },
+    {
+      "suite": "libero_spatial",
+      "task_id": 1162,
+      "name": "pick_up_the_black_bowl_in_the_top_drawer_of_the_wooden_cabinet_and_place_it_on_the_plate_language_41_view_0_0_100_0_0_initstate_0",
+      "base_task": "pick_up_the_black_bowl_in_the_top_drawer_of_the_wooden_cabinet_and_place_it_on_the_plate",
+      "category": "Language Instructions",
+      "difficulty": 4,
+      "classification_id": 1163,
+      "bddl": "libero_spatial/pick_up_the_black_bowl_in_the_top_drawer_of_the_wooden_cabinet_and_place_it_on_the_plate_language_41.bddl",
+      "init_file": "libero_spatial/pick_up_the_black_bowl_in_the_top_drawer_of_the_wooden_cabinet_and_place_it_on_the_plate.pruned_init",
+      "max_steps": 220
+    },
+    {
+      "suite": "libero_spatial",
+      "task_id": 1504,
+      "name": "pick_up_the_black_bowl_on_the_cookie_box_and_place_it_on_the_plate_view_0_0_100_0_0_initstate_0_noise_49",
+      "base_task": "pick_up_the_black_bowl_on_the_cookie_box_and_place_it_on_the_plate",
+      "category": "Sensor Noise",
+      "difficulty": 2,
+      "classification_id": 1505,
+      "bddl": "libero_spatial/pick_up_the_black_bowl_on_the_cookie_box_and_place_it_on_the_plate.bddl",
+      "init_file": "libero_spatial/pick_up_the_black_bowl_on_the_cookie_box_and_place_it_on_the_plate.pruned_init",
+      "max_steps": 220
+    },
+    {
+      "suite": "libero_spatial",
+      "task_id": 1783,
+      "name": "pick_up_the_black_bowl_from_table_center_and_place_it_on_the_plate_add_29",
+      "base_task": "pick_up_the_black_bowl_from_table_center_and_place_it_on_the_plate",
+      "category": "Objects Layout",
+      "difficulty": 4,
+      "classification_id": 1784,
+      "bddl": "libero_spatial/pick_up_the_black_bowl_from_table_center_and_place_it_on_the_plate_add_29.bddl",
+      "init_file": "libero_newobj/libero_spatial/pick_up_the_black_bowl_from_table_center_and_place_it_on_the_plate_add_29.pruned_init",
+      "max_steps": 220
+    },
+    {
+      "suite": "libero_spatial",
+      "task_id": 2290,
+      "name": "pick_up_the_black_bowl_next_to_the_ramekin_and_place_it_on_the_plate_light_8",
+      "base_task": "pick_up_the_black_bowl_next_to_the_ramekin_and_place_it_on_the_plate",
+      "category": "Light Conditions",
+      "difficulty": 2,
+      "classification_id": 2291,
+      "bddl": "libero_spatial/pick_up_the_black_bowl_next_to_the_ramekin_and_place_it_on_the_plate_light_8.bddl",
+      "init_file": "libero_spatial/pick_up_the_black_bowl_next_to_the_ramekin_and_place_it_on_the_plate.pruned_init",
+      "max_steps": 220
+    }
+  ],
+  "sources": {
+    "openpi": {
+      "url": "https://github.com/Physical-Intelligence/openpi.git",
+      "commit": "215abfb217dbac7d5f1273282331b9b1866c0479"
+    },
+    "libero_plus": {
+      "url": "https://github.com/sylvestf/LIBERO-plus.git",
+      "commit": "4976dc30028e805ff8094b55501d532c48fec182"
+    },
+    "libero_clean": {
+      "url": "https://github.com/Lifelong-Robot-Learning/LIBERO.git",
+      "commit": "f78abd68ee283de9f9be3c8f7e2a9ad60246e95c"
+    },
+    "checkpoint": "gs://openpi-assets/checkpoints/pi05_libero/",
+    "assets": {
+      "repo": "Sylvest/LIBERO-plus",
+      "revision": "dd2bd61b7d9a6fef1abc52d606e983b41886a149",
+      "file": "assets.zip",
+      "bytes": 6395849578,
+      "sha256": "96764a4bfbdaea98d4411598caeab235458318fe0f549611b93d1a323027b3cf"
+    },
+    "uv_version": "0.13.0"
+  },
+  "selection": "diagnostic subset",
+  "manifest_sha256": "053603379828668ae38135f6ad931c9722d91725cd8f79bbf7dc4156e154fc34"
+}

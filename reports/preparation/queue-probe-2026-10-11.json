@@ -193,6 +193,54 @@
         "/storage/scratch1/1/gliu386/VLA_Startup/slurm/parallel.sbatch",
         "fullplus-probe"
       ]
+    },
+    {
+      "gpu": "a100",
+      "max_workers": 4,
+      "hours_per_worker": 12,
+      "checked_at": "2026-10-11T21:25:19.529318-04:00",
+      "returncode": 0,
+      "output": "sbatch: Job 13967112 to start at 2026-10-13T23:55:14 a using 8 processors on nodes atl1-1-01-002-14-0 in partition gpu-a100",
+      "command": [
+        "sbatch",
+        "--test-only",
+        "--account=gts-jli741-paid",
+        "--partition=gpu-a100",
+        "--qos=inferno",
+        "--gres=gpu:a100:1",
+        "--cpus-per-task=8",
+        "--mem=64G",
+        "--time=12:00:00",
+        "--array=0-3%4",
+        "--job-name=pi05-fullplus-probe",
+        "--chdir=/storage/scratch1/1/gliu386/VLA_Startup",
+        "/storage/scratch1/1/gliu386/VLA_Startup/slurm/parallel.sbatch",
+        "fullplus-probe"
+      ]
+    },
+    {
+      "gpu": "a100",
+      "max_workers": 4,
+      "hours_per_worker": 24,
+      "checked_at": "2026-10-11T21:25:19.621578-04:00",
+      "returncode": 0,
+      "output": "sbatch: Job 13967113 to start at 2026-10-13T23:55:14 a using 8 processors on nodes atl1-1-01-002-14-0 in partition gpu-a100",
+      "command": [
+        "sbatch",
+        "--test-only",
+        "--account=gts-jli741-paid",
+        "--partition=gpu-a100",
+        "--qos=inferno",
+        "--gres=gpu:a100:1",
+        "--cpus-per-task=8",
+        "--mem=64G",
+        "--time=24:00:00",
+        "--array=0-3%4",
+        "--job-name=pi05-fullplus-probe",
+        "--chdir=/storage/scratch1/1/gliu386/VLA_Startup",
+        "/storage/scratch1/1/gliu386/VLA_Startup/slurm/parallel.sbatch",
+        "fullplus-probe"
+      ]
     }
   ]
 }

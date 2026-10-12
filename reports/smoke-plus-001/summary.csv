@@ -1,0 +1,13 @@
+group_type,group,expected,completed,missing,successes,failures,success_percent_completed,success_percent_full
+total,all,7,7,0,6,1,85.71428571428571,85.71428571428571
+suite,libero_spatial,7,7,0,6,1,85.71428571428571,85.71428571428571
+category,Background Textures,1,1,0,1,0,100.0,100.0
+category,Robot Initial States,1,1,0,0,1,0.0,0.0
+category,Camera Viewpoints,1,1,0,1,0,100.0,100.0
+category,Language Instructions,1,1,0,1,0,100.0,100.0
+category,Sensor Noise,1,1,0,1,0,100.0,100.0
+category,Objects Layout,1,1,0,1,0,100.0,100.0
+category,Light Conditions,1,1,0,1,0,100.0,100.0
+difficulty,4,4,4,0,3,1,75.0,75.0
+difficulty,1,1,1,0,1,0,100.0,100.0
+difficulty,2,2,2,0,2,0,100.0,100.0

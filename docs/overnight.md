@@ -2,6 +2,8 @@
 
 先单独完成并检查 `smoke-plus-001`，再由你决定是否提交本方案。下面的脚本不自动接续 smoke、不取消任何作业；默认仅预览，只有 `--submit` 才创建计费作业。
 
+当前检查已完成：2026-10-11 的 Plus smoke 作业 `13966714` 正常退出（0:0），14 分 32 秒，七类共 7/7 条有效记录、6 次成功、1 次任务失败，没有程序异常。见 [真实报告](../reports/smoke-plus-001/summary.md)和 [检查记录](validation.md)。四卡 full-plus 计划 `fullplus-4gpu-001` 已准备并通过 smoke gate，尚未提交。
+
 ## 查看 gliu386 的全部作业
 
 当前排队、运行和收尾中的作业，展开数组中的每个 worker：
@@ -61,6 +63,8 @@ sacct -u gliu386 -S today --format=JobID%22,JobName%34,State%22,ExitCode,Elapsed
 
 L40S 最初用 8 CPU 被分区的 4:1 CPU/GPU 上限拒绝；表中是改为 4 CPU 后的有效试算。八卡仅用于比较，执行脚本仍限制最多四卡。数组试算只返回一个候选启动估计，**不是所有成员同时启动的承诺**；不能从相同的输出推断增减卡数不影响排队。H100/H200/L40S 尚未验证本环境的模型、渲染与真实速度，当前没有证据表明切换会更早完成。
 
+21:25 再比较四个 A100 worker 的 12 / 24 小时时限，两者当时均返回 **10 月 13 日 23:55**。这也说明估计会随队列变化。因为没有观察到 24 小时时限的额外排队代价，下面推荐将此次上限设为 24 小时，减少中途超时后重新排队的机会；并不保证实际启动时间相同。
+
 复查限额和分区：
 
 ```bash
@@ -84,11 +88,15 @@ scontrol show partition gpu-a100
 
 按任务 horizon 分配负载，同一 clean 任务的 50 个初始状态放在同一个 worker 上，避免重复创建场景。分片互斥、并集等于完整测试集。真实耗时仍受场景创建、成功/失败步数、存储和排队影响。
 
-每个 worker 默认最多运行 **12 小时**，这是上限，不是预计完成时间。四个 worker 全部用满约为 48 GPU·小时；不是 12 GPU·小时，也不是实际 credit 报价。续交会产生额外资源用量。各 worker 的计时从自己获得资源后开始，故整个数组可能跨越更长的实际时间。
+脚本默认每个 worker 最多运行 **12 小时**；下面的推荐命令显式设置 **24 小时**，完成后会立即退出。这是上限，不是预计完成时间。四个 worker 全部用满 12 / 24 小时分别为 48 / 96 GPU·小时上限，不是实际 credit 报价；提前结束按实际资源使用记账，续交会增加用量。各 worker 的计时从自己获得资源后开始，故整个数组可能跨越更长的实际时间。
 
 仅作时间敏感性估算：若 Plus 每个变体连同建场景平均 10 秒，四卡均衡运行约需 7 小时；平均 20 秒则约 14 小时，还要加启动和排队。原版 smoke 的四条记录不足以估计全部 Plus。不要把原单卡脚本的 24 小时时限理解成 full 一定需要或一定能在 24 小时内完成。
 
 全量完成时间取决于最晚完成的 worker：`max(每片排队时间 + 模型启动 + 该片全部场景/rollout/汇总耗时)`。四卡只并行独立任务，不会让单个 episode 加速；环境创建、CPU 图像扰动和共享存储也有耗时。七条 smoke 覆盖七类扰动各一个 spatial 代表，不等于全量 10,030 个变体均无 bug，也不能充分代表其它 suite 的长任务。smoke 无程序错误后可以直接开始 full，后续异常仍会单独记录，不能悄悄当作机器人失败或完整成绩。
+
+此次 Plus smoke 的传感器用例耗时 48.62 秒，其中模型推理仅 1.51 秒；其它已预热的五个用例约 4.78–9.34 秒，首个用例 73.88 秒且包含首次推理编译。因此直接换更快 GPU 不会按算力比例缩短全部耗时。当前可执行建议是在四卡上限内直接分摊 full-plus，等它完成再跑 clean；不能根据七条样本承诺一晚完成。
+
+用于量级判断的粗算：此次运行配置写出前的启动约 668 秒，配置到最后一条记录约 196 秒。后者减去约 60 秒首次推理编译，再机械外推 `10030 × (196−60) / 7 / 4 / 3600 ≈ 13.5 小时`，尚不含排队和每片启动。这**不是可靠预测区间**：七条都来自 spatial，类别比例、扰动强度、环境构造开销和其它 suite 的 horizon 都不同。它说明 12 小时上限可能不足，不能将“一晚跑完”作为承诺。
 
 ## 运行命令
 
@@ -97,18 +105,18 @@ scontrol show partition gpu-a100
 ```bash
 cd /storage/scratch1/1/gliu386/VLA_Startup
 python3 scripts/parallel.py prepare fullplus-4gpu-001 --workers 4 --benchmarks plus
-bash scripts/submit_parallel.sh fullplus-4gpu-001
+TIME_LIMIT=24:00:00 bash scripts/submit_parallel.sh fullplus-4gpu-001
 ```
 
 **等 smoke-plus 结束并检查报告后**，明确决定使用 credit 时执行一次：
 
 ```bash
-bash scripts/submit_parallel.sh fullplus-4gpu-001 --submit
+TIME_LIMIT=24:00:00 bash scripts/submit_parallel.sh fullplus-4gpu-001 --submit
 ```
 
 plus-only 提交入口要求 Plus smoke 有 7/7 条完整记录，并且没有未审查的基础设施错误；clean-only 检查原版 4/4，both 则检查两者。任务本身未成功是有效评测结果，不要求 smoke 成功率 100%。尚未跑完会拒绝提交 full。没有作业依赖或自动接续机制。
 
-只想给每个 worker 8 小时上限，可以在预览和提交时均使用：
+如果希望控制单次作业时长，也可以选择 8 小时（或改为 12 小时）上限，在预览和提交时保持一致：
 
 ```bash
 TIME_LIMIT=08:00:00 bash scripts/submit_parallel.sh fullplus-4gpu-001
@@ -159,4 +167,4 @@ bash scripts/publish_results.sh fullplus-4gpu-001-full-plus
 - `tests/test_parallel.py`：分片覆盖和错误合并拒绝测试。
 - `tests/test_submission.py`：使用假的 Slurm 命令测试默认不提交、smoke gate、重复作业、超时不重试。
 
-并行功能已经做本地测试与调度器校验，尚未实际运行四卡 GPU 评测。原版 smoke 的真实结果见 [smoke-clean 报告](../reports/smoke-clean-001/summary.md)。
+并行功能已经做本地测试与调度器校验，尚未实际运行四卡 GPU 评测。真实单卡结果见 [smoke-clean 报告](../reports/smoke-clean-001/summary.md)和 [smoke-plus 报告](../reports/smoke-plus-001/summary.md)。

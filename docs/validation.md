@@ -4,6 +4,12 @@
 
 用户自行提交的 `smoke-clean-001`，Slurm Job `13965730`，在 2026-10-11 正常结束：`COMPLETED`、`ExitCode=0:0`、运行 13 分 02 秒、1 张 A100 / 8 CPU / 64 GB，记账 MaxRSS 为 `26506992K`（约 25.3 GiB 主机内存）。4/4 episode 均成功，缺失为 0；真实结果在 [reports/smoke-clean-001](../reports/smoke-clean-001)。这验证了原版完整权重加载、JIT、EGL 和闭环运行，不能用四条记录推断全量成功率，也尚不能替代 Plus smoke。
 
+用户随后提交的 `smoke-plus-001`，Slurm Job `13966714`，在 2026-10-11 21:07:39–21:22:11（EDT）运行并正常结束：`COMPLETED`、`ExitCode=0:0`、14 分 32 秒、1 张 A100 / 8 CPU / 64 GB，MaxRSS `25483756K`（约 24.3 GiB 主机内存）。七类扰动各有一条完整记录，6 次成功，Robot Initial States 用例达到 220 步上限后记为任务失败；没有 `errors.jsonl`。真实表格、图、压缩记录和校验和见 [reports/smoke-plus-001](../reports/smoke-plus-001)。
+
+Plus 两段视频分别有 126 / 220 帧、10 fps、224×224；抽查首末画面正常，成功用例最终把碗放入盘子，失败用例未完成放置。报告 SHA256、运行时记录的评测器源码指纹均已核对，`parallel.py check fullplus-4gpu-001 --require-smoke` 通过。说明七个代表性用例已跑通，不保证其它 10,023 个变体和其它 suite 均无异常；smoke 的 85.71% 不能当作 full-plus 分数。
+
+由文件时间和逐条记录复核：启动至 `run_config.json` 约 668 秒，配置到最后一条记录约 196 秒；七条 episode 内部计时总和 153.86 秒（不包含外部环境构造），其中推理 77.31 秒。首条包含首次推理编译，不能用整份 smoke 的 14 分 32 秒直接按 episode 数线性放大全量耗时。
+
 后续四卡方案使用四个单 GPU 数组成员，full-clean 分为每片 500 episodes，full-plus 分为 2507/2508/2507/2508。支持 `--benchmarks plus/clean/both`，当前优先方案只跑 full-plus。原版与 Plus 评测器本身未因分片而修改；每片独立恢复 RNG，合并明确保留来源。准备和提交只做预览与 Slurm `--test-only`，未执行四卡计费提交。具体操作与排队限制见 [overnight.md](overnight.md)。
 
 并行功能加入后，仿真 Python 下 **22 项测试全部通过**，包括 plus-only 计划不含 clean、分片覆盖、拒绝不完整/重复/不同配置的合并、CSV/PNG 生成，以及使用假 Slurm 命令的提交保护测试。shell 语法和 Python 编译检查通过；真实 smoke-clean 报告文件 SHA256 全部核对通过。测试未创建任何真实 Slurm 作业。

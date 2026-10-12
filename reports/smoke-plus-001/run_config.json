@@ -1,0 +1,40 @@
+{
+  "server": {
+    "model": "pi05_libero",
+    "backend": "jax",
+    "num_steps": 10,
+    "action_horizon": 10,
+    "initial_rng": [
+      0,
+      0
+    ],
+    "openpi_commit": "215abfb217dbac7d5f1273282331b9b1866c0479",
+    "checkpoint_manifest_sha256": "49e389064fb191d2f4ba5dc76af92a89ca770e5595c73f5d3606010332d34144"
+  },
+  "num_steps": 10,
+  "replan_steps": 5,
+  "wait_steps": 10,
+  "render_resolution": 256,
+  "policy_resolution": 224,
+  "horizons": {
+    "libero_spatial": 220,
+    "libero_object": 280,
+    "libero_goal": 300,
+    "libero_10": 520
+  },
+  "seed": 7,
+  "prompt_mode": "upstream",
+  "manifest_sha256": "053603379828668ae38135f6ad931c9722d91725cd8f79bbf7dc4156e154fc34",
+  "code_sha256": {
+    ".runtime/repos/openpi/uv.lock": "793488b5a55bb87200db90a61fd0af51922b686d94e1da4f4c587ab119b37d74",
+    "config/imagemagick.json": "89ffb3053c28794c469e814de147f1f31ef83399735009cf4bb6c9306fef2585",
+    "scripts/patch_sim.py": "6400c9ba19d7719678cdf54f2c271e0408789e82c6d4791553aabe30e895a54f",
+    "src/vla_startup/__init__.py": "28a9d13a05a834794f89520c799476686187156a992d6e7d72399f0b072baad3",
+    "src/vla_startup/evaluate.py": "0cb87bf6e02a03bcaea34437f1a292572e6d0a0025bea1c7d619ca1c17245028",
+    "src/vla_startup/journal.py": "ba426a18be34f40b1ce16521873365a50527c5a27292762f493cb5979dba106e",
+    "src/vla_startup/manifest.py": "e85ec7f2c65abd03e77332643dc6bf6e76c783a358966c3b22d1ee249f34511e",
+    "src/vla_startup/server.py": "3b7f261cf3d3392e4ad7cce15b994a841c5797bafe3f23fcba5997660148bc4f",
+    "src/vla_startup/summarize.py": "45a4994932f5b11ccd123654a1bf44ac18d8b4828c329a3c3beb7b9178c2129f"
+  },
+  "simulation_lock_sha256": "5ee9807826643be961a664628e053468f093d6756938e45d186b9e8910d8c5f6"
+}

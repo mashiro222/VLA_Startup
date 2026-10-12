@@ -1,0 +1,143 @@
+{
+  "schema_version": 1,
+  "profile": "smoke-plus",
+  "benchmark": "plus",
+  "manifest_sha256": "053603379828668ae38135f6ad931c9722d91725cd8f79bbf7dc4156e154fc34",
+  "complete": true,
+  "totals": {
+    "expected": 7,
+    "completed": 7,
+    "missing": 0,
+    "successes": 6,
+    "failures": 1,
+    "success_percent_completed": 85.71428571428571,
+    "success_percent_full": 85.71428571428571
+  },
+  "groups": {
+    "suite": {
+      "libero_spatial": {
+        "expected": 7,
+        "completed": 7,
+        "missing": 0,
+        "successes": 6,
+        "failures": 1,
+        "success_percent_completed": 85.71428571428571,
+        "success_percent_full": 85.71428571428571
+      }
+    },
+    "category": {
+      "Background Textures": {
+        "expected": 1,
+        "completed": 1,
+        "missing": 0,
+        "successes": 1,
+        "failures": 0,
+        "success_percent_completed": 100.0,
+        "success_percent_full": 100.0
+      },
+      "Robot Initial States": {
+        "expected": 1,
+        "completed": 1,
+        "missing": 0,
+        "successes": 0,
+        "failures": 1,
+        "success_percent_completed": 0.0,
+        "success_percent_full": 0.0
+      },
+      "Camera Viewpoints": {
+        "expected": 1,
+        "completed": 1,
+        "missing": 0,
+        "successes": 1,
+        "failures": 0,
+        "success_percent_completed": 100.0,
+        "success_percent_full": 100.0
+      },
+      "Language Instructions": {
+        "expected": 1,
+        "completed": 1,
+        "missing": 0,
+        "successes": 1,
+        "failures": 0,
+        "success_percent_completed": 100.0,
+        "success_percent_full": 100.0
+      },
+      "Sensor Noise": {
+        "expected": 1,
+        "completed": 1,
+        "missing": 0,
+        "successes": 1,
+        "failures": 0,
+        "success_percent_completed": 100.0,
+        "success_percent_full": 100.0
+      },
+      "Objects Layout": {
+        "expected": 1,
+        "completed": 1,
+        "missing": 0,
+        "successes": 1,
+        "failures": 0,
+        "success_percent_completed": 100.0,
+        "success_percent_full": 100.0
+      },
+      "Light Conditions": {
+        "expected": 1,
+        "completed": 1,
+        "missing": 0,
+        "successes": 1,
+        "failures": 0,
+        "success_percent_completed": 100.0,
+        "success_percent_full": 100.0
+      }
+    },
+    "difficulty": {
+      "4": {
+        "expected": 4,
+        "completed": 4,
+        "missing": 0,
+        "successes": 3,
+        "failures": 1,
+        "success_percent_completed": 75.0,
+        "success_percent_full": 75.0
+      },
+      "1": {
+        "expected": 1,
+        "completed": 1,
+        "missing": 0,
+        "successes": 1,
+        "failures": 0,
+        "success_percent_completed": 100.0,
+        "success_percent_full": 100.0
+      },
+      "2": {
+        "expected": 2,
+        "completed": 2,
+        "missing": 0,
+        "successes": 2,
+        "failures": 0,
+        "success_percent_completed": 100.0,
+        "success_percent_full": 100.0
+      }
+    }
+  },
+  "category_macro_percent": 85.71428571428571,
+  "reference": {
+    "source": "https://github.com/sylvestf/LIBERO-plus/issues/57",
+    "status": "community self-report by Skywalker-yqz, 2026-07-13; incomplete protocol, not an official pi0.5 leaderboard score",
+    "checkpoint": "gs://openpi-assets/checkpoints/pi05_libero/",
+    "category_percent": {
+      "Camera Viewpoints": 67.3,
+      "Robot Initial States": 78.8,
+      "Language Instructions": 86.3,
+      "Light Conditions": 95.8,
+      "Background Textures": 93.8,
+      "Sensor Noise": 87.3,
+      "Objects Layout": 86.4
+    },
+    "overall_percent": 84.2,
+    "episodes": 10030
+  },
+  "reference_comparison_enabled": false,
+  "comparisons": [],
+  "interpretation": "Partial coverage, diagnostic subset, or changed protocol: do not claim a benchmark reproduction."
+}
