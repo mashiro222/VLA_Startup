@@ -27,8 +27,20 @@ printf 'Submission command: '
 printf '%q ' "${cmd[@]}"
 printf '\n'
 if [[ "$mode" == --submit ]]; then
+    active="$(squeue -h -u "$(id -un)" -n "pi05-$run_id" -o '%i')"
+    if [[ -n "$active" ]]; then
+        printf 'Run already has active jobs: %s\n' "$active" >&2
+        exit 2
+    fi
     cd "$ROOT"
-    "${cmd[@]}"
+    if "${cmd[@]}"; then
+        :
+    else
+        code=$?
+        printf 'Submission reply failed. A job may still exist; do not retry before checking squeue.\n' >&2
+        squeue -u "$(id -un)" -n "pi05-$run_id" || true
+        exit "$code"
+    fi
 else
     printf 'Dry run only. No job submitted. Add --submit when ready.\n'
 fi

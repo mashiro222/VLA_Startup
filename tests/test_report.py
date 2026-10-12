@@ -15,6 +15,7 @@ from unittest.mock import patch
 
 from test_results import plan, records
 from vla_startup.journal import append, read_records
+from vla_startup.manifest import digest
 
 
 @unittest.skipUnless(importlib.util.find_spec('matplotlib'), 'Run with simulation Python for plot checks')
@@ -31,6 +32,9 @@ class ReportTests(unittest.TestCase):
             (root / 'config').mkdir()
             (root / 'config/references.json').write_text(json.dumps({'plus': {}}))
             manifest = plan()
+            manifest.pop('manifest_sha256')
+            manifest['parallel_aggregate'] = {'rng_note': 'Independent per-shard RNG streams.'}
+            manifest['manifest_sha256'] = digest(manifest)
             (run / 'manifest.json').write_text(json.dumps(manifest))
             rows = records(manifest)[:1]
             for row in rows:
@@ -54,6 +58,7 @@ class ReportTests(unittest.TestCase):
             self.assertEqual(totals['success_percent_full'], '')
             self.assertEqual(json.loads((output / 'summary.json').read_text())['complete'], False)
             self.assertIn('Completed: 1 / 3', (output / 'summary.md').read_text())
+            self.assertIn('Independent per-shard RNG streams.', (output / 'summary.md').read_text())
             with gzip.open(output / 'episodes.jsonl.gz', 'rt') as stream:
                 self.assertEqual([json.loads(line) for line in stream], rows)
             for name in ('cumulative_success.png', 'success_by_group.png'):

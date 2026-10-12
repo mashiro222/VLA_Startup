@@ -30,13 +30,16 @@ def main():
         raise ValueError('No completed episodes; refusing to generate empty or synthetic result plots')
     output = ROOT / 'reports' / args.run_id
     output.mkdir(parents=True, exist_ok=True)
-    for name in ('manifest.json', 'run_config.json', 'errors.jsonl'):
+    for name in ('manifest.json', 'run_config.json', 'errors.jsonl', 'parallel_execution.json'):
         if (run / name).exists():
             shutil.copy2(run / name, output / name)
     for path in run.glob('provenance-*.json'):
         shutil.copy2(path, output / path.name)
     (output / 'summary.json').write_text(json.dumps(result, indent=2) + '\n')
-    (output / 'summary.md').write_text(markdown(result))
+    text = markdown(result)
+    if 'parallel_aggregate' in manifest:
+        text += '\nParallel execution: ' + manifest['parallel_aggregate']['rng_note'] + '\n'
+    (output / 'summary.md').write_text(text)
     fields = ['episode_key', 'suite', 'task_id', 'name', 'base_task', 'category', 'difficulty',
               'episode', 'success', 'steps', 'elapsed_seconds', 'inference_calls', 'inference_seconds', 'prompt']
     with (output / 'episodes.csv').open('w', newline='') as stream:

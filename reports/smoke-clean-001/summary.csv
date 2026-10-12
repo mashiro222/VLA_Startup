@@ -1,0 +1,8 @@
+group_type,group,expected,completed,missing,successes,failures,success_percent_completed,success_percent_full
+total,all,4,4,0,4,0,100.0,100.0
+suite,libero_spatial,1,1,0,1,0,100.0,100.0
+suite,libero_object,1,1,0,1,0,100.0,100.0
+suite,libero_goal,1,1,0,1,0,100.0,100.0
+suite,libero_10,1,1,0,1,0,100.0,100.0
+category,Clean,4,4,0,4,0,100.0,100.0
+difficulty,None,4,4,0,4,0,100.0,100.0

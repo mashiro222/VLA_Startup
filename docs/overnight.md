@@ -1,0 +1,149 @@
+# 四张 A100 的独立 full 评测
+
+先单独完成并检查 `smoke-plus-001`，再由你决定是否提交本方案。下面的脚本不自动接续 smoke、不取消任何作业；默认仅预览，只有 `--submit` 才创建计费作业。
+
+## 查看 gliu386 的全部作业
+
+当前排队、运行和收尾中的作业，展开数组中的每个 worker：
+
+```bash
+squeue -r -u gliu386 -o '%.18i %.12P %.32j %.12T %.12M %.6D %R'
+```
+
+每 10 秒刷新；Ctrl+C 只退出查看，不取消作业：
+
+```bash
+watch -n 10 "squeue -r -u gliu386 -o '%.18i %.32j %.12T %.12M %R'"
+```
+
+今天的全部记录，包括已经完成或取消的作业：
+
+```bash
+sacct -u gliu386 -S today --format=JobID%22,JobName%34,State%22,ExitCode,Elapsed,AllocTRES%75,MaxRSS
+```
+
+换成 `-S 2026-10-01` 可以查询更早的记录；可查询范围由集群记账保留期决定。仅看每个作业一行，可以加 `-X`；需要 `MaxRSS` 时保留 `.batch` 等步骤行，作业总行的内存数据常常为空。
+
+| 输出 | 含义 |
+|---|---|
+| `PENDING` / `PD` | 尚未启动；`Resources` 是等待资源，`Priority` 是等待调度优先级 |
+| `RUNNING` / `R` | 正在执行；还需看 episode 日志确认业务进度 |
+| `COMPLETED` + `ExitCode=0:0` | 程序正常退出；机器人成功率另看报告 |
+| `FAILED` / `TIMEOUT` / `OUT_OF_MEMORY` | 程序失败、达到时限、内存超限，需看日志 |
+| `CANCELLED` | 作业被取消 |
+| `Elapsed` | 开始运行后的累计墙钟时间，不含排队时间 |
+| `AllocTRES` | 分配的 CPU、GPU、主机内存等；`billing` 是调度器计费资源单位，不是美元或实际花费 |
+| `MaxRSS` | 记账记录的峰值主机内存，不是 GPU 显存 |
+| 字段末尾 `+` | 列宽不够，内容被截断；例如 `.ba+` 是 `.batch` 的截断 |
+
+提交出现 `Socket timed out on send/recv operation` 时，调度器可能已创建作业，只是客户端没有收到回复。先用 `squeue` 查询，不能立即反复提交。提交入口现在会检查同名活动作业，并在提交回复失败后提示检查队列；这无法代替对短暂通信故障的人工判断。
+
+## PACE 是否支持四卡
+
+2026-10-11 的实际 Slurm 查询结果：
+
+- 账户 `gts-jli741-paid` 的用户关联允许 `inferno`；该用户关联未显示额外的 GPU 数限制。
+- `inferno` 的 `MaxTRESPU` 为 `cpu=6000,gres/gpu=32`。
+- `gpu-a100` 分区 `State=UP`，13 个节点共 32 张 A100，最大作业时限 3 天。
+- `MaxArraySize=1001`，本方案只有 4 个数组成员。
+- 对四成员数组、每成员 1 张 A100 / 8 CPU / 64 GB 的请求执行 `sbatch --test-only` 返回成功；这不会创建作业。
+
+这些检查说明资源请求可被接受，不表示有四张空闲卡、保证同时启动或保证账户 credit 充足。此次 12、8、4 小时时限的试算都给出约 **10 月 13 日晚**的启动估计。队列会变化，不能承诺 10 月 11 日当晚启动或完成；`--test-only` 输出中的编号是试算信息，不是已提交的计费作业。
+
+复查限额和分区：
+
+```bash
+sacctmgr -nP show qos where name=inferno format=Name,MaxTRESPU,MaxSubmitPU
+scontrol show partition gpu-a100
+```
+
+参考：[Slurm 作业数组](https://slurm.schedmd.com/job_array.html)、[sacct](https://slurm.schedmd.com/sacct.html)、[sbatch 的 test-only](https://slurm.schedmd.com/sbatch.html)。
+
+## 四卡具体跑什么
+
+一次提交一个数组，最多 4 个 worker 同时执行。每个 worker 申请 **1 张** A100，先完成自己的 clean 分片，再完成自己的 plus 分片。可以位于不同节点，无需一台机器同时空出 4 张卡。不要把 `GRES` 改成 4，那会变成每个 worker 申请 4 张卡。
+
+| Worker | full-clean | full-plus | 每个 worker 的资源 |
+|---|---:|---:|---|
+| 0 | 500 episodes | 2,507 episodes | 1 A100、8 CPU、64 GB |
+| 1 | 500 episodes | 2,508 episodes | 同上 |
+| 2 | 500 episodes | 2,507 episodes | 同上 |
+| 3 | 500 episodes | 2,508 episodes | 同上 |
+| 合计 | 2,000 | 10,030 | 同时最多 4 A100、32 CPU、256 GB |
+
+按任务 horizon 分配负载，同一 clean 任务的 50 个初始状态放在同一个 worker 上，避免重复创建场景。分片互斥、并集等于完整测试集。真实耗时仍受场景创建、成功/失败步数、存储和排队影响。
+
+每个 worker 默认最多运行 **12 小时**，这是上限，不是预计完成时间。四个 worker 全部用满约为 48 GPU·小时；不是 12 GPU·小时，也不是实际 credit 报价。续交会产生额外资源用量。各 worker 的计时从自己获得资源后开始，故整个数组可能跨越更长的实际时间。
+
+仅作时间敏感性估算：若 Plus 每个变体连同建场景平均 10 秒，四卡均衡运行约需 7 小时；平均 20 秒则约 14 小时，还要加 clean、启动和排队。原版 smoke 的四条记录不足以估计全部 Plus。不要把原单卡脚本的 24 小时时限理解成 full 一定需要或一定能在 24 小时内完成。
+
+## 运行命令
+
+在 PACE 终端执行。当前 `overnight-4gpu-001` 的四份计划已经准备好；前两条脚本命令均不提交作业：
+
+```bash
+cd /storage/scratch1/1/gliu386/VLA_Startup
+python3 scripts/parallel.py prepare overnight-4gpu-001 --workers 4
+bash scripts/submit_parallel.sh overnight-4gpu-001
+```
+
+**等 smoke-plus 结束并检查报告后**，明确决定使用 credit 时执行一次：
+
+```bash
+bash scripts/submit_parallel.sh overnight-4gpu-001 --submit
+```
+
+提交入口要求原版 smoke 有 4/4、Plus smoke 有 7/7 条完整记录，并且没有未审查的基础设施错误。任务本身未成功是有效评测结果，不要求 smoke 成功率 100%。尚未跑完会拒绝提交 full。没有作业依赖或自动接续机制。
+
+只想给每个 worker 8 小时上限，可以在预览和提交时均使用：
+
+```bash
+TIME_LIMIT=08:00:00 bash scripts/submit_parallel.sh overnight-4gpu-001
+TIME_LIMIT=08:00:00 bash scripts/submit_parallel.sh overnight-4gpu-001 --submit
+```
+
+缩短时限不能保证更早排到卡，并可能需要明天续跑。不要另外重复提交两份单卡 full；本数组已经包含两套 full。
+
+## 查看进度、续跑、汇总
+
+```bash
+python3 scripts/parallel.py status overnight-4gpu-001
+squeue -r -u gliu386 -o '%.18i %.32j %.12T %.12M %R'
+ls -lt logs/overnight-4gpu-001-*.out
+```
+
+数组日志命名为 `logs/overnight-4gpu-001-数组编号_成员编号.out`；逐条结果保存在 `runs/overnight-4gpu-001-full-clean-shard-00/` 等八个分片目录里。每个分片停止后会尝试输出自己的表格与图。
+
+如果时限到了且还有缺失记录，等旧数组所有成员彻底停止后，使用相同 batch ID 再执行提交入口。它只提交仍未完成的 worker，跳过已完成的 clean 分片，并按已有 episode/RNG 状态续跑。不要修改已开始批次的评测代码、配置、worker 数或 manifest；需要修改请使用新批次。
+
+两套 full 都完成后，在登录节点合并为每套 benchmark 一份报告：
+
+```bash
+python3 scripts/parallel.py merge overnight-4gpu-001
+```
+
+报告目录：
+
+- `reports/overnight-4gpu-001-full-clean/`
+- `reports/overnight-4gpu-001-full-plus/`
+
+每份含 `summary.md`、`summary.csv`、`episodes.csv`、成功率柱状图和累计成功率折线图。合并会核对全部任务、初始状态、配置与代码指纹，拒绝缺失和重复记录；保留分片来源和原始指纹。如果 clean 已完整但 plus 未完整，可能先生成 clean 报告，再提示 plus 未完成，不能把 plus 的部分结果当全量成绩。
+
+确认报告后上传小型结果（不会上传模型、场景或视频）：
+
+```bash
+bash scripts/publish_results.sh overnight-4gpu-001-full-clean
+bash scripts/publish_results.sh overnight-4gpu-001-full-plus
+```
+
+## 协议与代码位置
+
+分片沿用模型、图像、动作、任务数、horizon 和环境 seed。每片从原评测器默认的模型 RNG `[0, 0]` 开始，再独立记录和恢复随机流；因此**不是单卡串行执行的同一条连续随机序列**，不能宣称动作或成功率逐位一致。完整报告会明确标注这一点，公开成绩只作描述性比较。合并目录仅用于报告，不能当作串行续跑目录；续跑使用原分片。
+
+- `scripts/submit_parallel.sh`：独立提交入口、并发上限、smoke 和重复提交检查。
+- `slurm/parallel.sbatch`：每个数组成员的资源环境与启动方式。
+- `scripts/parallel.py`：任务分片、配置冻结、状态、顺序执行 clean/plus、结果合并。
+- `tests/test_parallel.py`：分片覆盖和错误合并拒绝测试。
+- `tests/test_submission.py`：使用假的 Slurm 命令测试默认不提交、smoke gate、重复作业、超时不重试。
+
+并行功能已经做本地测试与调度器校验，尚未实际运行四卡 GPU 评测。原版 smoke 的真实结果见 [smoke-clean 报告](../reports/smoke-clean-001/summary.md)。

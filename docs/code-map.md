@@ -11,6 +11,7 @@
 | 闭环推理、benchmark 协议、公开结果的比较限制 | [experiment.md](experiment.md) |
 | 哪些检查已实际完成，哪些要等 GPU smoke | [validation.md](validation.md) |
 | 环境与作业排错 | [troubleshooting.md](troubleshooting.md) |
+| 查看全部作业、手动提交四卡 full、合并报告 | [overnight.md](overnight.md) |
 
 ## 本次新增文件的分工
 
@@ -31,6 +32,8 @@
 | [scripts/report.py](../scripts/report.py) | CSV、PNG、压缩记录和报告校验和 |
 | [scripts/submit.sh](../scripts/submit.sh)、[slurm/evaluate.sbatch](../slurm/evaluate.sbatch) | 默认仅预览，显式 `--submit` 才提交 |
 | [scripts/run_node.py](../scripts/run_node.py) | 同一 GPU 作业内管理两个进程、终止和汇总 |
+| [scripts/submit_parallel.sh](../scripts/submit_parallel.sh)、[slurm/parallel.sbatch](../slurm/parallel.sbatch) | 独立四卡入口，每成员一张卡，默认仅预览 |
+| [scripts/parallel.py](../scripts/parallel.py) | 分片、冻结配置、检查进度、合并完整结果 |
 | [tests/](../tests) | 统计、续跑、路径、协议改变和导出测试 |
 | [.gitignore](../.gitignore) | 排除权重、资产、环境、视频和运行目录 |
 

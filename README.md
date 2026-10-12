@@ -2,7 +2,9 @@
 
 使用官方 `pi05_libero` checkpoint 做闭环推理，不进行训练或 fine-tuning。先用少量 episode 检查链路，再做原版 LIBERO 对照及 LIBERO-Plus 鲁棒性评测。只申请一张 A100；结果保存在本地，用 CSV、Markdown、JSON 和 PNG 查看，不使用 W&B。
 
-**交付边界：代码、环境、资产和提交脚本准备到提交之前。没有提交计费作业，也没有声称得到实际成功率。** 本地检查记录见 [docs/validation.md](docs/validation.md)。GPU 模型加载、显存、EGL 渲染与完整 rollout 必须由第一份 smoke 作业验证。
+初始环境准备阶段停在计费提交之前。随后用户自行提交的原版 smoke（`13965730`）已正常完成，4/4 episode 成功；这验证了原版推理链路，不代表完整 benchmark 成绩。检查记录见 [docs/validation.md](docs/validation.md)，实际结果见 [smoke-clean 报告](reports/smoke-clean-001/summary.md)。Plus smoke 与完整评测需分别验证。
+
+需要查看账号全部作业，或在 smoke-plus 检查后手动运行四卡 full：见 [四卡评测与作业查询说明](docs/overnight.md)。四卡入口独立于下文的单卡入口，不会自动提交或取消作业。
 
 ## 1. 当前目录与环境
 
@@ -73,7 +75,7 @@ smoke 的通过条件是模型与环境成功运行、所有选定 episode 都�
 | `full-clean` | 原版 40 个任务，每个 50 次 | 2,000 | 24 小时 | 对照 OpenPI 官方结果 |
 | `full-plus` | 所有 10,030 个变体，每个一次 | 10,030 | 24 小时 | 完整 Plus 鲁棒性评测 |
 
-时限是作业上限，**不是运行耗时承诺**。建议 smoke 成功后先运行 pilot，再按实测 episode 用时决定投入多少 credit。所有 profile 使用同一张 GPU，按顺序评测；没有默认并发数组。
+时限是作业上限，**不是运行耗时承诺**。建议 smoke 成功后先运行 pilot，再按实测 episode 用时决定投入多少 credit。本节的单卡入口使用一张 GPU、顺序评测；另有显式选择的[四卡数组入口](docs/overnight.md)。
 
 ```bash
 bash scripts/prepare.sh pilot-plus pilot-plus-001
