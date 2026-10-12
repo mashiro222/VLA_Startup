@@ -1,8 +1,10 @@
 # 2026-10-12：full-clean 的提交与检查
 
-当前 `fullplus-4gpu-001` 已由用户提交为 Slurm 数组 `13967217`：4 个 A100 worker，评测 10,030 个 Plus episode。`fullclean-4gpu-001` 已于 2026-10-12 08:26 EDT 提交为数组 **`13974531`**：4 个 H100 worker，每个 1 张 H100、8 CPU、64 GB，评测原版 LIBERO 的 2,000 个 episode，每片 500 个。提交后核对四片均为 `PENDING (Priority)`、`Dependency=(null)`。两批使用不同的 `runs/`、`logs/` 和 `reports/` 目录，不会覆盖结果。用户本次允许最多 8 张 GPU 重叠运行；full-clean 因而**不添加**等待 full-plus 的作业依赖。两批都使用付费账户 `gts-jli741-paid`、`inferno` QoS。
+当前 `fullplus-4gpu-001` 已由用户提交为 Slurm 数组 `13967217`：4 个 A100 worker，评测 10,030 个 Plus episode。`fullclean-4gpu-001` 已于 2026-10-12 08:26 EDT 提交为数组 **`13974531`**：4 个 H100 worker，每个 1 张 H100、8 CPU、64 GB，评测原版 LIBERO 的 2,000 个 episode，每片 500 个。提交后核对四片均为 `PENDING (Priority)`、`Dependency=(null)`。`ArrayTaskThrottle=4` 只是同时运行的上限，各分片可以分别启动，不要求同时拿到四张卡。两批使用不同的 `runs/`、`logs/` 和 `reports/` 目录，不会覆盖结果。用户本次允许最多 8 张 GPU 重叠运行；full-clean 因而**不添加**等待 full-plus 的作业依赖。两批都使用付费账户 `gts-jli741-paid`、`inferno` QoS。
 
 2026-10-12 08:13 EDT 的 `sbatch --test-only` 比较记录在 [clean-queue-probe-2026-10-12.json](../reports/preparation/clean-queue-probe-2026-10-12.json)。当时新申请的 H100 1/2/4 worker 均显示首个候选约 10 月 15 日 06:09；A100 则约 10 月 16 日 17:40。**这不是预约时间，也不代表四个成员会同时启动**。已有 full-plus 的候选时间从 10 月 12 日变到 10 月 13 日，说明估计会随调度重算。4 个 H100 是当时被测试的有效选项中较早的候选，选 2 个 H100 并没有显示更早排到，反而会让每卡承担更多 episode。
+
+同日约 08:35 EDT 的实时 `sinfo -N` 在 `gpu-h100` 分区列出 4 台节点、31 张 H100（7+8+8+8），其中 7 卡节点状态为 `inval`；其它 3 台、24 张处于可调度节点，但已有作业占用。新作业试算的 2×H100 与 4×H100 首个候选同为约 10 月 15 日 07:12，4×A100 则约 10 月 16 日 12:30。现有作业的 `squeue --start` 一度显示 `N/A`，它表示没有得到当前估计，**不表示永远排不到**；[Slurm 官方 FAQ](https://slurm.schedmd.com/faq.html)说明待排作业并不一定都有 backfill 启动预测。
 
 原版总量少于 Plus，但不能简单将时间按 2,000/10,030 换算：不同任务的 horizon、场景构建时间及成功/失败步数不同。A100 smoke 的 Slurm 记录显示峰值 GPU 显存约 9.2–9.4 GiB；这说明模型不需要 A100 的全部显存，不是 full 全量或其它 GPU 的兼容保证。L40S 有 48 GB 且支持 BF16，理论上可试，但本环境没有在 L40S 上验证 JAX 推理与 EGL 渲染；当天 L40S 的队列试算比 H100 更晚。H100 也尚未通过真实 smoke，若作业发生启动、CUDA 或 EGL 错误，先看日志并停止重复提交。单个 H100 worker 正常结束前最多运行 8 小时；这个时限不是预测用时。
 
