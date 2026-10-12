@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Each array member has one GPU and runs its clean shard, then its plus shard.
+# Each array member has one GPU and runs only the benchmarks selected in its plan.
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
 #SBATCH --signal=B:TERM@90

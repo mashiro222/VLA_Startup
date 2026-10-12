@@ -1,6 +1,6 @@
 # π0.5 × LIBERO-Plus：PACE 上的评测入门
 
-使用官方 `pi05_libero` checkpoint 做闭环推理，不进行训练或 fine-tuning。先用少量 episode 检查链路，再做原版 LIBERO 对照及 LIBERO-Plus 鲁棒性评测。只申请一张 A100；结果保存在本地，用 CSV、Markdown、JSON 和 PNG 查看，不使用 W&B。
+使用官方 `pi05_libero` checkpoint 做闭环推理，不进行训练或 fine-tuning。先用少量 episode 检查链路，再做原版 LIBERO 对照及 LIBERO-Plus 鲁棒性评测。smoke 使用一张 A100，完整评测可选择最多四个单卡 worker；结果保存在本地，用 CSV、Markdown、JSON 和 PNG 查看，不使用 W&B。
 
 初始环境准备阶段停在计费提交之前。随后用户自行提交的原版 smoke（`13965730`）已正常完成，4/4 episode 成功；这验证了原版推理链路，不代表完整 benchmark 成绩。检查记录见 [docs/validation.md](docs/validation.md)，实际结果见 [smoke-clean 报告](reports/smoke-clean-001/summary.md)。Plus smoke 与完整评测需分别验证。
 
@@ -75,7 +75,7 @@ smoke 的通过条件是模型与环境成功运行、所有选定 episode 都�
 | `full-clean` | 原版 40 个任务，每个 50 次 | 2,000 | 24 小时 | 对照 OpenPI 官方结果 |
 | `full-plus` | 所有 10,030 个变体，每个一次 | 10,030 | 24 小时 | 完整 Plus 鲁棒性评测 |
 
-时限是作业上限，**不是运行耗时承诺**。建议 smoke 成功后先运行 pilot，再按实测 episode 用时决定投入多少 credit。本节的单卡入口使用一张 GPU、顺序评测；另有显式选择的[四卡数组入口](docs/overnight.md)。
+时限是作业上限，**不是运行耗时承诺**。pilot 可以帮助估计速度，但不是必须步骤。当前按 full-plus 优先的安排，先等 Plus smoke 检查完成，再使用[四卡 full-plus 入口](docs/overnight.md#运行命令)，不先运行 full-clean。七条 smoke 只能验证代表性用例，不能保证全量无异常。下面保留单卡 pilot/full 的备选流程，不要与四卡数组重复提交。
 
 ```bash
 bash scripts/prepare.sh pilot-plus pilot-plus-001

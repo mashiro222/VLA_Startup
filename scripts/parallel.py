@@ -94,14 +94,17 @@ def frozen_inputs():
             for p in sorted(paths)}
 
 
-def prepare(batch_id, count):
+def prepare(batch_id, count, benchmarks='both'):
     identifier(batch_id)
     if not 1 <= count <= 4:
         raise ValueError('This overnight workflow is capped at 4 simultaneous GPUs')
     plan = {'schema_version': 1, 'batch_id': batch_id, 'workers': count,
             'strategy': STRATEGY, 'rng_note': RNG_NOTE,
             'frozen_inputs': frozen_inputs(), 'benchmarks': {}}
-    for mode in ('clean', 'plus'):
+    modes = ('clean', 'plus') if benchmarks == 'both' else (benchmarks,)
+    if any(mode not in ('clean', 'plus') for mode in modes):
+        raise ValueError('Unknown benchmark selection')
+    for mode in modes:
         base = build(ROOT, 'full-' + mode)
         parent, shards = split_manifest(base, count)
         parent_id = f'{batch_id}-full-{mode}'
@@ -115,7 +118,7 @@ def prepare(batch_id, count):
                                     'manifest_sha256': parent['manifest_sha256']}
     plan = signed(plan, 'plan_sha256')
     immutable_json(ROOT / 'runs' / batch_id / 'batch.json', plan)
-    print(f'Prepared {count} workers, each using one GPU: clean shard then plus shard.')
+    print(f'Prepared {count} workers, each using one GPU; benchmarks: {", ".join(modes)}.')
     status(plan)
 
 
@@ -128,8 +131,8 @@ def load_plan(batch_id, check_inputs=False):
         raise ValueError('Invalid worker count')
     if check_inputs and plan['frozen_inputs'] != frozen_inputs():
         raise ValueError('Code/configuration changed since preparation; restore it or use a new batch ID')
-    if set(plan['benchmarks']) != {'clean', 'plus'}:
-        raise ValueError('Batch must contain clean and plus')
+    if not plan['benchmarks'] or not set(plan['benchmarks']).issubset({'clean', 'plus'}):
+        raise ValueError('Batch must contain clean, plus, or both')
     for mode, entry in plan['benchmarks'].items():
         expected_parent = f'{batch_id}-full-{mode}'
         expected_children = [f'{expected_parent}-shard-{i:02d}' for i in range(plan['workers'])]
@@ -274,6 +277,8 @@ def worker(plan, index):
     signal.signal(signal.SIGTERM, stop)
     signal.signal(signal.SIGINT, stop)
     for mode in ('clean', 'plus'):
+        if mode not in plan['benchmarks']:
+            continue
         if stopping:
             return 143
         run_id = plan['benchmarks'][mode]['children'][index]
@@ -290,18 +295,21 @@ def main():
     parser.add_argument('command', choices=['prepare', 'check', 'status', 'merge', 'worker', 'remaining'])
     parser.add_argument('batch_id')
     parser.add_argument('--workers', type=int, default=4)
+    parser.add_argument('--benchmarks', choices=['both', 'clean', 'plus'], default='both')
     parser.add_argument('--index', type=int)
     parser.add_argument('--require-smoke', action='store_true')
     parser.add_argument('--clean-smoke', default='smoke-clean-001')
     parser.add_argument('--plus-smoke', default='smoke-plus-001')
     args = parser.parse_args()
     if args.command == 'prepare':
-        prepare(args.batch_id, args.workers)
+        prepare(args.batch_id, args.workers, args.benchmarks)
         return 0
     plan = load_plan(args.batch_id, check_inputs=args.command in ('check', 'worker'))
     if args.require_smoke:
-        require_smoke(args.clean_smoke, 'smoke-clean')
-        require_smoke(args.plus_smoke, 'smoke-plus')
+        if 'clean' in plan['benchmarks']:
+            require_smoke(args.clean_smoke, 'smoke-clean')
+        if 'plus' in plan['benchmarks']:
+            require_smoke(args.plus_smoke, 'smoke-plus')
     if args.command == 'check':
         print(f'Validated {plan["workers"]} workers and locked code/configuration.')
     elif args.command == 'status':

@@ -2,6 +2,8 @@ import copy
 import importlib.util
 from pathlib import Path
 import unittest
+import tempfile
+from unittest.mock import patch
 
 from vla_startup.journal import episode_keys
 from vla_startup.manifest import digest
@@ -35,6 +37,19 @@ def completed_shards(parent, shards):
 
 
 class ParallelTests(unittest.TestCase):
+    def test_plus_only_plan_excludes_clean_and_round_trips(self):
+        base = fixture()
+        base = parallel.signed({**base, 'profile': 'full-plus', 'benchmark': 'plus'})
+        with tempfile.TemporaryDirectory() as directory:
+            with patch.object(parallel, 'ROOT', Path(directory)), \
+                    patch.object(parallel, 'frozen_inputs', return_value={'code': 'abc'}), \
+                    patch.object(parallel, 'build', return_value=base) as build_mock:
+                parallel.prepare('plus-only', 4, 'plus')
+                plan = parallel.load_plan('plus-only', check_inputs=True)
+                self.assertEqual(set(plan['benchmarks']), {'plus'})
+                build_mock.assert_called_once_with(Path(directory), 'full-plus')
+                self.assertFalse((Path(directory) / 'runs/plus-only-full-clean').exists())
+
     def test_balanced_partition_is_disjoint_complete_and_keeps_whole_tasks(self):
         base = fixture()
         parent, shards = parallel.split_manifest(base, 4)

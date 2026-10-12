@@ -4,9 +4,9 @@
 
 用户自行提交的 `smoke-clean-001`，Slurm Job `13965730`，在 2026-10-11 正常结束：`COMPLETED`、`ExitCode=0:0`、运行 13 分 02 秒、1 张 A100 / 8 CPU / 64 GB，记账 MaxRSS 为 `26506992K`（约 25.3 GiB 主机内存）。4/4 episode 均成功，缺失为 0；真实结果在 [reports/smoke-clean-001](../reports/smoke-clean-001)。这验证了原版完整权重加载、JIT、EGL 和闭环运行，不能用四条记录推断全量成功率，也尚不能替代 Plus smoke。
 
-后续四卡方案使用四个单 GPU 数组成员，full-clean 分为每片 500 episodes，full-plus 分为 2507/2508/2507/2508。原版与 Plus 评测器本身未因分片而修改；每片独立恢复 RNG，合并明确保留来源。准备和提交只做预览与 Slurm `--test-only`，未执行四卡计费提交。具体操作与排队限制见 [overnight.md](overnight.md)。
+后续四卡方案使用四个单 GPU 数组成员，full-clean 分为每片 500 episodes，full-plus 分为 2507/2508/2507/2508。支持 `--benchmarks plus/clean/both`，当前优先方案只跑 full-plus。原版与 Plus 评测器本身未因分片而修改；每片独立恢复 RNG，合并明确保留来源。准备和提交只做预览与 Slurm `--test-only`，未执行四卡计费提交。具体操作与排队限制见 [overnight.md](overnight.md)。
 
-并行功能加入后，仿真 Python 下 **21 项测试全部通过**，包括分片覆盖、拒绝不完整/重复/不同配置的合并、CSV/PNG 生成，以及使用假 Slurm 命令的提交保护测试。shell 语法和 Python 编译检查通过；真实 smoke-clean 报告文件 SHA256 全部核对通过。测试未创建任何真实 Slurm 作业。
+并行功能加入后，仿真 Python 下 **22 项测试全部通过**，包括 plus-only 计划不含 clean、分片覆盖、拒绝不完整/重复/不同配置的合并、CSV/PNG 生成，以及使用假 Slurm 命令的提交保护测试。shell 语法和 Python 编译检查通过；真实 smoke-clean 报告文件 SHA256 全部核对通过。测试未创建任何真实 Slurm 作业。
 
 ## 初始准备阶段记录
 

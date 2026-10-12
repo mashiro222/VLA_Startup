@@ -51,5 +51,5 @@ if [[ "$mode" == --submit ]]; then
         exit "$code"
     fi
 else
-    printf 'Dry run only. No job submitted. Workers verify both smoke runs before loading models.\n'
+    printf 'Dry run only. No job submitted. Workers verify the selected benchmarks smoke runs before loading models.\n'
 fi
