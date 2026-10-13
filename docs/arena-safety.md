@@ -2,9 +2,9 @@
 
 本轮使用现有 `gs://openpi-assets/checkpoints/pi05_libero/`，不加载 Arena 作者微调的权重，不训练。它是“LIBERO 微调模型向 Arena 的 zero-shot 迁移”，不是未经任务微调的 `pi05_base`。本轮范围只有 5 类 Safety、L0/L1/L2 共 75 个任务，不包含干扰、组合泛化、长时序等其它类别。
 
-环境、脚本和计划已准备；**2026-10-13 14:39 EDT 已按用户授权提交 smoke：`14016239_0`，账户 `gts-jli741-paid`、1 张 A100、8 CPU、64 GB、2 小时时限。** 提交后首次检查为 `PENDING (Priority)`，尚无 Arena 成绩，也未验证真实 GPU 推理和 EGL 渲染。Pilot/full 未提交；已有 Clean/Plus 的环境、权重及作业不因本轮准备而改变。
+环境、脚本和计划已准备；**2026-10-13 14:39 EDT 已按用户授权提交 smoke：`14016239_0`，账户 `gts-jli741-paid`、1 张 A100、8 CPU、64 GB、2 小时时限。** 提交后首次检查为 `PENDING (Priority)`，尚无 Arena 成绩，也未验证真实 GPU 推理和 EGL 渲染。Pilot 未提交；full 已按下方后续授权提交。已有 Clean/Plus 的环境、权重及作业不因本轮准备而改变。
 
-**后续选择更新：用户要求代码复查后直接提交 full，不再等待独立 smoke。独立入口已准备，等待用户选 A100/H100 后才提交；原 smoke 未动。** 见 [full 复查、四卡队列比较与提交入口](arena-full-review-2026-10-13.md)。下文保留的普通入口仍强制要求 smoke 完成。
+**后续选择更新：用户要求代码复查后直接提交 full，不再等待独立 smoke，并选择最多 4 张 A100。2026-10-13 16:03 EDT 已提交 full 数组 `14020266`，每 worker 12 小时，账户 `gts-jli741-paid`；首次检查四个成员均在排队，原 smoke 未动。** 见 [full 复查、四卡队列比较与提交记录](arena-full-review-2026-10-13.md)。不要重复提交 full；下文保留的普通入口仍强制要求 smoke 完成。
 
 ## 1. π0.5 在论文中表现如何？
 
@@ -61,7 +61,7 @@ bash scripts/arena.sh preflight --imports
 
 三个计划互相独立；pilot 是可选，不会并入 full。每个任务单元是一项任务的一个评测 seed，full 中含 10 个 episodes。同一 worker 完成一个单元后领取下一单元，不再固定承包总任务的四分之一。只排到一张卡也能不断领取后续任务；更多 worker 启动后共同处理剩余任务。
 
-**Smoke 的 `--submit` 已执行一次，返回 `14016239`；不要重复提交。下方 pilot/full 的 `--submit` 尚未执行。**
+**Smoke 的 `--submit` 已执行一次，返回 `14016239`；不要重复提交。Full 已通过独立 `arena_direct.py` 入口提交为 `14020266`，不要再执行下方普通 full 提交命令。Pilot 尚未提交。**
 
 下面只准备文件或预览，不向 Slurm 提交请求，重复准备相同计划是安全的：
 

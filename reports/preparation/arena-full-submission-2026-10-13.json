@@ -1,0 +1,68 @@
+{
+  "schema": 1,
+  "submitted_at": "2026-10-13T16:03:18-04:00",
+  "checked_at": "2026-10-13T16:03:35-04:00",
+  "run_id": "arena-full-001",
+  "plan_sha256": "09fafef7bd31b3ddd5554bbc5792a953639f04662f96660a752c24050f53333b",
+  "expected_episodes": 2250,
+  "slurm_submission": {
+    "command": [
+      "sbatch",
+      "--parsable",
+      "--account=gts-jli741-paid",
+      "--partition=gpu-a100",
+      "--qos=inferno",
+      "--gres=gpu:a100:1",
+      "--cpus-per-task=8",
+      "--mem=64G",
+      "--time=12:00:00",
+      "--array=0-3%4",
+      "--job-name=pi05-arena-full-001",
+      "--chdir=/storage/scratch1/1/gliu386/VLA_Startup",
+      "--output=/storage/scratch1/1/gliu386/VLA_Startup/logs/arena-full-001-%A_%a.out",
+      "/storage/scratch1/1/gliu386/VLA_Startup/slurm/arena-direct.sbatch",
+      "arena-full-001"
+    ],
+    "time": 1791921797.87405,
+    "direct_launch_sha256": "fe481790c9aecf7b5880057f797bfb8af8adf6b0d958809b357ee5f4d179d0ad",
+    "smoke_requirement": "waived_by_user",
+    "job_id": "14020266"
+  },
+  "verified_account": "gts-jli741-paid",
+  "verified_partition": "gpu-a100",
+  "verified_array": "0-3%4",
+  "verified_gpu_per_worker": "gpu:a100:1",
+  "verified_time_limit": "12:00:00",
+  "verified_dependency": null,
+  "members": {
+    "0": {
+      "job_id": "14020266_0",
+      "state": "PENDING",
+      "reason": "Priority",
+      "start_time": null
+    },
+    "1": {
+      "job_id": "14020266_1",
+      "state": "PENDING",
+      "reason": "Priority",
+      "start_time": null
+    },
+    "2": {
+      "job_id": "14020266_2",
+      "state": "PENDING",
+      "reason": "Priority",
+      "start_time": null
+    },
+    "3": {
+      "job_id": "14020266_3",
+      "state": "PENDING",
+      "reason": "Priority",
+      "start_time": null
+    }
+  },
+  "completed_episodes": 0,
+  "existing_smoke_job": "14016239_0",
+  "existing_smoke_unchanged": true,
+  "gpu_inference_and_egl_verified": false,
+  "note": "Actual user-authorized submission after selecting A100; prior queue estimates are historical, not start guarantees."
+}

@@ -8,9 +8,9 @@
 
 需要查看账号全部作业或理解四卡方案：见 [四卡评测与作业查询说明](docs/overnight.md)。四卡入口独立于下文的单卡入口，不会自动提交或取消作业。
 
-**VLA-Arena Safety smoke 已于 2026-10-13 14:39 EDT 按用户授权提交，作业 `14016239_0`。** 使用 `gts-jli741-paid`、1 张 A100、2 小时时限，测试 15 条；提交后的首次检查为 `PENDING (Priority)`，尚无 Arena 运行结果。使用同一 `pi05_libero` 做 zero-shot，独立 uv 仿真环境与 75 个安全任务已校验；750 条 pilot、2,250 条 full 仍仅准备文件，未提交。完整命令、参数和文件导览见 [Arena Safety 运行说明](docs/arena-safety.md)；背景选择见 [VLA-Arena 与 LIBERO-Safety 对比](docs/safety-benchmark-comparison.md)。
+**VLA-Arena Safety smoke 已于 2026-10-13 14:39 EDT 按用户授权提交，作业 `14016239_0`。** 使用 `gts-jli741-paid`、1 张 A100、2 小时时限，测试 15 条；提交后的首次检查为 `PENDING (Priority)`，尚无 Arena 运行结果。使用同一 `pi05_libero` 做 zero-shot，独立 uv 仿真环境与 75 个安全任务已校验；750 条 pilot 仅准备文件，full 的提交见下方。完整命令、参数和文件导览见 [Arena Safety 运行说明](docs/arena-safety.md)；背景选择见 [VLA-Arena 与 LIBERO-Safety 对比](docs/safety-benchmark-comparison.md)。
 
-随后用户要求不等 smoke，复查后直接跑 Arena Safety full。**代码复查与独立提交入口已准备，等待用户选定 4×A100 或 4×H100 后再提交。** 详见 [full 复查与四卡选择](docs/arena-full-review-2026-10-13.md)。
+随后用户要求不等 smoke，复查后直接跑 Arena Safety full，并选定 A100。**2026-10-13 16:03 EDT 已提交数组 `14020266`：最多 4 张 A100，每个 worker 12 小时，账户 `gts-jli741-paid`，动态领取 2,250 条 episode。** 提交后四个成员均为 `PENDING (Priority)`，没有 smoke 依赖，原 smoke 保留不动。不要重复提交；查询命令见 [full 复查与提交记录](docs/arena-full-review-2026-10-13.md)。
 
 ## 1. 当前目录与环境
 
