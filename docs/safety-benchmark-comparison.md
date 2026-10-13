@@ -1,6 +1,6 @@
 # π0.5 的安全 benchmark 选择：VLA-Arena 与 LIBERO-Safety
 
-核对日期：2026-10-13。依据用户提供的两篇 PDF，以及当天官方 GitHub / Hugging Face 的源码和文件清单。此文是选型与接入审查；尚未安装这两个仿真环境、下载它们的场景/权重或提交评测作业。现有 Clean 补跑没有修改。
+核对日期：2026-10-13。依据用户提供的两篇 PDF，以及当天官方 GitHub / Hugging Face 的源码和文件清单。此文保留选型时的审查结果。**后续用户已选择 VLA-Arena Safety：独立环境、资产和评测脚本已准备，未提交作业；见 [运行说明](arena-safety.md)。** 没有下载两者作者的专项模型权重；LIBERO-Safety 环境仍未安装。现有 Clean 补跑没有修改。
 
 ## 1. 当前模型是什么，能否叫 zero-shot？
 
@@ -113,4 +113,4 @@ Arena 全部 170 任务同样按 3×10 次计算为 5,100 episodes，暂不必�
 - Safety：[论文](https://arxiv.org/abs/2606.23686)、3.2 任务分类、4.1 评测协议、表 3 与表 4、附录 A 安全约束、C.3 表 A.10 零样本对照；[官方仓库](https://github.com/LIBERO-SAFETY/LIBERO-Safety)。
 - 作者权重已核对 revision：Arena `31bbab4bcdeee70c99797ef50c083d24f1def528`；Safety `e66d84bfec17770384550593e39975f7e21e3463`。仅检查元数据，尚未下载。
 
-当前停在选型阶段，等待确定 benchmark；本说明中的规模没有提交为 Slurm 作业。
+选型后的实施入口见 [Arena Safety 运行说明](arena-safety.md)。本说明中的规模尚未提交为 Slurm 作业。

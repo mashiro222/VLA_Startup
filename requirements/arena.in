@@ -1,0 +1,26 @@
+# Simulation/client only; reuse the existing OpenPI server and checkpoint.
+# Python 3.11, robosuite/MuJoCo/bddl follow the pinned Arena base environment.
+numpy==1.26.4
+mujoco==3.5.0
+robosuite==1.5.1
+bddl==3.6.0
+torch==2.5.1+cpu
+gym==0.26.2
+opencv-python==4.10.0.84
+Pillow==11.0.0
+imageio==2.36.1
+imageio-ffmpeg==0.5.1
+matplotlib==3.9.2
+numba==0.60.0
+scipy==1.14.1
+easydict==1.13
+cloudpickle==3.1.0
+PyYAML==6.0.2
+websockets==14.2
+msgpack==1.1.0
+typing-extensions==4.12.2
+termcolor==2.5.0
+h5py==3.12.1
+Wand==0.6.13
+scikit-image==0.24.0
+huggingface-hub==0.36.0

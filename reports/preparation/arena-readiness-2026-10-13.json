@@ -1,0 +1,57 @@
+{
+  "checked_at": "2026-10-13T14:30:09.230184-04:00",
+  "checkpoint": "gs://openpi-assets/checkpoints/pi05_libero/",
+  "training_condition": "zero-shot transfer to Arena; no Arena-specific fine-tuning",
+  "upstream_commit": "babe582ebffc82b979b77964a7e56417d02f63a4",
+  "runtime_versions": {
+    "python": "3.11.17",
+    "numpy": "1.26.4",
+    "mujoco": "3.5.0",
+    "robosuite": "1.5.1",
+    "bddl": "3.6.0",
+    "torch": "2.5.1+cpu"
+  },
+  "asset_files": 2928,
+  "asset_bytes": 875080252,
+  "task_definitions_and_initial_states_loaded": 75,
+  "upstream_git_fsck": "passed",
+  "dependency_check": "86 packages compatible",
+  "unit_tests": "10 passed; mock rollouts, no GPU",
+  "checks": [
+    "imports including cost and initial-state helpers",
+    "Slurm dry-run makes no scheduler calls",
+    "duplicate-record rejection and incomplete-write recovery",
+    "cross-process unit lock exclusion/release",
+    "success versus environment timeout; final cost and hazard scaling",
+    "infrastructure exceptions propagate without task-failure records",
+    "complete report CSV/PNG generation on synthetic data in temporary directory",
+    "unique episode keys and seeds in prepared plans"
+  ],
+  "plans": {
+    "smoke": {
+      "run_id": "arena-smoke-001",
+      "episodes": 15,
+      "units": 15,
+      "max_workers": 1,
+      "plan_sha256": "740b2f026a6240cbbc1dd771f01d4f566a92ae2bcb75b5f650e12a6e74940d25"
+    },
+    "pilot": {
+      "run_id": "arena-pilot-001",
+      "episodes": 750,
+      "units": 75,
+      "max_workers": 4,
+      "plan_sha256": "f9b4f83fb46ac1c7b311044e19f90010dc514a54f8f5e1c62759a86c6685897b"
+    },
+    "full": {
+      "run_id": "arena-full-001",
+      "episodes": 2250,
+      "units": 225,
+      "max_workers": 4,
+      "plan_sha256": "09fafef7bd31b3ddd5554bbc5792a953639f04662f96660a752c24050f53333b"
+    }
+  },
+  "jobs_submitted": false,
+  "gpu_inference_tested": false,
+  "egl_rendering_tested": false,
+  "limitation": "Real GPU policy, simulator control and rendering require the separately submitted 15-episode smoke. No Arena evaluation results yet."
+}
