@@ -10,6 +10,8 @@
 
 **VLA-Arena Safety smoke 已于 2026-10-13 14:39 EDT 按用户授权提交，作业 `14016239_0`。** 使用 `gts-jli741-paid`、1 张 A100、2 小时时限，测试 15 条；提交后的首次检查为 `PENDING (Priority)`，尚无 Arena 运行结果。使用同一 `pi05_libero` 做 zero-shot，独立 uv 仿真环境与 75 个安全任务已校验；750 条 pilot、2,250 条 full 仍仅准备文件，未提交。完整命令、参数和文件导览见 [Arena Safety 运行说明](docs/arena-safety.md)；背景选择见 [VLA-Arena 与 LIBERO-Safety 对比](docs/safety-benchmark-comparison.md)。
 
+随后用户要求不等 smoke，复查后直接跑 Arena Safety full。**代码复查与独立提交入口已准备，等待用户选定 4×A100 或 4×H100 后再提交。** 详见 [full 复查与四卡选择](docs/arena-full-review-2026-10-13.md)。
+
 ## 1. 当前目录与环境
 
 PACE 工作目录：`/storage/scratch1/1/gliu386/VLA_Startup`。GitHub 备份：[mashiro222/VLA_Startup](https://github.com/mashiro222/VLA_Startup)。

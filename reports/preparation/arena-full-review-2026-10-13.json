@@ -1,0 +1,54 @@
+{
+  "schema": 1,
+  "checked_at": "2026-10-13T15:19:34-04:00",
+  "run_id": "arena-full-001",
+  "full_submitted": false,
+  "existing_smoke_job": "14016239_0",
+  "existing_smoke_unchanged": true,
+  "plan_sha256": "09fafef7bd31b3ddd5554bbc5792a953639f04662f96660a752c24050f53333b",
+  "tests": {
+    "protocol_and_original_submission": 10,
+    "direct_launch": 8,
+    "all_passed": true
+  },
+  "checks": [
+    "75 task definitions and initial-state files load",
+    "2250 unique episode RNG seeds",
+    "existing smoke/pilot/full frozen inputs unchanged",
+    "upstream rollout and cost semantics reviewed",
+    "shell and Python syntax checked"
+  ],
+  "not_verified": [
+    "Arena GPU inference",
+    "EGL rendering",
+    "real closed-loop simulator execution",
+    "cross-node task locks"
+  ],
+  "account": "gts-jli741-paid",
+  "workers": 4,
+  "gpu_per_worker": 1,
+  "cpus_per_worker": 8,
+  "memory_per_worker": "64G",
+  "probe_time_limit": "12:00:00",
+  "queue_probes": [
+    {
+      "gpu": "a100",
+      "chunk_id": "582770",
+      "wall_time_seconds": 0.000018701,
+      "exit_code": 0,
+      "original_token_count": 178,
+      "output": "2026-10-13T15:19:34-04:00\nPASS: local preparation checks; GPU policy/EGL smoke is still required\nsbatch --test-only --parsable --account=gts-jli741-paid --partition=gpu-a100 --qos=inferno --gres=gpu:a100:1 --cpus-per-task=8 --mem=64G --time=12:00:00 --array=0-3%4 --job-name=pi05-arena-full-001 --chdir=/storage/scratch1/1/gliu386/VLA_Startup --output=/storage/scratch1/1/gliu386/VLA_Startup/logs/arena-full-001-%A_%a.out /storage/scratch1/1/gliu386/VLA_Startup/slurm/arena-direct.sbatch arena-full-001\nSeparate smoke completion was waived by the user; GPU/EGL execution is unverified.\nsbatch: Job 14018513 to start at 2026-10-19T22:29:12 a using 8 processors on nodes atl1-1-01-002-12-0 in partition gpu-a100\n"
+    },
+    {
+      "gpu": "h100",
+      "chunk_id": "f84c6d",
+      "wall_time_seconds": 0.000008135,
+      "exit_code": 0,
+      "original_token_count": 178,
+      "output": "2026-10-13T15:19:34-04:00\nPASS: local preparation checks; GPU policy/EGL smoke is still required\nsbatch --test-only --parsable --account=gts-jli741-paid --partition=gpu-h100 --qos=inferno --gres=gpu:h100:1 --cpus-per-task=8 --mem=64G --time=12:00:00 --array=0-3%4 --job-name=pi05-arena-full-001 --chdir=/storage/scratch1/1/gliu386/VLA_Startup --output=/storage/scratch1/1/gliu386/VLA_Startup/logs/arena-full-001-%A_%a.out /storage/scratch1/1/gliu386/VLA_Startup/slurm/arena-direct.sbatch arena-full-001\nSeparate smoke completion was waived by the user; GPU/EGL execution is unverified.\nsbatch: Job 14018514 to start at 2026-10-22T16:25:00 a using 8 processors on nodes atl1-1-03-008-32-0 in partition gpu-h100\n"
+    }
+  ],
+  "recommendation": "a100",
+  "recommendation_basis": "Earlier current queue estimate; no measured Arena speed comparison. Estimates are not guarantees.",
+  "smoke_waiver": "User explicitly requested code review then direct full submission after choosing GPU. Neither GPU choice nor actual submission is inferred."
+}
