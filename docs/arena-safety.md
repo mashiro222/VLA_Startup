@@ -2,7 +2,7 @@
 
 本轮使用现有 `gs://openpi-assets/checkpoints/pi05_libero/`，不加载 Arena 作者微调的权重，不训练。它是“LIBERO 微调模型向 Arena 的 zero-shot 迁移”，不是未经任务微调的 `pi05_base`。本轮范围只有 5 类 Safety、L0/L1/L2 共 75 个任务，不包含干扰、组合泛化、长时序等其它类别。
 
-环境、脚本和计划已准备；**尚未提交 Arena 作业，因此当前没有我们的 Arena 成绩，也未验证真实 GPU 推理和 EGL 渲染。** 已有 Clean/Plus 的环境、权重及作业不因本轮准备而改变。
+环境、脚本和计划已准备；**2026-10-13 14:39 EDT 已按用户授权提交 smoke：`14016239_0`，账户 `gts-jli741-paid`、1 张 A100、8 CPU、64 GB、2 小时时限。** 提交后首次检查为 `PENDING (Priority)`，尚无 Arena 成绩，也未验证真实 GPU 推理和 EGL 渲染。Pilot/full 未提交；已有 Clean/Plus 的环境、权重及作业不因本轮准备而改变。
 
 ## 1. π0.5 在论文中表现如何？
 
@@ -20,6 +20,8 @@
 解释：它在较难任务上仍有明显短板。静态避障 L2 虽有 40% 成功率，但 CC 达 76.6，说明任务完成与安全是两回事；安全抓取 L2 成功率为零，低 CC 也可能来自未能有效执行。其它能力方面，表 7 的长时序任务成功率从 L0 的 85% 降至 L1/L2 的 0%；空间关系组合则是 62% → 24% → 6%。不能把这些条件下的数字直接作为 `pi05_libero` 的 zero-shot 成绩。
 
 本项目最终报告会将 **Our zero-shot SR/CC** 和 **Paper Arena-finetuned SR/CC** 分列，明确训练条件不同。它们是背景对照，不是误差容限或“复现通过”的判据。
+
+对本次 zero-shot 的定性预期：LIBERO 中学到的抓取、放置能力可能迁移到部分 Arena 任务，但新场景、物体、细致抓取及动态避障要求可能让成绩明显下降，个别任务组出现零成功并不意外。目前没有同一 checkpoint 在本协议下的实测依据，不能承诺总体非零，也不宜给出数值预测。15 条 smoke 每类每级只有一次；即使 0/15，也不能据此断定全量成功率为零。须结合视频、动作、计分和错误日志，区分未完成任务与接口错误；低 CC 也可能只是模型没有有效行动。
 
 ## 2. 安装了什么？
 
@@ -57,7 +59,7 @@ bash scripts/arena.sh preflight --imports
 
 三个计划互相独立；pilot 是可选，不会并入 full。每个任务单元是一项任务的一个评测 seed，full 中含 10 个 episodes。同一 worker 完成一个单元后领取下一单元，不再固定承包总任务的四分之一。只排到一张卡也能不断领取后续任务；更多 worker 启动后共同处理剩余任务。
 
-**到本次准备结束为止，下方的 `--submit` 命令均未执行。**
+**Smoke 的 `--submit` 已执行一次，返回 `14016239`；不要重复提交。下方 pilot/full 的 `--submit` 尚未执行。**
 
 下面只准备文件或预览，不向 Slurm 提交请求，重复准备相同计划是安全的：
 
@@ -69,10 +71,19 @@ bash scripts/arena.sh prepare full arena-full-001
 bash scripts/arena.sh submit arena-smoke-001
 ```
 
-预览应包含 `--account=gts-jli741-paid --partition=gpu-a100 --qos=inferno --gres=gpu:a100:1`、8 CPU、64 GB，smoke 仅一个数组成员。**你决定开始时，以下命令才会产生计费作业：**
+预览应包含 `--account=gts-jli741-paid --partition=gpu-a100 --qos=inferno --gres=gpu:a100:1`、8 CPU、64 GB，smoke 仅一个数组成员。**本轮已经执行过以下提交命令，保留作记录：**
 
 ```bash
 bash scripts/arena.sh submit arena-smoke-001 --submit
+```
+
+本轮作业的查询命令（`tail -F` 可以等日志文件在作业启动后创建；按 Ctrl-C 只退出查看）：
+
+```bash
+squeue -r -j 14016239 -o '%.20i %.12T %.24S %R'
+sacct -j 14016239 --format=JobID%22,State,ExitCode,Elapsed
+bash scripts/arena.sh check arena-smoke-001
+tail -F logs/arena-smoke-001-14016239_0.out
 ```
 
 运行后检查：

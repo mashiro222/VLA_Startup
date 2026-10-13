@@ -8,7 +8,7 @@
 
 需要查看账号全部作业或理解四卡方案：见 [四卡评测与作业查询说明](docs/overnight.md)。四卡入口独立于下文的单卡入口，不会自动提交或取消作业。
 
-**VLA-Arena Safety 已准备好，尚未提交作业。** 使用同一 `pi05_libero` 做 zero-shot，独立 uv 仿真环境与 75 个安全任务已校验，提供 15 条 smoke、750 条 pilot、2,250 条 full 计划。完整命令、参数和文件导览见 [Arena Safety 运行说明](docs/arena-safety.md)；背景选择见 [VLA-Arena 与 LIBERO-Safety 对比](docs/safety-benchmark-comparison.md)。
+**VLA-Arena Safety smoke 已于 2026-10-13 14:39 EDT 按用户授权提交，作业 `14016239_0`。** 使用 `gts-jli741-paid`、1 张 A100、2 小时时限，测试 15 条；提交后的首次检查为 `PENDING (Priority)`，尚无 Arena 运行结果。使用同一 `pi05_libero` 做 zero-shot，独立 uv 仿真环境与 75 个安全任务已校验；750 条 pilot、2,250 条 full 仍仅准备文件，未提交。完整命令、参数和文件导览见 [Arena Safety 运行说明](docs/arena-safety.md)；背景选择见 [VLA-Arena 与 LIBERO-Safety 对比](docs/safety-benchmark-comparison.md)。
 
 ## 1. 当前目录与环境
 
