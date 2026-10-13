@@ -1,0 +1,95 @@
+{
+  "schema_version": 1,
+  "profile": "shard-full-clean",
+  "benchmark": "clean",
+  "manifest_sha256": "8c44ef24b3dcff1fb7153547ccc0412af4c4743e0ea65e2db77396a257a7dc53",
+  "complete": true,
+  "totals": {
+    "expected": 500,
+    "completed": 500,
+    "missing": 0,
+    "successes": 489,
+    "failures": 11,
+    "success_percent_completed": 97.8,
+    "success_percent_full": 97.8
+  },
+  "groups": {
+    "suite": {
+      "libero_spatial": {
+        "expected": 150,
+        "completed": 150,
+        "missing": 0,
+        "successes": 147,
+        "failures": 3,
+        "success_percent_completed": 98.0,
+        "success_percent_full": 98.0
+      },
+      "libero_object": {
+        "expected": 100,
+        "completed": 100,
+        "missing": 0,
+        "successes": 98,
+        "failures": 2,
+        "success_percent_completed": 98.0,
+        "success_percent_full": 98.0
+      },
+      "libero_goal": {
+        "expected": 100,
+        "completed": 100,
+        "missing": 0,
+        "successes": 96,
+        "failures": 4,
+        "success_percent_completed": 96.0,
+        "success_percent_full": 96.0
+      },
+      "libero_10": {
+        "expected": 150,
+        "completed": 150,
+        "missing": 0,
+        "successes": 148,
+        "failures": 2,
+        "success_percent_completed": 98.66666666666667,
+        "success_percent_full": 98.66666666666667
+      }
+    },
+    "category": {
+      "Clean": {
+        "expected": 500,
+        "completed": 500,
+        "missing": 0,
+        "successes": 489,
+        "failures": 11,
+        "success_percent_completed": 97.8,
+        "success_percent_full": 97.8
+      }
+    },
+    "difficulty": {
+      "None": {
+        "expected": 500,
+        "completed": 500,
+        "missing": 0,
+        "successes": 489,
+        "failures": 11,
+        "success_percent_completed": 97.8,
+        "success_percent_full": 97.8
+      }
+    }
+  },
+  "category_macro_percent": null,
+  "reference": {
+    "source": "https://github.com/Physical-Intelligence/openpi/blob/215abfb217dbac7d5f1273282331b9b1866c0479/examples/libero/README.md",
+    "status": "official OpenPI; original LIBERO only",
+    "checkpoint": "gs://openpi-assets/checkpoints/pi05_libero/",
+    "suite_percent": {
+      "libero_spatial": 98.8,
+      "libero_object": 98.2,
+      "libero_goal": 98.0,
+      "libero_10": 92.4
+    },
+    "overall_percent": 96.85,
+    "episodes": 2000
+  },
+  "reference_comparison_enabled": false,
+  "comparisons": [],
+  "interpretation": "Partial coverage, diagnostic subset, or changed protocol: do not claim a benchmark reproduction."
+}

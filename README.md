@@ -2,7 +2,9 @@
 
 使用官方 `pi05_libero` checkpoint 做闭环推理，不进行训练或 fine-tuning。先用少量 episode 检查链路，再做原版 LIBERO 对照及 LIBERO-Plus 鲁棒性评测。smoke 使用一张 A100，完整评测可选择最多四个单卡 worker；结果保存在本地，用 CSV、Markdown、JSON 和 PNG 查看，不使用 W&B。
 
-初始环境准备阶段停在计费提交之前。随后用户自行提交的两份 smoke 均已正常完成：原版（`13965730`）4/4 成功；Plus（`13966714`）7/7 条记录完整、6 次成功、1 次任务失败，没有程序异常。它们验证了代表性用例，不代表完整 benchmark 成绩或全量无 bug。检查记录见 [docs/validation.md](docs/validation.md)，实际结果见 [smoke-clean 报告](reports/smoke-clean-001/summary.md)和 [smoke-plus 报告](reports/smoke-plus-001/summary.md)。当前已提交四卡 full-plus 数组 `13967217` 和四卡 full-clean 数组 `13974531`；查看与后续操作见 [2026-10-12 提交与检查说明](docs/full-clean-2026-10-12.md)。
+初始环境准备阶段停在计费提交之前。随后用户自行提交的两份 smoke 均已正常完成：原版（`13965730`）4/4 成功；Plus（`13966714`）7/7 条记录完整、6 次成功、1 次任务失败，没有程序异常。它们验证了代表性用例，不代表完整 benchmark 成绩或全量无 bug。检查记录见 [docs/validation.md](docs/validation.md)，实际结果见 [smoke-clean 报告](reports/smoke-clean-001/summary.md)和 [smoke-plus 报告](reports/smoke-plus-001/summary.md)。
+
+**2026-10-13 08:23 EDT 检查：full-plus 已全部完成，8,477 / 10,030 成功（84.52%）**，四个 A100 分片均以 `0:0` 正常退出。完整结果见 [汇总表](reports/fullplus-4gpu-001-full-plus/summary.md)、[分组柱状图](reports/fullplus-4gpu-001-full-plus/success_by_group.png)和[累计成功率图](reports/fullplus-4gpu-001-full-plus/cumulative_success.png)。Full-clean 已完成 1,500 / 2,000；第 2 片首次模型启动超时，授权补跑的单个 H100 作业 `13988230_2` 仍在排队（Priority），不要重复提交。已完成部分成功率 96.40%，不是 full-clean 最终成绩。详情与后续命令见 [提交与检查记录](docs/full-clean-2026-10-12.md)。
 
 需要查看账号全部作业或理解四卡方案：见 [四卡评测与作业查询说明](docs/overnight.md)。四卡入口独立于下文的单卡入口，不会自动提交或取消作业。
 

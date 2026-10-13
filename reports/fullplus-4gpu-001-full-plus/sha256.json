@@ -1,0 +1,16 @@
+{
+  "cumulative_success.png": "c037518fa0df3e0ee6691599f22817d92f366aa4db46c423fba3594091c936d5",
+  "episodes.csv": "c48d1ce36012380dae969f2d7e93d5c65ada543048a534ef931cda29a3541a45",
+  "episodes.jsonl.gz": "c8bc7ef96e59cecd1535ed6022527b1341cc25486593aad075ab0f8480ba436e",
+  "manifest.json": "db835f82e2164a631266a4a31eabd6fe014b41f9553d6dff9f126fcc35f80c3b",
+  "parallel_execution.json": "bdac6d0d25be0fb35977b975e649f47d95abcd84451af97a13d74472c8876e26",
+  "provenance-fullplus-4gpu-001-full-plus-shard-00-13974684.json": "1c66037f5fc7590d9d7f95adf7b937da61f8a51a4cfc65e6681ead548cef6a6d",
+  "provenance-fullplus-4gpu-001-full-plus-shard-01-13974685.json": "ab7f87b8d5357bfff72b987a7f8d53536bbb848c0c1fc10c88f272929a0bb62f",
+  "provenance-fullplus-4gpu-001-full-plus-shard-02-13974714.json": "efbac8c9d49f747d7d9a98f0977051f2b9b4a9d08c87f14b6d4ab1df2161dca0",
+  "provenance-fullplus-4gpu-001-full-plus-shard-03-13967217.json": "aab43ce039069d006a4f6e28d53aae3c24401caf5aaa1f57285fe956a237d9e3",
+  "run_config.json": "fc3bad8a7e58ffbec4ddef5af7b9b977551087385981bd2c8a77c8b1cc0c4bbe",
+  "success_by_group.png": "1ef92285b3fe200e46f93b56807a6c7657e37989f0c42040d52770230bb6d404",
+  "summary.csv": "7cef9a903af0cd0d943ec6b6b3bc875babd5c7bade7759fb304585b6688c7fb9",
+  "summary.json": "8b0955a9d5021f72b55b20e340912383b0283df05386140754eef9aaa75d7e13",
+  "summary.md": "3dbbcbff3f992dd869f22871b0bb5b6566f4d58663d2b0eb293c348a7ef5f6f4"
+}

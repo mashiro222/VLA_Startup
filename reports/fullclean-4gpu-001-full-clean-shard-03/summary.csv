@@ -1,0 +1,8 @@
+group_type,group,expected,completed,missing,successes,failures,success_percent_completed,success_percent_full
+total,all,500,500,0,492,8,98.4,98.4
+suite,libero_spatial,100,100,0,98,2,98.0,98.0
+suite,libero_object,150,150,0,148,2,98.66666666666667,98.66666666666667
+suite,libero_goal,150,150,0,147,3,98.0,98.0
+suite,libero_10,100,100,0,99,1,99.0,99.0
+category,Clean,500,500,0,492,8,98.4,98.4
+difficulty,None,500,500,0,492,8,98.4,98.4

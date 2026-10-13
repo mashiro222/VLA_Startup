@@ -1,0 +1,175 @@
+{
+  "schema_version": 1,
+  "profile": "shard-full-clean",
+  "benchmark": "clean",
+  "seed": 7,
+  "prompt_mode": "upstream",
+  "evaluation": {
+    "num_steps": 10,
+    "replan_steps": 5,
+    "wait_steps": 10,
+    "render_resolution": 256,
+    "policy_resolution": 224,
+    "horizons": {
+      "libero_spatial": 220,
+      "libero_object": 280,
+      "libero_goal": 300,
+      "libero_10": 520
+    }
+  },
+  "trials_per_task": 50,
+  "expected_episodes": 500,
+  "tasks": [
+    {
+      "suite": "libero_spatial",
+      "task_id": 3,
+      "name": "pick_up_the_black_bowl_on_the_cookie_box_and_place_it_on_the_plate",
+      "base_task": "pick_up_the_black_bowl_on_the_cookie_box_and_place_it_on_the_plate",
+      "category": "Clean",
+      "difficulty": null,
+      "classification_id": null,
+      "bddl": "libero_spatial/pick_up_the_black_bowl_on_the_cookie_box_and_place_it_on_the_plate.bddl",
+      "init_file": "libero_spatial/pick_up_the_black_bowl_on_the_cookie_box_and_place_it_on_the_plate.pruned_init",
+      "max_steps": 220
+    },
+    {
+      "suite": "libero_spatial",
+      "task_id": 7,
+      "name": "pick_up_the_black_bowl_on_the_stove_and_place_it_on_the_plate",
+      "base_task": "pick_up_the_black_bowl_on_the_stove_and_place_it_on_the_plate",
+      "category": "Clean",
+      "difficulty": null,
+      "classification_id": null,
+      "bddl": "libero_spatial/pick_up_the_black_bowl_on_the_stove_and_place_it_on_the_plate.bddl",
+      "init_file": "libero_spatial/pick_up_the_black_bowl_on_the_stove_and_place_it_on_the_plate.pruned_init",
+      "max_steps": 220
+    },
+    {
+      "suite": "libero_object",
+      "task_id": 1,
+      "name": "pick_up_the_cream_cheese_and_place_it_in_the_basket",
+      "base_task": "pick_up_the_cream_cheese_and_place_it_in_the_basket",
+      "category": "Clean",
+      "difficulty": null,
+      "classification_id": null,
+      "bddl": "libero_object/pick_up_the_cream_cheese_and_place_it_in_the_basket.bddl",
+      "init_file": "libero_object/pick_up_the_cream_cheese_and_place_it_in_the_basket.pruned_init",
+      "max_steps": 280
+    },
+    {
+      "suite": "libero_object",
+      "task_id": 5,
+      "name": "pick_up_the_tomato_sauce_and_place_it_in_the_basket",
+      "base_task": "pick_up_the_tomato_sauce_and_place_it_in_the_basket",
+      "category": "Clean",
+      "difficulty": null,
+      "classification_id": null,
+      "bddl": "libero_object/pick_up_the_tomato_sauce_and_place_it_in_the_basket.bddl",
+      "init_file": "libero_object/pick_up_the_tomato_sauce_and_place_it_in_the_basket.pruned_init",
+      "max_steps": 280
+    },
+    {
+      "suite": "libero_object",
+      "task_id": 9,
+      "name": "pick_up_the_orange_juice_and_place_it_in_the_basket",
+      "base_task": "pick_up_the_orange_juice_and_place_it_in_the_basket",
+      "category": "Clean",
+      "difficulty": null,
+      "classification_id": null,
+      "bddl": "libero_object/pick_up_the_orange_juice_and_place_it_in_the_basket.bddl",
+      "init_file": "libero_object/pick_up_the_orange_juice_and_place_it_in_the_basket.pruned_init",
+      "max_steps": 280
+    },
+    {
+      "suite": "libero_goal",
+      "task_id": 1,
+      "name": "put_the_bowl_on_the_stove",
+      "base_task": "put_the_bowl_on_the_stove",
+      "category": "Clean",
+      "difficulty": null,
+      "classification_id": null,
+      "bddl": "libero_goal/put_the_bowl_on_the_stove.bddl",
+      "init_file": "libero_goal/put_the_bowl_on_the_stove.pruned_init",
+      "max_steps": 300
+    },
+    {
+      "suite": "libero_goal",
+      "task_id": 3,
+      "name": "open_the_top_drawer_and_put_the_bowl_inside",
+      "base_task": "open_the_top_drawer_and_put_the_bowl_inside",
+      "category": "Clean",
+      "difficulty": null,
+      "classification_id": null,
+      "bddl": "libero_goal/open_the_top_drawer_and_put_the_bowl_inside.bddl",
+      "init_file": "libero_goal/open_the_top_drawer_and_put_the_bowl_inside.pruned_init",
+      "max_steps": 300
+    },
+    {
+      "suite": "libero_goal",
+      "task_id": 7,
+      "name": "turn_on_the_stove",
+      "base_task": "turn_on_the_stove",
+      "category": "Clean",
+      "difficulty": null,
+      "classification_id": null,
+      "bddl": "libero_goal/turn_on_the_stove.bddl",
+      "init_file": "libero_goal/turn_on_the_stove.pruned_init",
+      "max_steps": 300
+    },
+    {
+      "suite": "libero_10",
+      "task_id": 3,
+      "name": "KITCHEN_SCENE4_put_the_black_bowl_in_the_bottom_drawer_of_the_cabinet_and_close_it",
+      "base_task": "KITCHEN_SCENE4_put_the_black_bowl_in_the_bottom_drawer_of_the_cabinet_and_close_it",
+      "category": "Clean",
+      "difficulty": null,
+      "classification_id": null,
+      "bddl": "libero_10/KITCHEN_SCENE4_put_the_black_bowl_in_the_bottom_drawer_of_the_cabinet_and_close_it.bddl",
+      "init_file": "libero_10/KITCHEN_SCENE4_put_the_black_bowl_in_the_bottom_drawer_of_the_cabinet_and_close_it.pruned_init",
+      "max_steps": 520
+    },
+    {
+      "suite": "libero_10",
+      "task_id": 7,
+      "name": "LIVING_ROOM_SCENE1_put_both_the_alphabet_soup_and_the_cream_cheese_box_in_the_basket",
+      "base_task": "LIVING_ROOM_SCENE1_put_both_the_alphabet_soup_and_the_cream_cheese_box_in_the_basket",
+      "category": "Clean",
+      "difficulty": null,
+      "classification_id": null,
+      "bddl": "libero_10/LIVING_ROOM_SCENE1_put_both_the_alphabet_soup_and_the_cream_cheese_box_in_the_basket.bddl",
+      "init_file": "libero_10/LIVING_ROOM_SCENE1_put_both_the_alphabet_soup_and_the_cream_cheese_box_in_the_basket.pruned_init",
+      "max_steps": 520
+    }
+  ],
+  "sources": {
+    "openpi": {
+      "url": "https://github.com/Physical-Intelligence/openpi.git",
+      "commit": "215abfb217dbac7d5f1273282331b9b1866c0479"
+    },
+    "libero_plus": {
+      "url": "https://github.com/sylvestf/LIBERO-plus.git",
+      "commit": "4976dc30028e805ff8094b55501d532c48fec182"
+    },
+    "libero_clean": {
+      "url": "https://github.com/Lifelong-Robot-Learning/LIBERO.git",
+      "commit": "f78abd68ee283de9f9be3c8f7e2a9ad60246e95c"
+    },
+    "checkpoint": "gs://openpi-assets/checkpoints/pi05_libero/",
+    "assets": {
+      "repo": "Sylvest/LIBERO-plus",
+      "revision": "dd2bd61b7d9a6fef1abc52d606e983b41886a149",
+      "file": "assets.zip",
+      "bytes": 6395849578,
+      "sha256": "96764a4bfbdaea98d4411598caeab235458318fe0f549611b93d1a323027b3cf"
+    },
+    "uv_version": "0.13.0"
+  },
+  "selection": "parallel shard",
+  "parallel_shard": {
+    "index": 3,
+    "count": 4,
+    "parent_manifest_sha256": "d888a3b87781b10c8ab96609be798a5341c8c7d1853f47dac50d1867872493b9",
+    "rng_note": "Each shard starts the policy RNG at [0, 0], as in the serial evaluator. Its stream is then saved and resumed independently. This is not the same continuous random stream as a single serial full run."
+  },
+  "manifest_sha256": "840dc339cc1929b0761db75ecb3c126d48077bafbb19056e4c995f6d3e3c9462"
+}

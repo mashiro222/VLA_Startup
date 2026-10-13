@@ -1,0 +1,8 @@
+{
+  "job_id": "13967217",
+  "hostname": "atl1-1-01-002-20-0.pace.gatech.edu",
+  "started_unix": 1791809499.316838,
+  "git_commit": "5c350e65228ca7dd9a4051aa4f92f5457014c84f",
+  "cuda_visible_devices": "0",
+  "gpu": "name, uuid, driver_version, memory.total [MiB]\nNVIDIA A100 80GB PCIe, GPU-ff6f5e86-94f1-6f37-7974-15eeebe803ea, 615.71.09, 81920 MiB\n"
+}

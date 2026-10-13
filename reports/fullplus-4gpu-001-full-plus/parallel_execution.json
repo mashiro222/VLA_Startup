@@ -1,0 +1,31 @@
+{
+  "batch": "fullplus-4gpu-001",
+  "rng_note": "Each shard starts the policy RNG at [0, 0], as in the serial evaluator. Its stream is then saved and resumed independently. This is not the same continuous random stream as a single serial full run.",
+  "shards": [
+    "fullplus-4gpu-001-full-plus-shard-00",
+    "fullplus-4gpu-001-full-plus-shard-01",
+    "fullplus-4gpu-001-full-plus-shard-02",
+    "fullplus-4gpu-001-full-plus-shard-03"
+  ],
+  "plan_sha256": "c0ff3bf8469c163dd2c5f1c83d12220e78c000e5fc6a51e28931721ff1de62a3",
+  "frozen_inputs": {
+    ".runtime/repos/openpi/uv.lock": "793488b5a55bb87200db90a61fd0af51922b686d94e1da4f4c587ab119b37d74",
+    "config/checkpoint_files.json": "49e389064fb191d2f4ba5dc76af92a89ca770e5595c73f5d3606010332d34144",
+    "config/evaluation.json": "d042a4cbe19738c03f681f28dd48725c2c63ad480ca3bfba6d798cb5c6bf8d5a",
+    "config/imagemagick.json": "89ffb3053c28794c469e814de147f1f31ef83399735009cf4bb6c9306fef2585",
+    "config/sources.json": "9033c266c3baf6105e0ce5672b457ccfb9a01461e6dd16437b16d4c4ae31848b",
+    "requirements/sim.lock": "5ee9807826643be961a664628e053468f093d6756938e45d186b9e8910d8c5f6",
+    "scripts/common.sh": "cdb194cf8c9a3a445608bebe75590cbaa4e618bfe22f71ac6b581ab653f1895e",
+    "scripts/parallel.py": "59671a76a287185b7afb2e3ad651470f09a700e8c594b19617f352ff356a585d",
+    "scripts/patch_sim.py": "6400c9ba19d7719678cdf54f2c271e0408789e82c6d4791553aabe30e895a54f",
+    "scripts/report.py": "a5df161bc0769c264484bb44cbb8637f7cc929009df74d73af030bbb4594470e",
+    "scripts/run_node.py": "fa384b84ef04d9849a76e5c692395437e6711ad3de062600f083a6445961acdd",
+    "slurm/parallel.sbatch": "d365367d14c49d62bf8a2a924657f0e53994110309411265276226cadcdd52d8",
+    "src/vla_startup/__init__.py": "28a9d13a05a834794f89520c799476686187156a992d6e7d72399f0b072baad3",
+    "src/vla_startup/evaluate.py": "0cb87bf6e02a03bcaea34437f1a292572e6d0a0025bea1c7d619ca1c17245028",
+    "src/vla_startup/journal.py": "ba426a18be34f40b1ce16521873365a50527c5a27292762f493cb5979dba106e",
+    "src/vla_startup/manifest.py": "e85ec7f2c65abd03e77332643dc6bf6e76c783a358966c3b22d1ee249f34511e",
+    "src/vla_startup/server.py": "3b7f261cf3d3392e4ad7cce15b994a841c5797bafe3f23fcba5997660148bc4f",
+    "src/vla_startup/summarize.py": "45a4994932f5b11ccd123654a1bf44ac18d8b4828c329a3c3beb7b9178c2129f"
+  }
+}

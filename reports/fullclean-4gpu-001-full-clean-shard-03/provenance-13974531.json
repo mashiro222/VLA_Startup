@@ -1,0 +1,8 @@
+{
+  "job_id": "13974531",
+  "hostname": "atl1-1-03-008-27-0.pace.gatech.edu",
+  "started_unix": 1791836713.5085342,
+  "git_commit": "5c350e65228ca7dd9a4051aa4f92f5457014c84f",
+  "cuda_visible_devices": "0",
+  "gpu": "name, uuid, driver_version, memory.total [MiB]\nNVIDIA H100 80GB HBM3, GPU-918b30ae-06f8-0b7d-3c32-df854abc2d59, 615.71.09, 81559 MiB\n"
+}
