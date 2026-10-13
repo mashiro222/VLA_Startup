@@ -8,6 +8,8 @@
 
 需要查看账号全部作业或理解四卡方案：见 [四卡评测与作业查询说明](docs/overnight.md)。四卡入口独立于下文的单卡入口，不会自动提交或取消作业。
 
+后续安全评测的选型见 [VLA-Arena 与 LIBERO-Safety 对比](docs/safety-benchmark-comparison.md)：核对了两篇论文的 π0.5 结果、现有 `pi05_libero` 的 zero-shot 迁移含义、代码接入与安全计分要求。目前只完成选型审查，尚未提交新 benchmark 作业。
+
 ## 1. 当前目录与环境
 
 PACE 工作目录：`/storage/scratch1/1/gliu386/VLA_Startup`。GitHub 备份：[mashiro222/VLA_Startup](https://github.com/mashiro222/VLA_Startup)。
