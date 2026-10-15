@@ -10,7 +10,7 @@ import unittest
 from unittest.mock import patch
 
 from arena_startup.core import (ROOT, append, claim, collect, digest, episode_seed, finish_metrics,
-                               frozen_files, key, records, save, validate_rows)
+                               frozen_files, key, records, save, validate_plan, validate_rows)
 
 
 def try_claim(path, queue):
@@ -125,6 +125,16 @@ class RolloutTests(unittest.TestCase):
 
 
 class ReportTests(unittest.TestCase):
+    def test_historical_plan_is_readable_but_cannot_execute_changed_code(self):
+        plan = {'units': [], 'expected_episodes': 0, 'files': {'old.py': 'old-hash'}}
+        plan['sha256'] = digest(plan)
+        validate_plan(plan, check_files=False)
+        with self.assertRaisesRegex(ValueError, 'Frozen inputs changed'):
+            validate_plan(plan)
+        plan['expected_episodes'] = 1
+        with self.assertRaisesRegex(ValueError, 'checksum'):
+            validate_plan(plan, check_files=False)
+
     def test_partial_coverage_refused_then_complete_table_and_plot(self):
         from arena_startup.report import build
         cfg = json.loads((ROOT / 'config/arena.json').read_text())

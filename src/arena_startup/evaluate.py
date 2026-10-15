@@ -25,6 +25,7 @@ def timed_out(*unused):
 
 
 def rollout(unit, episode, plan, client, video_path=None):
+    logging.info('%s: loading simulator and initializing scene', key(unit, episode))
     import imageio.v2 as imageio
     import numpy as np
     import torch
@@ -57,6 +58,7 @@ def rollout(unit, episode, plan, client, video_path=None):
         # Follow the upstream warmup protocol; costs in these settling steps are not scored.
         for _ in range(proto['wait_steps']):
             observation, _, _, _ = env.step([0.0] * 6 + [-1.0])
+        logging.info('%s: initial scene ready', key(unit, episode))
         if video_path:
             video_path.parent.mkdir(parents=True, exist_ok=True)
             writer = imageio.get_writer(video_path, fps=20)
@@ -128,19 +130,22 @@ def main():
     plan = json.loads((args.run / 'plan.json').read_text())
     validate_plan(plan)
     import torch
-    from openpi_client.websocket_client_policy import WebsocketClientPolicy
+    from .transport import ArenaClient, TRANSPORT_VERSION
     torch.set_num_threads(1)
-    client = WebsocketClientPolicy('127.0.0.1', args.port)
-    meta = client.get_server_metadata()
     sources = json.loads((ROOT / 'config/sources.json').read_text())
-    if (meta.get('model') != 'pi05_libero' or meta.get('backend') != 'jax' or meta.get('action_horizon') != 10
-            or meta.get('num_steps') != plan['config']['evaluation']['num_steps']
-            or meta.get('openpi_commit') != sources['openpi']['commit']
-            or meta.get('checkpoint_manifest_sha256') != file_hash(ROOT / 'config/checkpoint_files.json')):
-        raise ValueError('Unexpected model/normalization/checkpoint identity')
+    expected = {'model': 'pi05_libero', 'backend': 'jax', 'action_horizon': 10,
+                'num_steps': plan['config']['evaluation']['num_steps'],
+                'openpi_commit': sources['openpi']['commit'],
+                'checkpoint_manifest_sha256': file_hash(ROOT / 'config/checkpoint_files.json'),
+                'transport': TRANSPORT_VERSION}
     signal.signal(signal.SIGTERM, interrupted)
     signal.signal(signal.SIGINT, interrupted)
     signal.signal(signal.SIGALRM, timed_out)
+    with ArenaClient(args.port, expected, plan['config']['evaluation']['policy_request_timeout_seconds']) as client:
+        evaluate_units(args, plan, client)
+
+
+def evaluate_units(args, plan, client):
     completed, videos = 0, 0
     for unit in plan['units']:
         directory = args.run / 'units' / unit['id']

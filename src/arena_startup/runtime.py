@@ -16,7 +16,7 @@ def environment():
     rt = ROOT / '.runtime'
     native = rt / 'native-7.1.1/squashfs-root/usr'
     env = dict(os.environ)
-    env.update(PYTHONPATH=f"{ROOT / 'src'}:{rt / 'repos/vla_arena'}:{rt / 'repos/openpi/packages/openpi-client/src'}",
+    env.update(PYTHONPATH=f"{ROOT / 'src'}:{rt / 'repos/vla_arena'}:{rt / 'repos/openpi/packages/openpi-client/src'}:{rt / 'repos/openpi/src'}",
                MAGICK_HOME=str(native), LD_LIBRARY_PATH=f"{native / 'lib'}:{env.get('LD_LIBRARY_PATH', '')}",
                OPENPI_DATA_HOME=str(rt / 'cache/openpi'), HF_HOME=str(rt / 'cache/huggingface'),
                LIBERO_CONFIG_PATH=str(rt / 'config/arena'),
@@ -68,7 +68,7 @@ def supervise(run):
     try:
         with (run / 'workers' / f'{worker}-server.log').open('w') as log:
             server_env = dict(env, PYTHONPATH=str(ROOT / 'src'))
-            server = subprocess.Popen([str(rt / 'server/bin/python'), '-m', 'vla_startup.server',
+            server = subprocess.Popen([str(rt / 'server/bin/python'), '-m', 'arena_startup.server',
                                        '--checkpoint', str(ROOT / plan['config']['checkpoint']),
                                        '--port', str(port), '--num-steps', str(plan['config']['evaluation']['num_steps'])],
                                       stdout=log, stderr=subprocess.STDOUT, env=server_env)

@@ -56,6 +56,7 @@ def preflight(imports=False):
         subprocess.run([str(ROOT / '.runtime/arena/bin/python'), '-c',
                         'import mujoco; import robosuite; from vla_arena.vla_arena.envs import OffScreenRenderEnv; '
                         'from openpi_client import image_tools; from wand.image import Image; '
+                        'from arena_startup.transport import ArenaClient, ArenaPolicyServer; '
                         'from vla_arena.vla_arena.utils.eval_cost import get_timeout_final_cost; '
                         'from vla_arena.vla_arena.utils.eval_init_state import select_init_state_index; '
                         'print("Arena imports OK; simulator and policy were not constructed")'],
@@ -64,9 +65,9 @@ def preflight(imports=False):
     print('PASS: local preparation checks; GPU policy/EGL smoke is still required')
 
 
-def load(run):
+def load(run, check_files=True):
     plan = json.loads((run / 'plan.json').read_text())
-    validate_plan(plan)
+    validate_plan(plan, check_files=check_files)
     return plan
 
 
@@ -79,6 +80,8 @@ def prepare(args):
         raise ValueError('Only the recorded per-episode seed protocol is implemented')
     if not 1 <= proto['replan_steps'] <= 10 or min(proto['num_steps'], proto['max_steps'], profile['trials']) < 1:
         raise ValueError('Invalid inference horizon/steps or trial count')
+    if not 0 < proto['policy_request_timeout_seconds'] < proto['episode_timeout_seconds']:
+        raise ValueError('Policy request timeout must be positive and shorter than the episode timeout')
     workers = args.workers or profile['workers']
     if not 1 <= workers <= 4:
         raise ValueError('Use 1 to 4 independent one-GPU workers')
@@ -176,12 +179,14 @@ def main():
     elif args.command == 'submit': submit(args)
     else:
         run = run_path(args.run_id)
-        plan = load(run)
+        plan = load(run, check_files=args.command == 'worker')
         rows = collect(run, plan)
         if args.command in ['status', 'check']:
             print(f"{len(rows)}/{plan['expected_episodes']} episodes, {sum(r['success'] for r in rows)} successes")
             errors = [str(p.relative_to(run)) for p in (run / 'units').glob('*/errors.jsonl') if p.stat().st_size]
             print('Error logs:', errors)
+            if plan['files'] != frozen_files():
+                print('Historical plan: current code differs; execution requires a new run ID.')
         elif args.command == 'worker':
             preflight()
             if plan['profile'] != 'smoke': require_smoke(plan, args.smoke_run)

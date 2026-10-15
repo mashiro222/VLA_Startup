@@ -7,7 +7,7 @@ from pathlib import Path
 import shutil
 from statistics import mean
 
-from .core import ROOT, collect, file_hash, save, validate_plan
+from .core import ROOT, collect, file_hash, frozen_files, save, validate_plan
 
 
 def write_csv(path, rows, fields=None):
@@ -19,7 +19,9 @@ def write_csv(path, rows, fields=None):
 
 def build(run, allow_partial=False, output=None):
     plan = json.loads((run / 'plan.json').read_text())
-    validate_plan(plan)
+    # Reporting historical records must not require the old executable checkout.
+    # Plan checksum and every journal's plan hash are still validated; execution is strict.
+    validate_plan(plan, check_files=False)
     rows = collect(run, plan)
     complete = len(rows) == plan['expected_episodes']
     if not complete and not allow_partial:
@@ -69,7 +71,8 @@ def build(run, allow_partial=False, output=None):
     result = {'completed': len(rows), 'expected': plan['expected_episodes'], 'complete': complete,
               'successes': sum(r['success'] for r in rows), 'sr_percent': 100 * mean(r['success'] for r in rows),
               'cc': mean(r['cost'] for r in rows), 'groups': groups, 'error_logs': errors,
-              'training_condition': plan['training_condition']}
+              'training_condition': plan['training_condition'],
+              'current_code_matches_recorded_plan': plan['files'] == frozen_files()}
     save(output / 'summary.json', result)
     def fmt(v): return 'N/A' if v is None else f'{v:.2f}'
     lines = [f"# {plan['run_id']}", '',
