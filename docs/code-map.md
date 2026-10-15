@@ -4,18 +4,18 @@
 
 本地根目录是 `/storage/scratch1/1/gliu386/VLA_Startup`，以下路径相对于此目录。先完成默认 smoke，再一次只改变一个因素，用新 run ID 运行；保留默认实验作为对照。
 
-## 优先看哪些文档
+## 文档索引
 
 | 目的 | 文件 |
 |---|---|
 | 准备、提交、监控、续跑、备份的完整命令 | [README.md](../README.md) |
-| 看本次做了什么，以及怎样调整和跟读代码 | 当前文件 `docs/code-map.md` |
+| 实现范围、参数配置与源码索引 | 当前文件 `docs/code-map.md` |
 | 闭环推理、benchmark 协议、公开结果的比较限制 | [experiment.md](experiment.md) |
 | 哪些检查已实际完成，哪些要等 GPU smoke | [validation.md](validation.md) |
 | 环境与作业排错 | [troubleshooting.md](troubleshooting.md) |
 | 查看全部作业、手动提交四卡 full、合并报告 | [overnight.md](overnight.md) |
 
-## 本次新增文件的分工
+## 模块与文件职责
 
 | 文件 | 负责什么 |
 |---|---|
@@ -41,7 +41,7 @@
 
 固定版本的 OpenPI、原版 LIBERO、LIBERO-Plus 跟踪源码保持原样。自写包装和 robosuite 日志补丁在本仓库中显式保存，可重建。
 
-## 在哪里调参数
+## 参数配置
 
 | 参数 | 修改入口 | 含义与限制 |
 |---|---|---|
@@ -74,9 +74,9 @@ bash scripts/submit.sh prompt-check-001
 
 默认 `upstream` 保留发布行为，包括文件名元数据进入部分 prompt 的已知现象。`bddl` 属于单独实验，见 `experiment.md`；不要合并不同 run 的结果。
 
-## 怎样跟读 model 的运行
+## 模型调用链
 
-先读本项目 `evaluate.py → server.py`，再打开 `.runtime/repos/openpi/` 下的文件。读取 `training/config.py` 和 checkpoint 辅助函数只是复用配置与参数加载代码，不会启动训练：
+模型调用链从本项目 `evaluate.py → server.py` 延伸到 `.runtime/repos/openpi/` 下的策略与网络实现。读取 `training/config.py` 和 checkpoint 辅助函数只是复用配置与参数加载代码，不会启动训练：
 
 | 路径（相对于 OpenPI） | 入口与作用 |
 |---|---|
@@ -91,7 +91,7 @@ bash scripts/submit.sh prompt-check-001
 
 在线：[固定版本 OpenPI 源码](https://github.com/Physical-Intelligence/openpi/tree/215abfb217dbac7d5f1273282331b9b1866c0479/src/openpi)。本项目 server 是加载和通信包装；神经网络实现需要跟读上游。
 
-## Benchmark 包含哪些测试，在哪里看
+## Benchmark 任务定义
 
 本地 `.runtime/repos/libero_plus/` 下：
 

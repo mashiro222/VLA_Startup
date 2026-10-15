@@ -4,9 +4,9 @@
 
 ## 后续实际 GPU 验证与并行准备
 
-用户自行提交的 `smoke-clean-001`，Slurm Job `13965730`，在 2026-10-11 正常结束：`COMPLETED`、`ExitCode=0:0`、运行 13 分 02 秒、1 张 A100 / 8 CPU / 64 GB，记账 MaxRSS 为 `26506992K`（约 25.3 GiB 主机内存）。4/4 episode 均成功，缺失为 0；真实结果在 [reports/smoke-clean-001](../reports/smoke-clean-001)。这验证了原版完整权重加载、JIT、EGL 和闭环运行，不能用四条记录推断全量成功率，也尚不能替代 Plus smoke。
+`smoke-clean-001`，Slurm Job `13965730`，在 2026-10-11 正常结束：`COMPLETED`、`ExitCode=0:0`、运行 13 分 02 秒、1 张 A100 / 8 CPU / 64 GB，记账 MaxRSS 为 `26506992K`（约 25.3 GiB 主机内存）。4/4 episode 均成功，缺失为 0；真实结果在 [reports/smoke-clean-001](../reports/smoke-clean-001)。这验证了原版完整权重加载、JIT、EGL 和闭环运行，不能用四条记录推断全量成功率，也尚不能替代 Plus smoke。
 
-用户随后提交的 `smoke-plus-001`，Slurm Job `13966714`，在 2026-10-11 21:07:39–21:22:11（EDT）运行并正常结束：`COMPLETED`、`ExitCode=0:0`、14 分 32 秒、1 张 A100 / 8 CPU / 64 GB，MaxRSS `25483756K`（约 24.3 GiB 主机内存）。七类扰动各有一条完整记录，6 次成功，Robot Initial States 用例达到 220 步上限后记为任务失败；没有 `errors.jsonl`。真实表格、图、压缩记录和校验和见 [reports/smoke-plus-001](../reports/smoke-plus-001)。
+`smoke-plus-001`，Slurm Job `13966714`，在 2026-10-11 21:07:39–21:22:11（EDT）运行并正常结束：`COMPLETED`、`ExitCode=0:0`、14 分 32 秒、1 张 A100 / 8 CPU / 64 GB，MaxRSS `25483756K`（约 24.3 GiB 主机内存）。七类扰动各有一条完整记录，6 次成功，Robot Initial States 用例达到 220 步上限后记为任务失败；没有 `errors.jsonl`。真实表格、图、压缩记录和校验和见 [reports/smoke-plus-001](../reports/smoke-plus-001)。
 
 Plus 两段视频分别有 126 / 220 帧、10 fps、224×224；抽查首末画面正常，成功用例最终把碗放入盘子，失败用例未完成放置。报告 SHA256、运行时记录的评测器源码指纹均已核对，`parallel.py check fullplus-4gpu-001 --require-smoke` 通过。说明七个代表性用例已跑通，不保证其它 10,023 个变体和其它 suite 均无异常；smoke 的 85.71% 不能当作 full-plus 分数。
 
@@ -40,7 +40,7 @@ Plus 两段视频分别有 126 / 220 帧、10 fps、224×224；抽查首末画�
 
 测试中的 fixture 是临时合成输入，只用于检查汇总与图文件格式，运行后删除；它不属于任何模型评测成绩，未发布到 `reports/`。
 
-## 交付确认
+## 初始准备阶段验证范围
 
 场景资产已完整校验、解压；最终 `preflight.py --imports` 检查通过。`smoke-clean-001` 和 `smoke-plus-001` 的任务清单已准备好，提交命令只做了 dry-run。
 
@@ -50,6 +50,6 @@ Plus 两段视频分别有 126 / 220 帧、10 fps、224×224；抽查首末画�
 
 准备阶段的版本、任务数量、资产校验和检查元数据保存在 `reports/preparation/`，不是 benchmark 结果。
 
-尚未验证：计算节点的驱动/CUDA 可用性、完整权重加载、显存占用、JIT 编译、EGL 实际渲染、闭环任务成功率、GPU 时间和 credit 消耗。必须由用户在本地说明中的显式 `--submit` 命令启动 smoke 后确认。
+尚未验证：计算节点的驱动/CUDA 可用性、完整权重加载、显存占用、JIT 编译、EGL 实际渲染、闭环任务成功率、GPU 时间和 credit 消耗。这些项目需要通过显式 `--submit` 提交的 GPU smoke 验证。
 
 本地详细检查日志在忽略的 `.runtime/` 中：`server-import-check.log`、`model-adapter-check.log`、`sim-import-check.log`、`clean-import-check.log`、`tests.log`、`download.log`。源码重建、任务协议和检查步骤保存在 GitHub；大文件不上传。

@@ -2,9 +2,9 @@
 
 本页记录 full-plus 设计、排队试算与通用四卡操作。**最新作业状态和 full-clean H100 方案请先看 [2026-10-12 提交与检查说明](full-clean-2026-10-12.md)。**下面的脚本不自动接续 smoke、不取消任何作业；默认仅预览，只有 `--submit` 才创建计费作业。
 
-2026-10-11 的 Plus smoke 作业 `13966714` 正常退出（0:0），14 分 32 秒，七类共 7/7 条有效记录、6 次成功、1 次任务失败，没有程序异常。见 [真实报告](../reports/smoke-plus-001/summary.md)和 [检查记录](validation.md)。四卡 full-plus 计划 `fullplus-4gpu-001` 已准备并通过 smoke gate，用户随后提交为 Slurm 数组 `13967217`。
+2026-10-11 的 Plus smoke 作业 `13966714` 正常退出（0:0），14 分 32 秒，七类共 7/7 条有效记录、6 次成功、1 次任务失败，没有程序异常。见 [真实报告](../reports/smoke-plus-001/summary.md)和 [检查记录](validation.md)。四卡 full-plus 计划 `fullplus-4gpu-001` 已准备并通过 smoke gate，随后提交为 Slurm 数组 `13967217`。
 
-## 查看 gliu386 的全部作业
+## 作业查询
 
 当前排队、运行和收尾中的作业，展开数组中的每个 worker：
 
@@ -40,7 +40,7 @@ sacct -u gliu386 -S today --format=JobID%22,JobName%34,State%22,ExitCode,Elapsed
 
 提交出现 `Socket timed out on send/recv operation` 时，调度器可能已创建作业，只是客户端没有收到回复。先用 `squeue` 查询，不能立即反复提交。提交入口现在会检查同名活动作业，并在提交回复失败后提示检查队列；这无法代替对短暂通信故障的人工判断。
 
-## PACE 是否支持四卡
+## PACE 资源与并发限制
 
 2026-10-11 的实际 Slurm 查询结果：
 
@@ -74,9 +74,9 @@ scontrol show partition gpu-a100
 
 参考：[Slurm 作业数组](https://slurm.schedmd.com/job_array.html)、[sacct](https://slurm.schedmd.com/sacct.html)、[sbatch 的 test-only](https://slurm.schedmd.com/sbatch.html)。
 
-## 四卡具体跑什么
+## 四卡任务划分
 
-这个数组最多 4 个 worker 同时执行，只跑 full-plus。每个 worker 申请 **1 张** A100，可以位于不同节点，无需一台机器同时空出 4 张卡。不要把 `GRES` 改成 4，那会变成每个 worker 申请 4 张卡。2026-10-12 用户另行批准一份最多 4 张 H100 的 full-clean 数组与它重叠运行，因此两份合计可达 8 张 GPU。
+这个数组最多 4 个 worker 同时执行，只跑 full-plus。每个 worker 申请 **1 张** A100，可以位于不同节点，无需一台机器同时空出 4 张卡。不要把 `GRES` 改成 4，那会变成每个 worker 申请 4 张卡。2026-10-12 的 full-clean 配置另设最多 4 张 H100，与 full-plus 并行时总并发上限为 8 张 GPU。
 
 | Worker | full-plus | 每个 worker 的资源 |
 |---|---:|---|
@@ -94,9 +94,9 @@ scontrol show partition gpu-a100
 
 全量完成时间取决于最晚完成的 worker：`max(每片排队时间 + 模型启动 + 该片全部场景/rollout/汇总耗时)`。四卡只并行独立任务，不会让单个 episode 加速；环境创建、CPU 图像扰动和共享存储也有耗时。七条 smoke 覆盖七类扰动各一个 spatial 代表，不等于全量 10,030 个变体均无 bug，也不能充分代表其它 suite 的长任务。smoke 无程序错误后可以直接开始 full，后续异常仍会单独记录，不能悄悄当作机器人失败或完整成绩。
 
-此次 Plus smoke 的传感器用例耗时 48.62 秒，其中模型推理仅 1.51 秒；其它已预热的五个用例约 4.78–9.34 秒，首个用例 73.88 秒且包含首次推理编译。因此直接换更快 GPU 不会按算力比例缩短全部耗时。当前可执行建议是在四卡上限内直接分摊 full-plus，等它完成再跑 clean；不能根据七条样本承诺一晚完成。
+此次 Plus smoke 的传感器用例耗时 48.62 秒，其中模型推理仅 1.51 秒；其它已预热的五个用例约 4.78–9.34 秒，首个用例 73.88 秒且包含首次推理编译。因此直接换更快 GPU 不会按算力比例缩短全部耗时。full-plus 采用四卡分片；单凭七条 smoke 样本不足以预测全量结束时间。后续 clean 与 Plus 的并行配置见 [clean 运行记录](full-clean-2026-10-12.md)。
 
-用于量级判断的粗算：此次运行配置写出前的启动约 668 秒，配置到最后一条记录约 196 秒。后者减去约 60 秒首次推理编译，再机械外推 `10030 × (196−60) / 7 / 4 / 3600 ≈ 13.5 小时`，尚不含排队和每片启动。这**不是可靠预测区间**：七条都来自 spatial，类别比例、扰动强度、环境构造开销和其它 suite 的 horizon 都不同。它说明 12 小时上限可能不足，不能将“一晚跑完”作为承诺。
+用于量级判断的粗算：此次运行配置写出前的启动约 668 秒，配置到最后一条记录约 196 秒。后者减去约 60 秒首次推理编译，再机械外推 `10030 × (196−60) / 7 / 4 / 3600 ≈ 13.5 小时`，尚不含排队和每片启动。这**不是可靠预测区间**：七条都来自 spatial，类别比例、扰动强度、环境构造开销和其它 suite 的 horizon 都不同。它说明 12 小时上限可能不足，不足以支持固定完成时间的预测。
 
 ## 运行命令
 
@@ -108,7 +108,7 @@ python3 scripts/parallel.py prepare fullplus-4gpu-001 --workers 4 --benchmarks p
 TIME_LIMIT=24:00:00 bash scripts/submit_parallel.sh fullplus-4gpu-001
 ```
 
-smoke-plus 结束并检查报告后，用户已经执行了一次 full-plus 的计费提交。下面保留提交命令作为复现或超时续跑参考；活动数组存在时不要重复提交：
+smoke-plus 完成并通过检查后，已提交 full-plus 作业。下面保留提交命令作为复现或超时续跑参考；活动数组存在时不要重复提交：
 
 ```bash
 TIME_LIMIT=24:00:00 bash scripts/submit_parallel.sh fullplus-4gpu-001 --submit
@@ -123,11 +123,11 @@ TIME_LIMIT=08:00:00 bash scripts/submit_parallel.sh fullplus-4gpu-001
 TIME_LIMIT=08:00:00 bash scripts/submit_parallel.sh fullplus-4gpu-001 --submit
 ```
 
-缩短时限不能保证更早排到卡，并可能需要续跑。不要另外重复提交一份单卡 full-plus。原版 `fullclean-4gpu-001` 已提交为 H100 数组 `13974531`；用户此次允许两份数组总计最多 8 张 GPU 同时运行，查看方式见[最新说明](full-clean-2026-10-12.md)。
+缩短时限不能保证更早排到卡，并可能需要续跑。不要另外重复提交一份单卡 full-plus。原版 `fullclean-4gpu-001` 已提交为 H100 数组 `13974531`；两份数组的总并发上限为 8 张 GPU，运行记录见[最新说明](full-clean-2026-10-12.md)。
 
 `--benchmarks both` 保留原来的每片 clean 后接 plus 模式，需要两套 smoke 都通过；它会推迟 full-plus 的完成，不是当前的优先方案。
 
-## 查看进度、续跑、汇总
+## 作业监控、续跑与结果汇总
 
 ```bash
 python3 scripts/parallel.py status fullplus-4gpu-001
@@ -157,7 +157,7 @@ python3 scripts/parallel.py merge fullplus-4gpu-001
 bash scripts/publish_results.sh fullplus-4gpu-001-full-plus
 ```
 
-## 协议与代码位置
+## 协议与源码索引
 
 分片沿用模型、图像、动作、任务数、horizon 和环境 seed。每片从原评测器默认的模型 RNG `[0, 0]` 开始，再独立记录和恢复随机流；因此**不是单卡串行执行的同一条连续随机序列**，不能宣称动作或成功率逐位一致。完整报告会明确标注这一点，公开成绩只作描述性比较。合并目录仅用于报告，不能当作串行续跑目录；续跑使用原分片。
 
@@ -167,4 +167,4 @@ bash scripts/publish_results.sh fullplus-4gpu-001-full-plus
 - `tests/test_parallel.py`：分片覆盖和错误合并拒绝测试。
 - `tests/test_submission.py`：使用假的 Slurm 命令测试默认不提交、smoke gate、重复作业、超时不重试。
 
-并行功能已经做本地测试与调度器校验；四卡 full 运行结果尚待作业完成。真实单卡结果见 [smoke-clean 报告](../reports/smoke-clean-001/summary.md)和 [smoke-plus 报告](../reports/smoke-plus-001/summary.md)。
+上述内容记录并行功能的设计与提交前验证。后续 full 结果见 [结果总览](results-overview.md)；单卡 smoke 结果见 [smoke-clean 报告](../reports/smoke-clean-001/summary.md)和 [smoke-plus 报告](../reports/smoke-plus-001/summary.md)。

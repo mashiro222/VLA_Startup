@@ -1,14 +1,14 @@
 # VLA-Arena Safety：固定 pi05_libero 的 zero-shot 评测
 
-**2026-10-15 更新：通信修复已提交为 `32c5152`，25 项回归测试通过。新的单 A100 smoke `arena-smoke-002` 已提交，作业 `14074038_0`，账户 `gts-jli741-paid`，15 条、2 小时；首次核对为 `PENDING (Priority)`。GPU 端到端验证仍待完成，本轮没有重新提交 full。** 见 [修复与检查命令](arena-transport-fix-2026-10-15.md)。
+**2026-10-15 更新：通信修复已提交为 `32c5152`，25 项回归测试通过。新的单 A100 smoke `arena-smoke-002` 已提交，作业 `14074038_0`，账户 `gts-jli741-paid`，15 条、2 小时；首次核对为 `PENDING (Priority)`。GPU 端到端验证仍待完成，新的 full 评测尚未提交。** 见 [修复与检查命令](arena-transport-fix-2026-10-15.md)。
 
 原 smoke `14016239_0` 与 full `14020266` 于 10 月 14 日均因 WebSocket 心跳超时退出，完成数为 0/15、0/2,250，没有有效成功率。[失败诊断](../reports/arena-diagnostics-2026-10-15/summary.md)保留；旧计划只用于审计，修改后用新 run ID，不续接旧数据。
 
 使用现有 `gs://openpi-assets/checkpoints/pi05_libero/`，不加载 Arena 专项权重、不训练。这是“LIBERO 微调模型向 Arena 的 zero-shot 迁移”，不是未微调 `pi05_base`。仅评测 5 类 Safety、L0/L1/L2 共 75 个任务。训练/推理代码入口和图片生成见 [研究阅读导航](research-guide.md)，已完成及未完成实验见 [结果总览](results-overview.md)。
 
-## 1. π0.5 在论文中表现如何？
+## 1. 论文中的 π0.5 结果
 
-用户提供的 [VLA-Arena 论文](https://arxiv.org/abs/2512.22539)附录 A、表 7（PDF 页码 14）给出了 π0.5 结果。下面是**在 Arena L0-L 上专项微调后的模型**，不是本次 zero-shot 权重的预期成绩：
+[VLA-Arena 论文](https://arxiv.org/abs/2512.22539)附录 A、表 7（PDF 页码 14）给出了 π0.5 结果。下面是**在 Arena L0-L 上专项微调后的模型**，不是本次 zero-shot 权重的预期成绩：
 
 | 安全类别 | L0 成功率 | L1 成功率 | L2 成功率 | L0 / L1 / L2 的 CC |
 |---|---:|---:|---:|---|
@@ -19,13 +19,13 @@
 | 动态避障 DynamicObstacles | 50% | 44% | 22% | 2.4 / 8.8 / 5.7 |
 | **五类等权平均（由表中数值计算）** | **61.2%** | **41.2%** | **30.4%** | 不将跨类 CC 汇总当统一安全分 |
 
-解释：它在较难任务上仍有明显短板。静态避障 L2 虽有 40% 成功率，但 CC 达 76.6，说明任务完成与安全是两回事；安全抓取 L2 成功率为零，低 CC 也可能来自未能有效执行。其它能力方面，表 7 的长时序任务成功率从 L0 的 85% 降至 L1/L2 的 0%；空间关系组合则是 62% → 24% → 6%。不能把这些条件下的数字直接作为 `pi05_libero` 的 zero-shot 成绩。
+该模型在较难任务上的表现仍有明显局限。静态避障 L2 虽有 40% 成功率，但 CC 达 76.6，说明任务完成与安全是两回事；安全抓取 L2 成功率为零，低 CC 也可能来自未能有效执行。其它能力方面，表 7 的长时序任务成功率从 L0 的 85% 降至 L1/L2 的 0%；空间关系组合则是 62% → 24% → 6%。不能把这些条件下的数字直接作为 `pi05_libero` 的 zero-shot 成绩。
 
 本项目最终报告会将 **Our zero-shot SR/CC** 和 **Paper Arena-finetuned SR/CC** 分列，明确训练条件不同。它们是背景对照，不是误差容限或“复现通过”的判据。
 
 对本次 zero-shot 的定性预期：LIBERO 中学到的抓取、放置能力可能迁移到部分 Arena 任务，但新场景、物体、细致抓取及动态避障要求可能让成绩明显下降，个别任务组出现零成功并不意外。目前没有同一 checkpoint 在本协议下的实测依据，不能承诺总体非零，也不宜给出数值预测。15 条 smoke 每类每级只有一次；即使 0/15，也不能据此断定全量成功率为零。须结合视频、动作、计分和错误日志，区分未完成任务与接口错误；低 CC 也可能只是模型没有有效行动。
 
-## 2. 安装了什么？
+## 2. 环境与依赖
 
 | 内容 | 本地位置 | 用途 |
 |---|---|---|
@@ -76,14 +76,14 @@ tail -F logs/arena-smoke-002-14074038_0.out
 
 Smoke 通过要求：15 条有效 episode、没有基础设施错误，不要求 15 次模型都成功。完成后运行 `bash scripts/arena.sh report arena-smoke-002`。未完成但已有记录可加 `--partial`；0 条记录不生成成功率图。
 
-只有 smoke 跑通、用户决定再做 full 后，才准备新计划。未来预览方式如下，**这两条没有提交 GPU**：
+新的 full 计划以匹配配置的 smoke 完成端到端验证为前提。以下命令用于准备与提交预览，**不申请 GPU 资源**：
 
 ```bash
 bash scripts/arena.sh prepare full arena-full-002
 bash scripts/arena.sh submit arena-full-002 --smoke-run arena-smoke-002 --gpu a100
 ```
 
-将来实际提交才在第二条末尾加 `--submit`，普通入口会检查匹配的 smoke。当前没有执行这两条，也没有提交依赖作业；旧 `arena-full-001` 不用新代码续跑。Pilot 同理需新 run ID。
+将来实际提交才在第二条末尾加 `--submit`，普通入口会检查匹配的 smoke。截至本记录，尚未执行这些命令或提交依赖作业；旧 `arena-full-001` 不用新代码续跑。Pilot 同理需新 run ID。
 
 每个 Arena 单元为一项任务的一个评测 seed，full 单元含 10 条 episode。worker 完成一个单元后动态领取下一个，只排到一张卡也能继续领取。它不是 LIBERO 旧四卡方案的固定四分之一分片。GPU 资源选项为 `--gpu a100` 或 `--gpu h100`，每个 worker 各申请一张；时限用 `--time-limit` 覆盖。Arena 的 H100 路径尚未验证，GPU/时限选择不保证排队速度。
 
@@ -139,9 +139,9 @@ SR 是任务是否完成。CC 是上游安全谓词在整个轨迹上的累计�
 - 源码版本与论文发布时的环境可能有差异，因此最终数字是本次固定版本协议下的迁移评测，不能视为作者训练条件的严格复现。
 - 当前启动器没有额外强制上游 evaluator 的 XLA/cuBLAS deterministic flags，固定 seed 不承诺跨硬件或驱动逐位一致。
 
-## 6. 看哪些文件、在哪里改参数？
+## 6. 文件职责与参数配置
 
-| 想了解或修改 | 文件 |
+| 功能或配置 | 文件 |
 |---|---|
 | 任务类别、levels、seeds、重复次数、horizon、重规划步数、默认卡数/时限、论文参考分数 | `config/arena.json` |
 | 固定依赖与独立环境安装 | `requirements/arena.in`、`requirements/arena.lock`、`scripts/setup_arena.sh` |

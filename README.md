@@ -1,23 +1,23 @@
 # π0.5 × LIBERO-Plus / Arena Safety：PACE 评测
 
-**下午汇报先看 [结果总览](docs/results-overview.md)，再看 [研究阅读导航](docs/research-guide.md)。** 后者集中解释文件分工、training / inference 的修改位置、benchmark 测试内容、以及怎样生成具体测试的图像。
+本仓库提供 π0.5 在 LIBERO、LIBERO-Plus 和 VLA-Arena Safety 上的闭环评测流程。实验状态与统计结果见 [结果总览](docs/results-overview.md)；代码结构、训练与推理配置、benchmark 协议和图像导出见 [开发指南](docs/research-guide.md)。
 
 使用官方 LIBERO 微调的 `pi05_libero` checkpoint，不训练，不使用 W&B。结果保存在本地表格和图中；GitHub 备份代码、说明及小型报告，不上传模型权重、场景资产或视频。
 
-**2026-10-15 当前结果：** LIBERO-Plus 完整完成，8,477 / 10,030 成功（84.52%）；clean 完成 1,500 / 2,000，已完成部分为 96.40%。Clean 第 2 片的旧补跑 `13988230_2` 今天再次模型启动超时，没有新增结果，按用户决定暂不补跑。见 [结果总览与表图](docs/results-overview.md)。
+**2026-10-15 当前结果：** LIBERO-Plus 完整完成，8,477 / 10,030 成功（84.52%）；clean 完成 1,500 / 2,000，已完成部分为 96.40%。Clean 第 2 片的旧补跑 `13988230_2` 于 10 月 15 日再次因模型启动超时退出，没有新增结果，暂不继续补跑。见 [结果总览与表图](docs/results-overview.md)。
 
-**Arena：** 首轮 smoke/full 因心跳超时全部退出，没有有效成功率；已修复并通过 25 项回归检查。10 月 15 日 10:15 EDT 已提交新的 **单 A100 smoke `14074038_0` / `arena-smoke-002`**，账户 `gts-jli741-paid`，15 条、2 小时时限，初次核对为 `PENDING (Priority)`。**尚未验证 GPU 闭环，本轮没有重新提交 full。** 查看 [修复、新作业与测试记录](docs/arena-transport-fix-2026-10-15.md)和 [Arena 运行说明](docs/arena-safety.md)。
+**Arena：** 首轮 smoke/full 因心跳超时全部退出，没有有效成功率；已修复并通过 25 项回归检查。10 月 15 日 10:15 EDT 已提交新的 **单 A100 smoke `14074038_0` / `arena-smoke-002`**，账户 `gts-jli741-paid`，15 条、2 小时时限，初次核对为 `PENDING (Priority)`。**GPU 端到端验证尚未完成，新的 full 评测尚未提交。** 查看 [修复、新作业与测试记录](docs/arena-transport-fix-2026-10-15.md)和 [Arena 运行说明](docs/arena-safety.md)。
 
-| 想做什么 | 阅读入口 |
+| 内容 | 文档 |
 |---|---|
-| 准备汇报、找结果和未完成实验总结 | [docs/results-overview.md](docs/results-overview.md) |
-| 看懂代码；改训练/推理参数；看具体测试；导出图片 | [docs/research-guide.md](docs/research-guide.md) |
-| 理解 LIBERO/Plus 的闭环、任务与比较协议 | [docs/experiment.md](docs/experiment.md)、[docs/code-map.md](docs/code-map.md) |
-| 理解 Arena 五类安全任务、SR/CC、zero-shot | [docs/arena-safety.md](docs/arena-safety.md) |
-| 直接取用真实场景截图 | [reports/presentation-2026-10-15/README.md](reports/presentation-2026-10-15/README.md) |
+| 实验结果与未完成实验记录 | [docs/results-overview.md](docs/results-overview.md) |
+| 代码结构、训练与推理参数、测试定义、图像导出 | [docs/research-guide.md](docs/research-guide.md) |
+| LIBERO/Plus 闭环执行、任务与对照协议 | [docs/experiment.md](docs/experiment.md)、[docs/code-map.md](docs/code-map.md) |
+| Arena 安全任务、SR/CC 与 zero-shot 协议 | [docs/arena-safety.md](docs/arena-safety.md) |
+| 实际录像截图与来源信息 | [reports/presentation-2026-10-15/README.md](reports/presentation-2026-10-15/README.md) |
 | 查看全部 Slurm 作业、LIBERO 四卡方案 | [docs/overnight.md](docs/overnight.md) |
 
-下方保留 LIBERO 初始搭建和运行手册；已有完成的 run 不需要重新提交。Arena 使用独立入口，见上方链接。
+以下为 LIBERO 环境搭建与运行手册。已完成的 run 无需重复提交；Arena 使用独立的运行入口。
 
 ## 1. 当前目录与环境
 
@@ -51,7 +51,7 @@ python3 scripts/preflight.py --imports
 
 当前已经准备过的目录不需要重新 clone。安装与下载可重复执行，完成的下载会校验后复用。权重约 12.4 GB，场景 ZIP 约 6.4 GB；另需解压空间、源码、两套环境与下载缓存。不要仅按这两个文件的体积预留空间。下载不需要训练数据集。
 
-## 2. 第一份计费作业如何提交
+## 2. 单卡 smoke 提交
 
 先进入仓库。以下前两条脚本命令只准备和预览，不申请资源：
 
@@ -61,7 +61,7 @@ bash scripts/prepare.sh smoke-clean smoke-clean-001
 bash scripts/submit.sh smoke-clean-001
 ```
 
-确认预览使用 `--account=gts-jli741-paid --partition=gpu-a100 --qos=inferno --gres=gpu:a100:1`。默认 8 CPU、64 GB 内存，smoke 时限 45 分钟。**下面这条才会真的提交计费作业，由你执行：**
+确认预览使用 `--account=gts-jli741-paid --partition=gpu-a100 --qos=inferno --gres=gpu:a100:1`。默认 8 CPU、64 GB 内存，smoke 时限 45 分钟。**以下命令通过 `--submit` 提交计费作业：**
 
 ```bash
 bash scripts/submit.sh smoke-clean-001 --submit
@@ -93,7 +93,7 @@ smoke 的通过条件是模型与环境成功运行、所有选定 episode 都�
 ```bash
 bash scripts/prepare.sh pilot-plus pilot-plus-001
 bash scripts/submit.sh pilot-plus-001
-# 检查预览后，由你执行
+# 检查预览后提交
 bash scripts/submit.sh pilot-plus-001 --submit
 
 # pilot 完成并检查报告后，分别准备完整运行
@@ -104,7 +104,7 @@ bash scripts/submit.sh full-plus-001
 # 以上两份完整作业尚未提交；各自加 --submit 才会提交。
 ```
 
-粗略时间估计：`预计剩余小时 ≈ 剩余 episode × pilot 平均 episode 秒数 / 3600`，并预留模型启动、JIT、任务切换时间。不同任务 horizon、失败率会影响耗时，56 次 pilot 也不一定代表全部变体。按组内当期 PACE 计费规则换算 credit；本仓库不编造价格。2026-10-12 用户允许 full-plus 与 full-clean 两份四卡数组并行，最多同时 8 张 GPU。
+粗略时间估计：`预计剩余小时 ≈ 剩余 episode × pilot 平均 episode 秒数 / 3600`，并预留模型启动、JIT、任务切换时间。不同任务 horizon、失败率会影响耗时，56 次 pilot 也不一定代表全部变体。按组内当期 PACE 计费规则换算 credit；2026-10-12 的资源配置允许 full-plus 与 full-clean 两份四卡数组并行，总并发上限为 8 张 GPU。
 
 修改资源请写入忽略的 `config/local.env`。仅改时限可用：
 
@@ -113,7 +113,7 @@ TIME_LIMIT=08:00:00 bash scripts/submit.sh full-plus-001
 # 确认后在同一命令末尾加 --submit
 ```
 
-## 4. 查看进度、中断和续跑
+## 4. 作业监控与续跑
 
 ```bash
 squeue -u "$USER"
@@ -127,7 +127,7 @@ tail -f logs/smoke-clean-001-JOB_ID.out
 
 主动停止用 `scancel JOB_ID`。确认旧作业已结束后，重新执行相同 run ID 的 `submit.sh ... --submit` 即续跑；已完成 episode 不重复计数。保存了 JAX 和 NumPy RNG 状态，未完成 episode 重做。相同 run ID 不允许更改 checkpoint、评测代码或参数；需要更改实验时用新 ID。跨硬件、驱动或依赖修改不保证逐位一致。
 
-## 5. 本地表格和图，以及小文件备份
+## 5. 结果文件与备份
 
 ```bash
 bash scripts/report.sh smoke-clean-001
@@ -151,9 +151,9 @@ bash scripts/publish_results.sh smoke-clean-001
 
 模型、场景 ZIP、环境、视频均被 `.gitignore` 排除。GitHub 可恢复代码和已备份报告，但不能恢复尚未备份的 scratch 日志；因此长任务的中间报告也可手工备份。恢复环境重新下载即可。
 
-## 6. 学习与比较
+## 6. 代码与评测协议
 
-先看 [docs/code-map.md](docs/code-map.md)：本次新增文件、参数修改入口、模型源码阅读顺序，以及 benchmark 的全部测试清单在哪里。常用控制参数集中在 `config/evaluation.json`。
+[docs/code-map.md](docs/code-map.md)说明评测模块、参数配置、模型源码和 benchmark 任务清单。常用控制参数集中在 `config/evaluation.json`。
 
 按 [docs/experiment.md](docs/experiment.md) 阅读一次闭环中 model、benchmark、环境和汇总器各自的作用，以及原版/Plus 的参考分数和比较限制。实现入口是 `src/vla_startup/evaluate.py`，模型入口是 `src/vla_startup/server.py`。
 

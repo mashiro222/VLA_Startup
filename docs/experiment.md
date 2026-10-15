@@ -1,8 +1,8 @@
-# 实验协议与阅读路线
+# 实验协议与模型执行流程
 
 本项目使用作者已经在 LIBERO 上训练过的 `pi05_libero` checkpoint，不自行 fine-tune，也不称为未经任务训练的基础模型 zero-shot 实验。原版 LIBERO 检查任务表现，LIBERO-Plus 检查相机、机器人初始状态、语言、光照、背景、噪声和物体布局变化下的表现。
 
-## 一次闭环发生什么
+## 闭环执行流程
 
 ```mermaid
 flowchart LR
@@ -24,7 +24,7 @@ flowchart LR
 5. 此配置的预测长度是 10。内部动作维度经过 adapter 后成为 LIBERO 的 7 维控制向量（末端运动及夹爪）；执行前 5 个动作，然后用新观测重新规划。这是闭环控制，不是给整段视频一次性打分。
 6. 环境返回任务成功则结束，否则到 horizon 后记失败。运行时异常中止并单独保存，不能混入模型失败率。
 
-具体配置有个容易误读的地方：锁定的 `pi05_libero` 设置 `discrete_state_input=False`，且 π0.5 不走 π0 的连续状态 token 分支。虽然客户端保留标准 8 维 state 接口，也不能据此断言该配置把它作为 state token 输入网络。请结合上游 `training/config.py`、`models/pi0.py` 和 `policies/libero_policy.py` 阅读。
+状态输入配置需要结合模型实现解释：锁定的 `pi05_libero` 设置 `discrete_state_input=False`，且 π0.5 不走 π0 的连续状态 token 分支。虽然客户端保留标准 8 维 state 接口，也不能据此断言该配置把它作为 state token 输入网络。请结合上游 `training/config.py`、`models/pi0.py` 和 `policies/libero_policy.py` 阅读。
 
 同一 GPU 作业内运行两个进程：Python 3.11/OpenPI/JAX 提供本机 WebSocket policy 服务；Python 3.10/LIBERO/MuJoCo 执行环境并发送观测。服务只监听 `127.0.0.1`。隔离环境避免两套项目的依赖冲突；并不意味着申请两张 GPU。
 
@@ -67,7 +67,7 @@ flowchart LR
 | Sensor Noise | 1,601 |
 | Objects Layout | 1,525 |
 
-## 如何与公开结果比较
+## 公开结果对照
 
 原版 LIBERO 官方 `pi05_libero` 参考：spatial 98.8%、object 98.2%、goal 98.0%、libero_10 92.4%，四项等权平均 96.85%。这些是**原版**分数。来源：[OpenPI 固定版本的 LIBERO 说明](https://github.com/Physical-Intelligence/openpi/blob/215abfb217dbac7d5f1273282331b9b1866c0479/examples/libero/README.md)。
 
@@ -81,7 +81,7 @@ Plus 仓库 issue #57 中，Skywalker-yqz 在 2026-07-13 自报使用同一 chec
 
 **已知 prompt 差异：**锁定版本会把部分非语言变体的文件名参数带入 `task.language`。社区在 Camera/object 子集上观察到清洗 prompt 后分数变化；这不等于整个 Plus 的固定增益。为避免暗中修改 benchmark，默认保留发布行为并记录实际 prompt。可用 `manifest --prompt-mode bddl` 创建单独的消融实验，但汇总器会禁用其默认参考比较。来源：[issue #65](https://github.com/sylvestf/LIBERO-plus/issues/65)。不要把自定义 prompt 的分数标成与默认协议严格可比。
 
-## 阅读代码的顺序
+## 源码索引
 
 1. `src/vla_startup/manifest.py`：任务怎样选择，类别怎样关联，episode 分母如何确定。
 2. `src/vla_startup/evaluate.py`：reset → 初始状态 → 观测处理 → infer → env.step → success。

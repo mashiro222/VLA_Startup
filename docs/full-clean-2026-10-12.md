@@ -2,7 +2,7 @@
 
 ## 2026-10-15 更新
 
-旧补跑 `13988230_2` 于 08:26:46 开始，08:41:54 以 `FAILED / 1:0` 退出，日志为 `TimeoutError: Policy startup timed out`，仍触发 900 秒模型启动限制，0 个新增 episode。完整 clean 仍缺第 2 片的 500 条，已完成部分 1,446/1,500（96.40%）。这不是 Arena 的 WebSocket 故障。按用户“那一片就不管了”的决定，本轮不再提交补跑。下面 10 月 12/13 日的排队信息是历史记录，不能当作当前状态。最新总览见 [results-overview.md](results-overview.md)。
+旧补跑 `13988230_2` 于 08:26:46 开始，08:41:54 以 `FAILED / 1:0` 退出，日志为 `TimeoutError: Policy startup timed out`，仍触发 900 秒模型启动限制，0 个新增 episode。完整 clean 仍缺第 2 片的 500 条，已完成部分 1,446/1,500（96.40%）。这不是 Arena 的 WebSocket 故障。第 2 片暂不继续补跑，结果保留为部分覆盖。下面 10 月 12/13 日的排队信息是历史记录，不能当作当前状态。最新总览见 [results-overview.md](results-overview.md)。
 
 本地证据：`logs/fullclean-4gpu-001-13988230_2.out` 与 `sacct -j 13988230 --format=JobID,State,ExitCode,Start,End,Elapsed`。
 
@@ -17,13 +17,13 @@ Plus 最后一片于 **10 月 12 日 23:06:16 EDT** 结束，每片实际用时�
 
 本次 Plus 的 84.52% 比[社区报告的 84.2%](https://github.com/sylvestf/LIBERO-plus/issues/57)高 0.32 个百分点。这是描述性比较：该社区结果不是官方排行榜，公开协议不完整；本次每个分片也各自从相同初始随机状态开始，不能宣称与单进程连续随机流完全一致。各扰动类别仍有差异，详见汇总表。
 
-Clean 原数组第 2 片 `13974531_2` 在 10 月 12 日 16:25:03 以 `1:0` 退出，直接错误为 `TimeoutError: Policy startup timed out`（900 秒启动上限），尚未完成任何 episode。日志没有给出明确 CUDA/OOM 证据，启动变慢的根因尚未确认。用户随后授权只补跑这一片，18:09:44 提交得到 **`13988230_2`**，资源为 1 张 H100、8 CPU、64 GB、8 小时，账户 `gts-jli741-paid`。目前它还未启动，启动时间为 `N/A`，没有新的运行错误，也无需重复提交。其它三片在 H100 上已正常完成，每片约 58–75 分钟；补跑实际耗时仍需以运行结果为准。
+Clean 原数组第 2 片 `13974531_2` 在 10 月 12 日 16:25:03 以 `1:0` 退出，直接错误为 `TimeoutError: Policy startup timed out`（900 秒启动上限），尚未完成任何 episode。日志没有给出明确 CUDA/OOM 证据，启动变慢的根因尚未确认。10 月 12 日 18:09:44 单独提交第 2 片补跑，作业号为 **`13988230_2`**，资源为 1 张 H100、8 CPU、64 GB、8 小时，账户 `gts-jli741-paid`。截至 10 月 13 日 08:23 EDT 检查，该补跑尚未启动，启动时间为 `N/A`；后续状态见本文顶部更新。其它三片在 H100 上已正常完成，每片约 58–75 分钟；补跑实际耗时仍需以运行结果为准。
 
-已完成的 Clean 分片也分别备份为 [shard 00](../reports/fullclean-4gpu-001-full-clean-shard-00/summary.md)、[shard 01](../reports/fullclean-4gpu-001-full-clean-shard-01/summary.md)、[shard 03](../reports/fullclean-4gpu-001-full-clean-shard-03/summary.md)。它们只是部分结果，等剩余 500 条完成后才能合并和比较 full-clean 成绩。此次检查没有提交、取消或修改任何 GPU 作业。
+已完成的 Clean 分片也分别备份为 [shard 00](../reports/fullclean-4gpu-001-full-clean-shard-00/summary.md)、[shard 01](../reports/fullclean-4gpu-001-full-clean-shard-01/summary.md)、[shard 03](../reports/fullclean-4gpu-001-full-clean-shard-03/summary.md)。它们只是部分结果，等剩余 500 条完成后才能合并和比较 full-clean 成绩。
 
 ## 10 月 12 日提交与调度历史
 
-`fullplus-4gpu-001` 由用户提交为 Slurm 数组 `13967217`：4 个 A100 worker，评测 10,030 个 Plus episode。`fullclean-4gpu-001` 于 2026-10-12 08:26 EDT 提交为数组 **`13974531`**：4 个 H100 worker，每个 1 张 H100、8 CPU、64 GB，评测原版 LIBERO 的 2,000 个 episode，每片 500 个。提交后核对四片均为 `PENDING (Priority)`、`Dependency=(null)`。`ArrayTaskThrottle=4` 只是同时运行的上限，各分片可以分别启动，不要求同时拿到四张卡。两批使用不同的 `runs/`、`logs/` 和 `reports/` 目录，不会覆盖结果。用户本次允许最多 8 张 GPU 重叠运行；full-clean 因而**不添加**等待 full-plus 的作业依赖。两批都使用付费账户 `gts-jli741-paid`、`inferno` QoS。
+`fullplus-4gpu-001` 的 Slurm 数组编号为 `13967217`：4 个 A100 worker，评测 10,030 个 Plus episode。`fullclean-4gpu-001` 于 2026-10-12 08:26 EDT 提交为数组 **`13974531`**：4 个 H100 worker，每个 1 张 H100、8 CPU、64 GB，评测原版 LIBERO 的 2,000 个 episode，每片 500 个。提交后核对四片均为 `PENDING (Priority)`、`Dependency=(null)`。`ArrayTaskThrottle=4` 只是同时运行的上限，各分片可以分别启动，不要求同时拿到四张卡。两批使用不同的 `runs/`、`logs/` 和 `reports/` 目录，不会覆盖结果。两批作业的总并发上限为 8 张 GPU；full-clean **不设置**等待 full-plus 的作业依赖。两批都使用付费账户 `gts-jli741-paid`、`inferno` QoS。
 
 2026-10-12 08:13 EDT 的 `sbatch --test-only` 比较记录在 [clean-queue-probe-2026-10-12.json](../reports/preparation/clean-queue-probe-2026-10-12.json)。当时新申请的 H100 1/2/4 worker 均显示首个候选约 10 月 15 日 06:09；A100 则约 10 月 16 日 17:40。**这不是预约时间，也不代表四个成员会同时启动**。已有 full-plus 的候选时间从 10 月 12 日变到 10 月 13 日，说明估计会随调度重算。4 个 H100 是当时被测试的有效选项中较早的候选，选 2 个 H100 并没有显示更早排到，反而会让每卡承担更多 episode。
 
@@ -37,9 +37,9 @@ full-plus 的数组成员 0、1 已于当天 08:45:50 EDT 开始运行，实际 
 
 原版总量少于 Plus，但不能简单将时间按 2,000/10,030 换算：不同任务的 horizon、场景构建时间及成功/失败步数不同。A100 smoke 的 Slurm 记录显示峰值 GPU 显存约 9.2–9.4 GiB；这说明模型不需要 A100 的全部显存，不是 full 全量或其它 GPU 的兼容保证。L40S 有 48 GB 且支持 BF16，理论上可试，但本环境没有在 L40S 上验证 JAX 推理与 EGL 渲染；当天 L40S 的队列试算比 H100 更晚。提交时 H100 尚未验证，随后三个 full-clean 分片已正常完成。如果作业发生启动、CUDA 或 EGL 错误，先看日志并停止重复提交。单个 H100 worker 正常结束前最多运行 8 小时；这个时限不是预测用时。
 
-## 状态与提交
+## 作业查询与提交记录
 
-在 PACE 终端运行，先看已有作业。`squeue` 失败时不要猜测它是否存在，也不要重复提交：
+在 PACE 终端查询现有作业。若 `squeue` 查询失败，应先核实作业状态，避免重复提交：
 
 ```bash
 cd /storage/scratch1/1/gliu386/VLA_Startup
@@ -55,13 +55,13 @@ python3 scripts/parallel.py check fullclean-4gpu-001 --require-smoke
 VLA_GPU_TYPE=h100 TIME_LIMIT=08:00:00 bash scripts/submit_parallel.sh fullclean-4gpu-001
 ```
 
-**历史提交命令：第 2 片的补跑已于 10 月 15 日失败，按当前决定不再补跑，不要直接执行下面这条。** 它仅供当前补跑结束后仍有缺失分片时续跑，或在新批次复现时参考。用户已特别授权 Codex 提交原 full-clean，以及随后这一次第 2 片补跑。提交入口会检查同名活动数组，并只请求未完成的分片；遇到通信超时先查队列，不要盲目重试。
+**以下为历史提交命令。第 2 片补跑已于 10 月 15 日失败，当前没有继续补跑计划。** 该入口用于未完成分片的续跑，会检查同名活动数组，并只请求未完成的分片；提交通信超时后需先核实队列，避免重复提交。
 
 ```bash
 VLA_GPU_TYPE=h100 TIME_LIMIT=08:00:00 bash scripts/submit_parallel.sh fullclean-4gpu-001 --submit
 ```
 
-若将来改回总共最多 4 张卡，可额外设置 `VLA_AFTERANY_JOB_ID=13967217`，让 clean 在 Plus 整个数组结束后才变为可运行；本次为尽快出结果，不设置它。[Slurm 数组依赖说明](https://slurm.schedmd.com/job_array.html#job-dependencies)确认 `afterany` 等待该数组全部成员结束，不要求它们全部成功。
+若需限制两批作业的总并发为 4 张卡，可设置 `VLA_AFTERANY_JOB_ID=13967217`，让 clean 在 Plus 整个数组结束后才变为可运行；此次并行配置未设置该依赖。[Slurm 数组依赖说明](https://slurm.schedmd.com/job_array.html#job-dependencies)确认 `afterany` 等待该数组全部成员结束，不要求它们全部成功。
 
 可用以下命令看作业和日志。`13974531` 是初次 full-clean 数组 ID，`13988230` 是第 2 片补跑 ID；`--test-only` 输出的数字不是正式作业 ID。
 

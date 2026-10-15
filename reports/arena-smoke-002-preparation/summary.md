@@ -11,7 +11,7 @@
 | 修复代码 | commit `32c5152` |
 | CPU 检查 | 25 项 Arena 测试通过；服务端环境的 6 项真实通信回归也通过；75 项任务/import 检查通过 |
 | GPU 验证 | 等待此新 smoke 实际完成，不以 CPU 测试代替 |
-| Full | 本轮没有准备或提交新 full 作业 |
+| Full | 尚未准备或提交新 full 作业 |
 
 本目录备份 `plan.json`、`submission.json`、`checks.json`。旧 smoke/full 仍保留原始失败记录；新运行不续接旧计划。这个目录是准备记录，不是模型成绩报告。
 
