@@ -1,5 +1,7 @@
 # Arena Safety full：代码复查与四卡选择
 
+**2026-10-15 后续检查：数组四个成员均已在 10 月 14 日凌晨运行后失败（退出码 1:0），错误为 WebSocket `keepalive ping timeout`，完成 0/2,250。Smoke 也遇到同一错误。** 详情见 [失败诊断](../reports/arena-diagnostics-2026-10-15/summary.md)。本文下方保留提交前复查及提交当时的历史信息，不表示作业仍在排队。
+
 2026-10-13，用户明确要求不再等待独立 smoke 完成，复查代码后直接评测 full，并在比较后选定 **最多 4 张 A100**。**16:03:18 EDT 已提交 full 数组 `14020266`，成员 `_0` 至 `_3`，每成员 1 张 A100、8 CPU、64 GB、12 小时时限，账户 `gts-jli741-paid`、QoS `inferno`。** 原 smoke `14016239_0` 没有修改或取消。
 
 提交后核对 `ArrayTaskThrottle=4`、`Dependency=(null)`；四个成员均为 `PENDING (Priority)`，候选时间 `N/A`，已完成 0/2,250，尚无运行结果。提交命令与校验摘要见 [实际提交记录](../reports/preparation/arena-full-submission-2026-10-13.json)。这与下方历史 `--test-only` 的候选日期是不同信息；实际启动仍由调度器决定。

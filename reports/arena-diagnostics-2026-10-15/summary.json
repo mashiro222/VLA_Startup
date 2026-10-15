@@ -1,0 +1,91 @@
+{
+  "checked_at": "2026-10-15T09:49:39.069734-04:00",
+  "runs": [
+    {
+      "run_id": "arena-smoke-001",
+      "expected_episodes": 15,
+      "completed_episodes": 0,
+      "task_success_rate": null,
+      "state": "FAILED",
+      "plan_sha256": "740b2f026a6240cbbc1dd771f01d4f566a92ae2bcb75b5f650e12a6e74940d25",
+      "workers": [
+        {
+          "worker": "14016239-0",
+          "job_id": "14016239",
+          "array_job_id": "14016239",
+          "hostname": "atl1-1-02-018-31-0.pace.gatech.edu",
+          "exit_code": 1,
+          "git_commit": "0c481b7aadb0132c4445dd224f6e27d582532912",
+          "plan_sha256": "740b2f026a6240cbbc1dd771f01d4f566a92ae2bcb75b5f650e12a6e74940d25",
+          "started_unix": 1791954627.5359778,
+          "ended_unix": 1791955562.680909
+        }
+      ]
+    },
+    {
+      "run_id": "arena-full-001",
+      "expected_episodes": 2250,
+      "completed_episodes": 0,
+      "task_success_rate": null,
+      "state": "FAILED",
+      "plan_sha256": "09fafef7bd31b3ddd5554bbc5792a953639f04662f96660a752c24050f53333b",
+      "workers": [
+        {
+          "worker": "14020266-3",
+          "job_id": "14020266",
+          "array_job_id": "14020266",
+          "hostname": "atl1-1-01-002-16-0.pace.gatech.edu",
+          "exit_code": 1,
+          "git_commit": "0c481b7aadb0132c4445dd224f6e27d582532912",
+          "plan_sha256": "09fafef7bd31b3ddd5554bbc5792a953639f04662f96660a752c24050f53333b",
+          "started_unix": 1791959554.2886062,
+          "ended_unix": 1791960347.562017
+        },
+        {
+          "worker": "14034666-0",
+          "job_id": "14034666",
+          "array_job_id": "14020266",
+          "hostname": "atl1-1-01-002-18-0.pace.gatech.edu",
+          "exit_code": 1,
+          "git_commit": "0c481b7aadb0132c4445dd224f6e27d582532912",
+          "plan_sha256": "09fafef7bd31b3ddd5554bbc5792a953639f04662f96660a752c24050f53333b",
+          "started_unix": 1791958968.3065927,
+          "ended_unix": 1791959874.7575538
+        },
+        {
+          "worker": "14034726-1",
+          "job_id": "14034726",
+          "array_job_id": "14020266",
+          "hostname": "atl1-1-02-018-27-0.pace.gatech.edu",
+          "exit_code": 1,
+          "git_commit": "0c481b7aadb0132c4445dd224f6e27d582532912",
+          "plan_sha256": "09fafef7bd31b3ddd5554bbc5792a953639f04662f96660a752c24050f53333b",
+          "started_unix": 1791959276.962612,
+          "ended_unix": 1791959874.9058027
+        },
+        {
+          "worker": "14034762-2",
+          "job_id": "14034762",
+          "array_job_id": "14020266",
+          "hostname": "atl1-1-01-002-16-0.pace.gatech.edu",
+          "exit_code": 1,
+          "git_commit": "0c481b7aadb0132c4445dd224f6e27d582532912",
+          "plan_sha256": "09fafef7bd31b3ddd5554bbc5792a953639f04662f96660a752c24050f53333b",
+          "started_unix": 1791959554.3001163,
+          "ended_unix": 1791960347.7349248
+        }
+      ]
+    }
+  ],
+  "common_error": "WebSocket ConnectionClosedError: received 1011 keepalive ping timeout",
+  "failure_stage": "First client.infer call fails at websocket.send, before an action response or completed episode",
+  "observations": [
+    "All 5 workers failed with exit code 1",
+    "Checkpoint and normalization load completed in all workers",
+    "No completed episode; success rate is unavailable, not zero percent",
+    "Smoke video decoded successfully: one 224x224 RGB initial scene frame; no policy action response"
+  ],
+  "hypothesis": "WebSocket is opened before slow simulator imports and scene setup; default server heartbeat expires before first inference. Exact blocking component requires reproduction.",
+  "paid_resubmission_performed": false,
+  "evaluation_code_modified": false
+}

@@ -1,5 +1,7 @@
 # VLA-Arena Safety：固定 pi05_libero 的 zero-shot 评测
 
+**2026-10-15 更新：首轮 smoke/full 均已运行后失败，五个 worker 都在首次推理请求前遭遇 WebSocket 心跳超时。没有完成 episode，不能报告成功率。** 先看 [失败诊断](../reports/arena-diagnostics-2026-10-15/summary.md)；本轮检查没有重新提交，修复前不要照下方历史命令重跑。
+
 本轮使用现有 `gs://openpi-assets/checkpoints/pi05_libero/`，不加载 Arena 作者微调的权重，不训练。它是“LIBERO 微调模型向 Arena 的 zero-shot 迁移”，不是未经任务微调的 `pi05_base`。本轮范围只有 5 类 Safety、L0/L1/L2 共 75 个任务，不包含干扰、组合泛化、长时序等其它类别。
 
 环境、脚本和计划已准备；**2026-10-13 14:39 EDT 已按用户授权提交 smoke：`14016239_0`，账户 `gts-jli741-paid`、1 张 A100、8 CPU、64 GB、2 小时时限。** 提交后首次检查为 `PENDING (Priority)`，尚无 Arena 成绩，也未验证真实 GPU 推理和 EGL 渲染。Pilot 未提交；full 已按下方后续授权提交。已有 Clean/Plus 的环境、权重及作业不因本轮准备而改变。
