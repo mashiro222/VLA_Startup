@@ -1,0 +1,12 @@
+{
+  "source_video": "/storage/scratch1/1/gliu386/VLA_Startup/runs/smoke-plus-001/videos/libero_spatial_254_0.mp4",
+  "source_sha256": "528019d811709fcf2885f5e581302a49ae1b7e4be59ed08b55581e9c90d27178",
+  "frame_index": 100,
+  "fps": 10.0,
+  "shape": [
+    224,
+    224,
+    3
+  ],
+  "note": "Actual recorded observation, not a generated scene. A frame alone does not prove task success."
+}

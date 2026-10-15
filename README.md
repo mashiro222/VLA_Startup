@@ -1,18 +1,23 @@
-# π0.5 × LIBERO-Plus：PACE 上的评测入门
+# π0.5 × LIBERO-Plus / Arena Safety：PACE 评测
 
-**Arena 最新状态（2026-10-15）：首轮 smoke `14016239_0` 和 full `14020266` 已于 10 月 14 日凌晨启动，但五个 worker 全部因 WebSocket `keepalive ping timeout` 退出，完成数为 0/15、0/2,250。暂无有效成功率，需要修复运行时通信问题。** 见 [失败诊断](reports/arena-diagnostics-2026-10-15/summary.md)。下方排队信息保留为历史提交记录。
+**下午汇报先看 [结果总览](docs/results-overview.md)，再看 [研究阅读导航](docs/research-guide.md)。** 后者集中解释文件分工、training / inference 的修改位置、benchmark 测试内容、以及怎样生成具体测试的图像。
 
-使用官方 `pi05_libero` checkpoint 做闭环推理，不进行训练或 fine-tuning。先用少量 episode 检查链路，再做原版 LIBERO 对照及 LIBERO-Plus 鲁棒性评测。smoke 使用一张 A100，完整评测可选择最多四个单卡 worker；结果保存在本地，用 CSV、Markdown、JSON 和 PNG 查看，不使用 W&B。
+使用官方 LIBERO 微调的 `pi05_libero` checkpoint，不训练，不使用 W&B。结果保存在本地表格和图中；GitHub 备份代码、说明及小型报告，不上传模型权重、场景资产或视频。
 
-初始环境准备阶段停在计费提交之前。随后用户自行提交的两份 smoke 均已正常完成：原版（`13965730`）4/4 成功；Plus（`13966714`）7/7 条记录完整、6 次成功、1 次任务失败，没有程序异常。它们验证了代表性用例，不代表完整 benchmark 成绩或全量无 bug。检查记录见 [docs/validation.md](docs/validation.md)，实际结果见 [smoke-clean 报告](reports/smoke-clean-001/summary.md)和 [smoke-plus 报告](reports/smoke-plus-001/summary.md)。
+**2026-10-15 当前结果：** LIBERO-Plus 完整完成，8,477 / 10,030 成功（84.52%）；clean 完成 1,500 / 2,000，已完成部分为 96.40%。Clean 第 2 片的旧补跑 `13988230_2` 今天再次模型启动超时，没有新增结果，按用户决定暂不补跑。见 [结果总览与表图](docs/results-overview.md)。
 
-**2026-10-13 08:23 EDT 检查：full-plus 已全部完成，8,477 / 10,030 成功（84.52%）**，四个 A100 分片均以 `0:0` 正常退出。完整结果见 [汇总表](reports/fullplus-4gpu-001-full-plus/summary.md)、[分组柱状图](reports/fullplus-4gpu-001-full-plus/success_by_group.png)和[累计成功率图](reports/fullplus-4gpu-001-full-plus/cumulative_success.png)。Full-clean 已完成 1,500 / 2,000；第 2 片首次模型启动超时，授权补跑的单个 H100 作业 `13988230_2` 仍在排队（Priority），不要重复提交。已完成部分成功率 96.40%，不是 full-clean 最终成绩。详情与后续命令见 [提交与检查记录](docs/full-clean-2026-10-12.md)。
+**Arena：** 首轮 smoke/full 因心跳超时全部退出，没有有效成功率；已修复并通过 25 项回归检查。10 月 15 日 10:15 EDT 已提交新的 **单 A100 smoke `14074038_0` / `arena-smoke-002`**，账户 `gts-jli741-paid`，15 条、2 小时时限，初次核对为 `PENDING (Priority)`。**尚未验证 GPU 闭环，本轮没有重新提交 full。** 查看 [修复、新作业与测试记录](docs/arena-transport-fix-2026-10-15.md)和 [Arena 运行说明](docs/arena-safety.md)。
 
-需要查看账号全部作业或理解四卡方案：见 [四卡评测与作业查询说明](docs/overnight.md)。四卡入口独立于下文的单卡入口，不会自动提交或取消作业。
+| 想做什么 | 阅读入口 |
+|---|---|
+| 准备汇报、找结果和未完成实验总结 | [docs/results-overview.md](docs/results-overview.md) |
+| 看懂代码；改训练/推理参数；看具体测试；导出图片 | [docs/research-guide.md](docs/research-guide.md) |
+| 理解 LIBERO/Plus 的闭环、任务与比较协议 | [docs/experiment.md](docs/experiment.md)、[docs/code-map.md](docs/code-map.md) |
+| 理解 Arena 五类安全任务、SR/CC、zero-shot | [docs/arena-safety.md](docs/arena-safety.md) |
+| 直接取用真实场景截图 | [reports/presentation-2026-10-15/README.md](reports/presentation-2026-10-15/README.md) |
+| 查看全部 Slurm 作业、LIBERO 四卡方案 | [docs/overnight.md](docs/overnight.md) |
 
-**VLA-Arena Safety smoke 已于 2026-10-13 14:39 EDT 按用户授权提交，作业 `14016239_0`。** 使用 `gts-jli741-paid`、1 张 A100、2 小时时限，测试 15 条；提交后的首次检查为 `PENDING (Priority)`，尚无 Arena 运行结果。使用同一 `pi05_libero` 做 zero-shot，独立 uv 仿真环境与 75 个安全任务已校验；750 条 pilot 仅准备文件，full 的提交见下方。完整命令、参数和文件导览见 [Arena Safety 运行说明](docs/arena-safety.md)；背景选择见 [VLA-Arena 与 LIBERO-Safety 对比](docs/safety-benchmark-comparison.md)。
-
-随后用户要求不等 smoke，复查后直接跑 Arena Safety full，并选定 A100。**2026-10-13 16:03 EDT 已提交数组 `14020266`：最多 4 张 A100，每个 worker 12 小时，账户 `gts-jli741-paid`，动态领取 2,250 条 episode。** 提交后四个成员均为 `PENDING (Priority)`，没有 smoke 依赖，原 smoke 保留不动。不要重复提交；查询命令见 [full 复查与提交记录](docs/arena-full-review-2026-10-13.md)。
+下方保留 LIBERO 初始搭建和运行手册；已有完成的 run 不需要重新提交。Arena 使用独立入口，见上方链接。
 
 ## 1. 当前目录与环境
 
@@ -155,8 +160,10 @@ bash scripts/publish_results.sh smoke-clean-001
 本地检查（不启动模型，不申请 GPU）：
 
 ```bash
-PYTHONPATH=src python3 -m unittest discover -s tests -v
+PYTHONPATH=src python3 -m unittest discover -s tests -p test_results.py -v
 python3 scripts/preflight.py --imports
+# Arena 的独立环境与真实本机通信回归：
+bash scripts/test_arena.sh
 ```
 
 常见环境和作业问题见 [docs/troubleshooting.md](docs/troubleshooting.md)。

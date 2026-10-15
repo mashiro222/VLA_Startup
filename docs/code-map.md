@@ -1,5 +1,7 @@
 # 文件导航、参数修改与源码阅读
 
+本页主要覆盖 LIBERO/Plus。训练算法、Arena 推理、具体测试图像的完整入口见新增 [research-guide.md](research-guide.md)，所有实验最新汇总见 [results-overview.md](results-overview.md)。
+
 本地根目录是 `/storage/scratch1/1/gliu386/VLA_Startup`，以下路径相对于此目录。先完成默认 smoke，再一次只改变一个因素，用新 run ID 运行；保留默认实验作为对照。
 
 ## 优先看哪些文档

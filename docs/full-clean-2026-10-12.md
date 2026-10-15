@@ -1,6 +1,12 @@
 # 2026-10-12：full-clean 的提交与检查
 
-## 2026-10-13 08:23 EDT 检查
+## 2026-10-15 更新
+
+旧补跑 `13988230_2` 于 08:26:46 开始，08:41:54 以 `FAILED / 1:0` 退出，日志为 `TimeoutError: Policy startup timed out`，仍触发 900 秒模型启动限制，0 个新增 episode。完整 clean 仍缺第 2 片的 500 条，已完成部分 1,446/1,500（96.40%）。这不是 Arena 的 WebSocket 故障。按用户“那一片就不管了”的决定，本轮不再提交补跑。下面 10 月 12/13 日的排队信息是历史记录，不能当作当前状态。最新总览见 [results-overview.md](results-overview.md)。
+
+本地证据：`logs/fullclean-4gpu-001-13988230_2.out` 与 `sacct -j 13988230 --format=JobID,State,ExitCode,Start,End,Elapsed`。
+
+## 2026-10-13 08:23 EDT 历史检查
 
 | 评测 | 完成数 | 成功数 | 当前状态 |
 |---|---:|---:|---|
@@ -49,7 +55,7 @@ python3 scripts/parallel.py check fullclean-4gpu-001 --require-smoke
 VLA_GPU_TYPE=h100 TIME_LIMIT=08:00:00 bash scripts/submit_parallel.sh fullclean-4gpu-001
 ```
 
-**第 2 片的补跑 `13988230_2` 仍在排队；现在不要执行下面这条。** 它仅供当前补跑结束后仍有缺失分片时续跑，或在新批次复现时参考。用户已特别授权 Codex 提交原 full-clean，以及随后这一次第 2 片补跑。提交入口会检查同名活动数组，并只请求未完成的分片；遇到通信超时先查队列，不要盲目重试。
+**历史提交命令：第 2 片的补跑已于 10 月 15 日失败，按当前决定不再补跑，不要直接执行下面这条。** 它仅供当前补跑结束后仍有缺失分片时续跑，或在新批次复现时参考。用户已特别授权 Codex 提交原 full-clean，以及随后这一次第 2 片补跑。提交入口会检查同名活动数组，并只请求未完成的分片；遇到通信超时先查队列，不要盲目重试。
 
 ```bash
 VLA_GPU_TYPE=h100 TIME_LIMIT=08:00:00 bash scripts/submit_parallel.sh fullclean-4gpu-001 --submit

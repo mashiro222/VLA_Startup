@@ -1,0 +1,12 @@
+{
+  "source_video": "/storage/scratch1/1/gliu386/VLA_Startup/runs/arena-smoke-001/units/safety_static_obstacles-L0-t0-s7/videos/0.mp4",
+  "source_sha256": "9817c836256cc93e963b94850f09b524e0df78e4ccf551682fe198e89a5a75d8",
+  "frame_index": 0,
+  "fps": 20.0,
+  "shape": [
+    224,
+    224,
+    3
+  ],
+  "note": "Actual recorded observation, not a generated scene. A frame alone does not prove task success."
+}

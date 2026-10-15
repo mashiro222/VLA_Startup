@@ -1,12 +1,10 @@
 # VLA-Arena Safety：固定 pi05_libero 的 zero-shot 评测
 
-**2026-10-15 更新：首轮 smoke/full 均已运行后失败，五个 worker 都在首次推理请求前遭遇 WebSocket 心跳超时。没有完成 episode，不能报告成功率。** 先看 [失败诊断](../reports/arena-diagnostics-2026-10-15/summary.md)；本轮检查没有重新提交，修复前不要照下方历史命令重跑。
+**2026-10-15 更新：通信修复已提交为 `32c5152`，25 项回归测试通过。新的单 A100 smoke `arena-smoke-002` 已提交，作业 `14074038_0`，账户 `gts-jli741-paid`，15 条、2 小时；首次核对为 `PENDING (Priority)`。GPU 端到端验证仍待完成，本轮没有重新提交 full。** 见 [修复与检查命令](arena-transport-fix-2026-10-15.md)。
 
-本轮使用现有 `gs://openpi-assets/checkpoints/pi05_libero/`，不加载 Arena 作者微调的权重，不训练。它是“LIBERO 微调模型向 Arena 的 zero-shot 迁移”，不是未经任务微调的 `pi05_base`。本轮范围只有 5 类 Safety、L0/L1/L2 共 75 个任务，不包含干扰、组合泛化、长时序等其它类别。
+原 smoke `14016239_0` 与 full `14020266` 于 10 月 14 日均因 WebSocket 心跳超时退出，完成数为 0/15、0/2,250，没有有效成功率。[失败诊断](../reports/arena-diagnostics-2026-10-15/summary.md)保留；旧计划只用于审计，修改后用新 run ID，不续接旧数据。
 
-环境、脚本和计划已准备；**2026-10-13 14:39 EDT 已按用户授权提交 smoke：`14016239_0`，账户 `gts-jli741-paid`、1 张 A100、8 CPU、64 GB、2 小时时限。** 提交后首次检查为 `PENDING (Priority)`，尚无 Arena 成绩，也未验证真实 GPU 推理和 EGL 渲染。Pilot 未提交；full 已按下方后续授权提交。已有 Clean/Plus 的环境、权重及作业不因本轮准备而改变。
-
-**后续选择更新：用户要求代码复查后直接提交 full，不再等待独立 smoke，并选择最多 4 张 A100。2026-10-13 16:03 EDT 已提交 full 数组 `14020266`，每 worker 12 小时，账户 `gts-jli741-paid`；首次检查四个成员均在排队，原 smoke 未动。** 见 [full 复查、四卡队列比较与提交记录](arena-full-review-2026-10-13.md)。不要重复提交 full；下文保留的普通入口仍强制要求 smoke 完成。
+使用现有 `gs://openpi-assets/checkpoints/pi05_libero/`，不加载 Arena 专项权重、不训练。这是“LIBERO 微调模型向 Arena 的 zero-shot 迁移”，不是未微调 `pi05_base`。仅评测 5 类 Safety、L0/L1/L2 共 75 个任务。训练/推理代码入口和图片生成见 [研究阅读导航](research-guide.md)，已完成及未完成实验见 [结果总览](results-overview.md)。
 
 ## 1. π0.5 在论文中表现如何？
 
@@ -51,79 +49,43 @@ bash scripts/arena.sh preflight --imports
 
 当前机器已经安装，无需为了阅读说明重装。Arena 资产随固定源码 checkout 一起下载，当前 assets 目录有 2,928 个文件、875,080,252 bytes；此外还有源码、初始状态及 Git 对象占用。`git fsck` 与干净工作树检查用于验证这份源码/资产快照。GPU 渲染、动作控制和推理仍必须经 smoke 作业验证。
 
-本地准备记录见 [arena-readiness-2026-10-13.json](../reports/preparation/arena-readiness-2026-10-13.json)，全部任务的名称、指令与初始状态数量见 [arena-task-catalog.csv](../reports/preparation/arena-task-catalog.csv)。计分/断点/并发领取/提交边界的 10 项测试已通过；可用 `bash scripts/test_arena.sh` 重跑，它使用可控模拟接口，不加载模型权重或申请 GPU。
+本地准备记录见 [arena-readiness-2026-10-13.json](../reports/preparation/arena-readiness-2026-10-13.json)，全部任务的名称、指令与初始状态数量见 [arena-task-catalog.csv](../reports/preparation/arena-task-catalog.csv)。目前 25 项计分/断点/并发/提交/通信测试已通过；可用 `bash scripts/test_arena.sh` 重跑。它使用模拟环境和真实本机 WebSocket，不加载模型权重或申请 GPU。详见修复记录。
 
-## 3. 已准备的计划与提交命令
+## 3. 当前 smoke 与后续计划
 
-| Profile | Run ID | 任务 × 每任务次数 | 任务单元数 | 最多同时用卡 | 每 worker 时限 |
-|---|---|---:|---:|---:|---|
-| smoke | `arena-smoke-001` | 每类每级选 1 个任务 × 1 = **15** | 15 | 1 | 2 小时 |
-| pilot | `arena-pilot-001` | 75 × 10 × 1 seed = **750** | 75 | 4 | 8 小时 |
-| full | `arena-full-001` | 75 × 10 × 3 seeds = **2,250** | 225 | 4 | 12 小时 |
+| Profile | 覆盖 | 单元数 | 默认 worker 数 / 时限 |
+|---|---:|---:|---|
+| smoke | 每类每级选 task 0 × 1 = 15 | 15 | 1 / 2 小时 |
+| pilot | 75 × 10 × 1 seed = 750 | 75 | 4 / 8 小时 |
+| full | 75 × 10 × 3 seeds = 2,250 | 225 | 4 / 12 小时 |
 
-三个计划互相独立；pilot 是可选，不会并入 full。每个任务单元是一项任务的一个评测 seed，full 中含 10 个 episodes。同一 worker 完成一个单元后领取下一单元，不再固定承包总任务的四分之一。只排到一张卡也能不断领取后续任务；更多 worker 启动后共同处理剩余任务。
-
-**Smoke 的 `--submit` 已执行一次，返回 `14016239`；不要重复提交。Full 已通过独立 `arena_direct.py` 入口提交为 `14020266`，不要再执行下方普通 full 提交命令。Pilot 尚未提交。**
-
-下面只准备文件或预览，不向 Slurm 提交请求，重复准备相同计划是安全的：
+当前运行只提交 `arena-smoke-002`。新计划通过下列命令生成；提交命令已执行，保留作记录，**不要重复提交**：
 
 ```bash
 cd /storage/scratch1/1/gliu386/VLA_Startup
-bash scripts/arena.sh prepare smoke arena-smoke-001
-bash scripts/arena.sh prepare pilot arena-pilot-001
-bash scripts/arena.sh prepare full arena-full-001
-bash scripts/arena.sh submit arena-smoke-001
+# 2026-10-15 已执行：
+# bash scripts/arena.sh prepare smoke arena-smoke-002 --workers 1
+# bash scripts/arena.sh submit arena-smoke-002 --gpu a100 --smoke-run arena-smoke-002 --submit
+
+# 现在只查进度：
+squeue -r -j 14074038 -o '%.20i %.12T %.24S %R'
+sacct -j 14074038 --format=JobID%22,State,ExitCode,Elapsed
+bash scripts/arena.sh check arena-smoke-002
+tail -F logs/arena-smoke-002-14074038_0.out
 ```
 
-预览应包含 `--account=gts-jli741-paid --partition=gpu-a100 --qos=inferno --gres=gpu:a100:1`、8 CPU、64 GB，smoke 仅一个数组成员。**本轮已经执行过以下提交命令，保留作记录：**
+Smoke 通过要求：15 条有效 episode、没有基础设施错误，不要求 15 次模型都成功。完成后运行 `bash scripts/arena.sh report arena-smoke-002`。未完成但已有记录可加 `--partial`；0 条记录不生成成功率图。
+
+只有 smoke 跑通、用户决定再做 full 后，才准备新计划。未来预览方式如下，**这两条没有提交 GPU**：
 
 ```bash
-bash scripts/arena.sh submit arena-smoke-001 --submit
+bash scripts/arena.sh prepare full arena-full-002
+bash scripts/arena.sh submit arena-full-002 --smoke-run arena-smoke-002 --gpu a100
 ```
 
-本轮作业的查询命令（`tail -F` 可以等日志文件在作业启动后创建；按 Ctrl-C 只退出查看）：
+将来实际提交才在第二条末尾加 `--submit`，普通入口会检查匹配的 smoke。当前没有执行这两条，也没有提交依赖作业；旧 `arena-full-001` 不用新代码续跑。Pilot 同理需新 run ID。
 
-```bash
-squeue -r -j 14016239 -o '%.20i %.12T %.24S %R'
-sacct -j 14016239 --format=JobID%22,State,ExitCode,Elapsed
-bash scripts/arena.sh check arena-smoke-001
-tail -F logs/arena-smoke-001-14016239_0.out
-```
-
-运行后检查：
-
-```bash
-squeue -r -u gliu386 -o '%.20i %.32j %.12T %.12M %R'
-sacct -u gliu386 -S today --format=JobID%22,JobName%32,State,ExitCode,Elapsed
-bash scripts/arena.sh status arena-smoke-001
-ls -lt logs/arena-smoke-001-*.out
-```
-
-最后一条列出真实日志文件名，随后对那一个实际文件使用 `tail -f`，不要输入字面值 `JOB_ID`。Slurm 的 `COMPLETED` 只代表进程退出状态，还要核对 episode 覆盖及 `errors.jsonl`。
-
-Smoke 的通过条件是 15 个 episode 全部产生有效成功/失败与 cost 记录，且无基础设施错误；不要求模型 15 次全成功。此时生成报告：
-
-```bash
-bash scripts/arena.sh report arena-smoke-001
-```
-
-检查 smoke 报告和视频后，可选择直接跑 full。两条分开，前者仅预览，后者提交：
-
-```bash
-bash scripts/arena.sh submit arena-full-001
-bash scripts/arena.sh submit arena-full-001 --submit
-```
-
-若想先看 750 条：将上面 run ID 改为 `arena-pilot-001`，不必同时跑 pilot 与 full。提交 pilot/full 时会强制验证匹配配置的 Arena smoke；旧 LIBERO smoke 不能代替它。
-
-选 H100 或调整时限的语法如下，第一条仍仅预览：
-
-```bash
-bash scripts/arena.sh submit arena-full-001 --gpu h100 --time-limit 08:00:00
-# 确认后才在同一命令末尾加 --submit
-```
-
-默认使用 A100。此前的 LIBERO 实验证明模型能在 H100 上运行，但 Arena 的 H100 渲染仍需实际验证。时限是上限，不是运行时间预测。尚无 Arena 实测秒数，不承诺一晚结束。
+每个 Arena 单元为一项任务的一个评测 seed，full 单元含 10 条 episode。worker 完成一个单元后动态领取下一个，只排到一张卡也能继续领取。它不是 LIBERO 旧四卡方案的固定四分之一分片。GPU 资源选项为 `--gpu a100` 或 `--gpu h100`，每个 worker 各申请一张；时限用 `--time-limit` 覆盖。Arena 的 H100 路径尚未验证，GPU/时限选择不保证排队速度。
 
 ## 4. 断点续跑与结果保存
 
@@ -133,19 +95,19 @@ bash scripts/arena.sh submit arena-full-001 --gpu h100 --time-limit 08:00:00
 
 旧数组已全部结束、错误已检查且没有修改冻结代码时，使用同一提交命令续跑。每个 worker 启动前核对冻结文件；如果需要修改评测代码、任务定义或关键参数，使用新 run ID，不把改变后的数据接到原成绩中。无需修改环境的临时排队或时限问题可原计划续跑。基础设施异常会记录到单元的 `errors.jsonl` 并使 worker 非零退出，不计入模型失败。
 
-所有 episode 完成后，在登录节点合并、出图，不申请 GPU：
+未来 full-002 所有 episode 完成后，在登录节点合并、出图，不申请 GPU（目前没有该运行）：
 
 ```bash
-bash scripts/arena.sh report arena-full-001
+bash scripts/arena.sh report arena-full-002
 ```
 
 不完整时默认拒绝生成完整报告。需要观察中途结果时可明确使用：
 
 ```bash
-bash scripts/arena.sh report arena-full-001 --partial
+bash scripts/arena.sh report arena-full-002 --partial
 ```
 
-输出目录 `reports/arena-full-001/`：
+输出目录 `reports/arena-full-002/`：
 
 - `summary.md` / `summary.csv`：各 suite × level 的 SR、CC、覆盖数、带代价的成功数和论文参考。
 - `by_seed.csv`：三个**评测** seeds 的分组结果，不是三个训练 seeds 的误差条。
@@ -157,7 +119,7 @@ bash scripts/arena.sh report arena-full-001 --partial
 未来审查结果后，以下命令会明确把该小型报告提交并推送到 GitHub：
 
 ```bash
-bash scripts/publish_arena.sh arena-full-001
+bash scripts/publish_arena.sh arena-full-002
 ```
 
 它只暂存指定 `reports/` 子目录；不上传 checkpoint、场景、环境、视频或原始服务日志。模型任务失败属于正常结果，不应删除失败记录来提高分数。
@@ -185,11 +147,12 @@ SR 是任务是否完成。CC 是上游安全谓词在整个轨迹上的累计�
 | 固定依赖与独立环境安装 | `requirements/arena.in`、`requirements/arena.lock`、`scripts/setup_arena.sh` |
 | 准备计划、状态检查、提交预览、smoke gate | `scripts/arena.py`，入口 `scripts/arena.sh` |
 | GPU 资源与作业入口 | `slurm/arena.sbatch`、`scripts/arena.py` 的 `submit()` |
-| 模型服务启动与关闭 | `src/arena_startup/runtime.py`；复用 `src/vla_startup/server.py` |
+| 模型服务启动与关闭 | `src/arena_startup/runtime.py`、`server.py`；通信在 `transport.py` |
 | 观测如何进入模型、action chunk 如何执行、CC 如何累计 | `src/arena_startup/evaluate.py` |
 | 任务领取、断点记录、episode seed 和计分函数 | `src/arena_startup/core.py` |
 | 表格、图片与原始记录导出 | `src/arena_startup/report.py` |
-| 计分、异常、并发领取、断点与禁止自动提交测试 | `tests/test_arena.py` |
+| 计分、异常、并发领取、断点与提交测试 | `tests/test_arena.py`、`test_arena_direct.py` |
+| 真实 WebSocket 停顿、deadline、身份与错误传播 | `tests/test_arena_transport.py` |
 | 上游任务名称与分级 | `.runtime/repos/vla_arena/vla_arena/vla_arena/benchmark/vla_arena_suite_task_map.py` |
 | 各任务具体场景、目标与安全条件 | 上游 `vla_arena/vla_arena/bddl_files/safety_*/level_*/` |
 | 安全谓词定义和执行 | 上游 `envs/predicates/`、`envs/bddl_base_domain.py` |

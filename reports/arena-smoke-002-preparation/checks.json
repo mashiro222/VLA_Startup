@@ -1,0 +1,30 @@
+{
+  "checked_at": "2026-10-15T10:21:22.562355-04:00",
+  "run_id": "arena-smoke-002",
+  "job_id": "14074038_0",
+  "state_at_first_check": "PENDING",
+  "reason": "Priority",
+  "account": "gts-jli741-paid",
+  "partition": "gpu-a100",
+  "gpus": 1,
+  "cpus": 8,
+  "memory": "64G",
+  "time_limit": "02:00:00",
+  "expected_episodes": 15,
+  "transport_fix_commit": "32c5152",
+  "plan_sha256": "e3280c1c6e56c35c46d2e206bf079d8cebb07c58a7a928e7ad91dff5231c04e7",
+  "validation": {
+    "arena_tests": {
+      "passed": 25,
+      "command": "bash scripts/test_arena.sh"
+    },
+    "transport_tests_server_venv": {
+      "passed": 6,
+      "websockets": "15.0.1"
+    },
+    "arena_client_websockets": "14.2",
+    "preflight_75_tasks_and_imports": "passed",
+    "gpu_end_to_end": "not yet validated"
+  },
+  "full_submitted_this_turn": false
+}

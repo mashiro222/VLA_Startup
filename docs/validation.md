@@ -1,5 +1,7 @@
 # 提交前检查记录
 
+2026-10-15 Arena 通信修复、25 项测试和新单卡 smoke 的记录见 [专门说明](arena-transport-fix-2026-10-15.md)。所有实验现状见 [结果总览](results-overview.md)；下文保留最初 LIBERO 准备阶段的检查。
+
 ## 后续实际 GPU 验证与并行准备
 
 用户自行提交的 `smoke-clean-001`，Slurm Job `13965730`，在 2026-10-11 正常结束：`COMPLETED`、`ExitCode=0:0`、运行 13 分 02 秒、1 张 A100 / 8 CPU / 64 GB，记账 MaxRSS 为 `26506992K`（约 25.3 GiB 主机内存）。4/4 episode 均成功，缺失为 0；真实结果在 [reports/smoke-clean-001](../reports/smoke-clean-001)。这验证了原版完整权重加载、JIT、EGL 和闭环运行，不能用四条记录推断全量成功率，也尚不能替代 Plus smoke。
