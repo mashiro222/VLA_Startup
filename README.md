@@ -1,12 +1,12 @@
 # π0.5 × LIBERO-Plus / Arena Safety：PACE 评测
 
-本仓库提供 π0.5 在 LIBERO、LIBERO-Plus 和 VLA-Arena Safety 上的闭环评测流程。实验状态与统计结果见 [结果总览](docs/results-overview.md)；代码结构、训练与推理配置、benchmark 协议和图像导出见 [开发指南](docs/research-guide.md)。
+本仓库提供 π0.5 在 LIBERO、LIBERO-Plus 和 VLA-Arena Safety 上的闭环评测，以及 Arena LoRA / Spatial Forcing 配对训练流程。实验状态与统计结果见 [结果总览](docs/results-overview.md)；代码结构、训练与推理配置、benchmark 协议和图像导出见 [开发指南](docs/research-guide.md)。
 
-使用官方 LIBERO 微调的 `pi05_libero` checkpoint，不训练，不使用 W&B。结果保存在本地表格和图中；GitHub 备份代码、说明及小型报告，不上传模型权重、场景资产或视频。
+迁移评测使用官方 LIBERO 微调的 `pi05_libero` checkpoint；配对训练从官方 `pi05_base` 初始化。不使用 W&B。结果保存在本地表格和图中；GitHub 备份代码、说明及小型报告，不上传模型权重、场景资产或视频。
 
 **2026-10-15 当前结果：** LIBERO-Plus 完整完成，8,477 / 10,030 成功（84.52%）；clean 完成 1,500 / 2,000，已完成部分为 96.40%。Clean 第 2 片的旧补跑 `13988230_2` 于 10 月 15 日再次因模型启动超时退出，没有新增结果，暂不继续补跑。见 [结果总览与表图](docs/results-overview.md)。
 
-**Arena：** 通信修复后的单 A100 smoke `14074038_0` / `arena-smoke-002` 已完成 **15/15 条，SR 0%，平均 CC 41.05**；均在 300 步上限结束，未复现通信超时。见 [录像、接口与 CC 诊断](docs/arena-smoke-audit-2026-10-16.md)。新增终止原因、逐谓词 cost、接触段/持续步数记录，并通过 34 项回归检查；[1,500 条评测方案](docs/arena-diagnostics.md)已准备，新记录器尚需 GPU smoke，未提交新作业。[π0.5 LoRA / Spatial Forcing 对照设计](docs/arena-spatial-forcing-plan.md)明确后续训练条件及尚需完成的接入工作。
+**Arena：** 通信修复后的单 A100 smoke `14074038_0` / `arena-smoke-002` 已完成 **15/15 条，SR 0%，平均 CC 41.05**；均在 300 步上限结束，未复现通信超时。见 [录像、接口与 CC 诊断](docs/arena-smoke-audit-2026-10-16.md)。新增终止原因、逐谓词 cost、接触段/持续步数记录，并通过 34 项回归检查；[1,500 条评测方案](docs/arena-diagnostics.md)已准备，新记录器的单卡诊断 smoke `14126130_0` 已完成 15/15 条，SR 0%、平均 CC 33.33，无基础设施错误，见[诊断结果](reports/arena-smoke-003/summary.md)。[π0.5 LoRA / Spatial Forcing 对照设计](docs/arena-spatial-forcing-plan.md)与[训练实现及运行说明](docs/arena-sf-training.md)定义了从 `pi05_base` 开始的配对实验。
 
 | 内容 | 文档 |
 |---|---|
@@ -15,7 +15,7 @@
 | LIBERO/Plus 闭环执行、任务与对照协议 | [docs/experiment.md](docs/experiment.md)、[docs/code-map.md](docs/code-map.md) |
 | Arena 安全任务、SR/CC 与 zero-shot 协议 | [docs/arena-safety.md](docs/arena-safety.md) |
 | Arena 失败原因、接触代价分解与 1,500 条配置 | [docs/arena-diagnostics.md](docs/arena-diagnostics.md) |
-| 从 pi05_base 开始的 LoRA / SF 配对实验 | [docs/arena-spatial-forcing-plan.md](docs/arena-spatial-forcing-plan.md) |
+| 从 pi05_base 开始的 LoRA / SF 配对实验 | [实验设计](docs/arena-spatial-forcing-plan.md)、[训练配置、代码与提交](docs/arena-sf-training.md) |
 | 实际录像截图与来源信息 | [reports/presentation-2026-10-15/README.md](reports/presentation-2026-10-15/README.md) |
 | 查看全部 Slurm 作业、LIBERO 四卡方案 | [docs/overnight.md](docs/overnight.md) |
 

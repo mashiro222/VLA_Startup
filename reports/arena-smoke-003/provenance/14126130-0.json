@@ -1,0 +1,14 @@
+{
+  "worker": "14126130-0",
+  "job_id": "14126130",
+  "array_job_id": "14126130",
+  "hostname": "atl1-1-01-002-18-0.pace.gatech.edu",
+  "started_unix": 1792209762.0240915,
+  "plan_sha256": "b1923a3f42b8e82f7fa7b8045ed2fabcf0d18a25ccd4cd2803329c7fcb307b9b",
+  "git_commit": "06ed5728c798859dac26cdd51b5d561d63faf329",
+  "gpu": "name, uuid, driver_version, memory.total [MiB]\nNVIDIA A100 80GB PCIe, GPU-d7b8170e-f725-e7e0-929f-274b380d2ec3, 615.71.09, 81920 MiB\n",
+  "cuda_visible_devices": "0",
+  "ended_unix": 1792210781.7927387,
+  "exit_code": 0,
+  "interrupted": false
+}

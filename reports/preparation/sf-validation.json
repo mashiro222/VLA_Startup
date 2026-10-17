@@ -1,0 +1,34 @@
+{
+  "date": "2026-10-17",
+  "cpu_tests": {
+    "tests": "25",
+    "failures": "0",
+    "errors": "0",
+    "skipped": "0",
+    "time": "354.013"
+  },
+  "conversion_shape_audit": {
+    "expected_tensors": 813,
+    "mapped_tensors": 811,
+    "missing_explicitly_handled": [
+      "paligemma_with_expert.gemma_expert.lm_head.weight",
+      "paligemma_with_expert.paligemma.lm_head.weight"
+    ],
+    "shape_mismatches": [],
+    "unexpected": [],
+    "weights_loaded": false
+  },
+  "policy_trainable_parameters": 466957072,
+  "gpu_training_validated": false,
+  "training_submitted": false,
+  "evaluation_smoke_job": "14126130",
+  "prepared_scheme": "2 A100 GPUs per training arm; maximum 4 for paired formal training",
+  "note": "GPU validation is an automatic prerequisite, not established by CPU tests.",
+  "evaluation_smoke_state": "COMPLETED",
+  "assets": {
+    "manifest_sha256": "694062bd19195337dd6bbaf0b74a4fe53ad65e6a00da03898508b980acdd3c2b",
+    "files": 3054,
+    "bytes": 55017991583,
+    "verified_at_unix": 1792211516.636993
+  }
+}

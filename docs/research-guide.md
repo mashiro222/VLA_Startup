@@ -168,3 +168,7 @@ python3 scripts/arena_scene.py \
 ```
 
 脚本不自动申请资源，在登录节点直接运行会明确拒绝。当前仅做过命令行/任务目录/登录节点保护检查，独立场景工具尚未在 GPU 上验证；已有录像截图已完成实际解码检查。场景截图不代表安全规则是否被遵守，讨论安全行为应同时看轨迹视频和该 episode 的 SR/CC。
+
+## π0.5 LoRA / Spatial Forcing 实现
+
+从 `pi05_base` 开始的 Arena 配对训练入口、两卡 DDP、训练 smoke、checkpoint 恢复与文件导航见 [Arena SF 训练说明](arena-sf-training.md)。该入口使用独立 uv 环境；既有 `pi05_libero` 评测环境保持隔离。

@@ -1,6 +1,6 @@
 # π0.5 LoRA 与 Spatial Forcing：Arena 对照设计
 
-状态：实验设计与代码审查；**没有开始训练，尚无可直接运行的 π0.5+SF+LoRA 训练入口**。当前已具备的是固定 `pi05_libero` 的 Arena 评测链路和扩展诊断实现。
+状态：已实现 π0.5 LoRA / LoRA+SF 训练入口、配置冻结、两卡 DDP、完整 checkpoint 恢复及训练 smoke。运行步骤与检查边界见 [训练说明](arena-sf-training.md)。GPU 正确性由独立训练验证作业确认，不能由固定 `pi05_libero` 的评测 smoke 推定。
 
 ## 假设与比较对象
 
@@ -19,7 +19,7 @@
 
 训练集为 `VLA-Arena/VLA_Arena_L0_L_lerobot_openpi`，固定 revision `8c6cdcac185c7c97582a78f8ad8c2ef3757ce2c7`：3,018 条示范、361,736 帧、60 个任务，覆盖 Arena 全部能力域的 L0-L，不是 Safety 专属数据集。采用这份完整训练集是为了与 Arena 配方对齐；若改用 Safety 子集，必须同时修改两组并重新计算统计。
 
-每个 IL 样本是图像两路、8 维机器人状态、文本指令和未来 10 个 7 维动作。没有额外的安全分类标签。训练只用 L0；评测分别报告 L0、L1、L2，后两者作为难度泛化。训练/验证按示范轨迹划分，不把相邻帧随机拆成独立验证集；测试任务结果不用于挑 λ 或 checkpoint。
+每个 IL 样本是图像两路、8 维机器人状态、文本指令和未来 10 个 7 维动作。没有额外的安全分类标签。训练只用 L0；评测分别报告 L0、L1、L2，后两者作为难度泛化。当前配方使用完整 L0-L 训练集，未额外划出验证示范，按固定训练步数评测。若增加 validation，必须按轨迹划分；测试任务结果不用于挑 λ 或 checkpoint。
 
 两组均使用 PyTorch、同一代码路径和精度，避免把 JAX/PyTorch 差异混入 SF 效果。策略初始化、LoRA 初始化、数据顺序、增强、动作噪声与评测清单配对固定；VGGT 使用独立随机流，避免教师初始化改变策略或采样随机数。
 
@@ -56,7 +56,7 @@ optimizer.step()  # 仅显式声明的可训练参数；SF 分支还包括 proje
 4. 上游保存函数保存 policy 与 optimizer，但没有显式保存独立的 `align_projector` 参数；本实验须保存/恢复 projector、LoRA、归一化统计、优化器、scheduler 与全部 RNG，进行断点恢复等价测试。
 5. 当前本项目 JAX 服务写死 `pi05_libero` 身份与 RNG；训练权重接入需增加 PyTorch/LoRA checkpoint 身份验证和随机状态控制。两组须使用同一推理实现。
 
-这些是训练开始前的必要工程工作，不是已经验证通过的功能。训练耗时和显存须在统一 global batch 下实测，不由评测速度推算。
+项目训练入口已实现 LoRA 注入、跳过 baseline 教师、projector/optimizer/RNG 恢复及独立训练验证；CPU 测试已覆盖低秩数学、梯度和恢复等价性。真实 π0.5 前后向、DDP 和显存仍由 GPU 训练验证确认。PyTorch 训练权重的 Arena 服务端接入属于后续评测步骤。训练耗时不由原有评测速度推算。
 
 ## 评测与主要指标
 

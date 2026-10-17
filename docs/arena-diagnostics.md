@@ -62,6 +62,8 @@
 
 ## 准备与验证
 
+2026-10-17：单 A100 作业 `14126130_0` / `arena-smoke-003` 已完成 15/15 条，SR 0%、平均 CC 33.33，无基础设施错误；逐谓词记录覆盖 15/15。结果见[汇总](../reports/arena-smoke-003/summary.md)与[终止原因](../reports/arena-smoke-003/diagnostics.md)。`arena-balanced1500-001` 尚未提交。以下保留重建步骤；已有 run 不要重复 prepare。
+
 ```bash
 cd /storage/scratch1/1/gliu386/VLA_Startup
 bash scripts/test_arena.sh
@@ -73,6 +75,6 @@ bash scripts/arena.sh submit arena-smoke-003 --gpu a100 --smoke-run arena-smoke-
 bash scripts/arena.sh submit arena-balanced1500-001 --gpu a100 --smoke-run arena-smoke-003
 ```
 
-新 instrumentation 仍需单卡 GPU smoke 验证；旧 `arena-smoke-002` 的冻结配置不同，不能当作新代码已通过的证明。这里没有提交计费作业。上述命令不含 `--submit`；同配置 smoke 完成后，显式添加该开关才能提交 1,500 条计划。
+新 instrumentation 的 GPU 验证来自 `arena-smoke-003`；旧 `arena-smoke-002` 的冻结配置不同。上述命令不含 `--submit`；显式添加该开关才会提交 1,500 条计划。
 
 生成结果：`bash scripts/arena.sh report arena-balanced1500-001`。未完成时显式加 `--partial`；基础设施错误与模型失败分开。所有任务和失败记录都保留，不根据观测结果选择性删样本。

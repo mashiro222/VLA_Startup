@@ -1,6 +1,6 @@
 # 实验结果与未完成项目总览
 
-检查日期：2026-10-16，时区 America/New_York（EDT）。作业实时变化需查看 Slurm。已有实测模型均为官方 LIBERO 微调后的 **`pi05_libero`**，本项目尚未开始训练。
+检查日期：2026-10-17，时区 America/New_York（EDT）。作业实时变化需查看 Slurm。已有实测模型均为官方 LIBERO 微调后的 **`pi05_libero`**，Arena LoRA / Spatial Forcing 训练配置与状态见[训练说明](arena-sf-training.md)。
 
 ## 实验结果
 
@@ -13,6 +13,7 @@
 | Arena 首轮 smoke | 0 / 15 | N/A | 通信故障，没有有效成功率 | [失败诊断](../reports/arena-diagnostics-2026-10-15/summary.md) |
 | Arena 首轮 full | 0 / 2,250 | N/A | 四个 worker 都在首个动作返回前退出 | 同上 |
 | Arena 修复后 smoke `arena-smoke-002` | 15 / 15 | 0 / 15 = 0% | 通信正常；全部达到 300 步上限，平均 CC 41.05；仅为 smoke 样本 | [结果](../reports/arena-smoke-002/summary.md)、[录像与接口诊断](arena-smoke-audit-2026-10-16.md) |
+| Arena 归因 smoke `arena-smoke-003` | 15 / 15 | 0 / 15 = 0% | 逐谓词记录覆盖 15/15；均达 300 步，平均 CC 33.33，无基础设施错误 | [结果](../reports/arena-smoke-003/summary.md)、[终止与代价](../reports/arena-smoke-003/diagnostics.md) |
 
 Clean 第 2 片原作业 `13974531_2` 在模型启动 900 秒限制下失败；补跑 `13988230_2` 于 **10 月 15 日 08:26:46–08:41:54** 再次以相同 `Policy startup timed out` 退出，没有新增有效 episode。启动超时的根因尚未确定；另外三片 H100 已运行成功，现有证据不足以认定 GPU 不兼容。该分片暂不继续补跑，clean 结果保留为部分覆盖。此问题与 Arena 的 WebSocket 心跳故障不同。历史记录与日志路径见 [clean 运行记录](full-clean-2026-10-12.md)。
 
@@ -40,8 +41,8 @@ Clean 第 2 片原作业 `13974531_2` 在模型启动 900 秒限制下失败；�
 - [修复与测试说明](arena-transport-fix-2026-10-15.md)：改动、回归测试和新 smoke 的具体查看命令。
 - [Arena 协议](arena-safety.md)：训练条件、五类 × 三级、SR/CC、与论文结果的比较限制。
 - [Smoke 录像与接口诊断](arena-smoke-audit-2026-10-16.md)：15 条失败的可见行为、分级 CC、接口检查和证据局限。
-- [1,500 条评测与 cost 明细](arena-diagnostics.md)：新初态协议、终止原因、逐谓词 cost 与接触持续时间。新代码尚未提交 GPU smoke。
-- [LoRA / Spatial Forcing 对照设计](arena-spatial-forcing-plan.md)：从同一 `pi05_base` 出发的两组训练，及尚需完成的训练接入工作。
+- [1,500 条评测与 cost 明细](arena-diagnostics.md)：新初态协议、终止原因、逐谓词 cost 与接触持续时间。新记录器已通过 `arena-smoke-003` 的单 A100 运行验证。
+- [LoRA / Spatial Forcing 对照设计](arena-spatial-forcing-plan.md)：从同一 `pi05_base` 出发的两组训练；[训练实现及提交记录](arena-sf-training.md)列出配置、验证与恢复方式。
 
 本地原始文件：
 
@@ -55,11 +56,13 @@ Clean 第 2 片原作业 `13974531_2` 在模型启动 900 秒限制下失败；�
 | `logs/arena-*.out` | Slurm stdout/stderr |
 | `runs/arena-*/units/*/videos/*.mp4` | 实际轨迹录像，本地保留 |
 
+`reports/arena-smoke-003/` 包含 15/15 条逐谓词诊断，新增 `failure_modes.csv`、`cost_components.csv`、`cost_by_category.csv`、`cost_attribution.png`。均在 horizon 结束只说明终止条件，不能直接确定物理失败原因。
+
 `reports/arena-smoke-002/` 已包含汇总、逐 episode 表、终止原因及 `safety_by_level.png`、`cumulative_success.png`。旧 smoke 没有逐谓词记录，诊断覆盖率标为 0；不从录像编造 cost 分解。
 
 ## 总结
 
-本项目使用官方 LIBERO 微调的 π0.5 固定 checkpoint 建立闭环评测流程，不进行额外训练。LIBERO-Plus 的 10,030 条测试已全部完成，成功率为 84.52%；七类扰动中，相机视角和机器人初态变化下的表现相对较弱。原版 LIBERO 对照完成 1,500/2,000 条，已完成部分成功率为 96.40%，完整评测尚未完成。
+迁移评测使用官方 LIBERO 微调的 π0.5 固定 checkpoint。LIBERO-Plus 的 10,030 条测试已全部完成，成功率为 84.52%；七类扰动中，相机视角和机器人初态变化下的表现相对较弱。原版 LIBERO 对照完成 1,500/2,000 条，已完成部分成功率为 96.40%，完整评测尚未完成。
 
 VLA-Arena Safety 用于评估同一 checkpoint 的 zero-shot 迁移表现。首轮实验因通信超时未产生有效结果；修复后单卡 smoke 完成 15 条，SR 0%、平均 CC 41.05。现有证据更符合任务迁移不足，但不能排除全部适配问题，也不能用低 SR 单独证明安全性差。后续采用固定 1,500 条协议，并对 static/dynamic 的接触与终态代价进行分解；LoRA 与 LoRA+SF 为独立的后续对照实验。
 

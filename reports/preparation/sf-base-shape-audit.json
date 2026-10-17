@@ -1,0 +1,11 @@
+{
+  "expected_tensors": 813,
+  "mapped_tensors": 811,
+  "missing_explicitly_handled": [
+    "paligemma_with_expert.gemma_expert.lm_head.weight",
+    "paligemma_with_expert.paligemma.lm_head.weight"
+  ],
+  "shape_mismatches": [],
+  "unexpected": [],
+  "weights_loaded": false
+}
