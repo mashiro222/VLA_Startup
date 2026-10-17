@@ -15,6 +15,7 @@ from sf_training.data import ArenaData, batch_indices, collate
 from sf_training.lora import parameter_manifest
 from sf_training.model import Experiment, build_policy, build_teacher
 from sf_training.utils import accumulation, learning_rate, seed_all, write_json, sha
+from sf_training.normalization import MAX_FLOW_MSE, unnormalize
 
 STOP = False
 
@@ -123,11 +124,15 @@ def run(plan_path, arm, stop_step=None, resume=False):
             len(dataset), cfg["seed"], step, cfg["global_batch"], rank, world
         )
         losses = torch.zeros(3, device=device)
+        target_abs_max = torch.zeros((), device=device)
+        rare_rotation_samples = torch.zeros((), device=device)
         for micro in range(accum):
             subset = indices[
                 micro * cfg["micro_batch"] : (micro + 1) * cfg["micro_batch"]
             ]
             batch = collate([dataset[i] for i in subset], device)
+            target_abs_max = torch.maximum(target_abs_max, batch["actions"].abs().max())
+            rare_rotation_samples += batch["rare_rotation"].sum()
             sync = (
                 wrapped.no_sync()
                 if world > 1 and micro < accum - 1
@@ -136,8 +141,8 @@ def run(plan_path, arm, stop_step=None, resume=False):
             with sync:
                 with torch.autocast("cuda", dtype=torch.bfloat16):
                     loss, fm, align = wrapped(batch)
-                    if not torch.isfinite(loss):
-                        raise FloatingPointError(f"Nonfinite loss at step {step}")
+                    if not torch.isfinite(loss) or not torch.isfinite(fm) or fm > MAX_FLOW_MSE:
+                        raise FloatingPointError(f"Nonfinite/extreme flow loss at update {step + 1}: {float(fm)}")
                     scaled = loss / accum
                 scaled.backward()
             losses += torch.stack([loss.detach(), fm, align]) / accum
@@ -185,6 +190,8 @@ def run(plan_path, arm, stop_step=None, resume=False):
         if world > 1:
             dist.all_reduce(losses)
             losses /= world
+            dist.all_reduce(target_abs_max, op=dist.ReduceOp.MAX)
+            dist.all_reduce(rare_rotation_samples)
         torch.cuda.synchronize()
         elapsed = time.monotonic() - begin
         if rank == 0:
@@ -195,6 +202,8 @@ def run(plan_path, arm, stop_step=None, resume=False):
                 alignment=float(losses[2]),
                 lr=lr,
                 grad_norm=float(gradnorm),
+                target_abs_max=float(target_abs_max),
+                rare_rotation_samples=int(rare_rotation_samples),
                 seconds=elapsed,
                 peak_allocated_gib=torch.cuda.max_memory_allocated() / 2**30,
                 peak_reserved_gib=torch.cuda.max_memory_reserved() / 2**30,
@@ -243,7 +252,7 @@ def run(plan_path, arm, stop_step=None, resume=False):
                 dist.barrier()
         if stopping.item():
             break
-    if plan["profile"] == "smoke" and last_step == 3:
+    if plan["profile"] == "smoke" and last_step == cfg["steps"]:
         from sf_training.model import observation
 
         model.eval()
@@ -255,6 +264,7 @@ def run(plan_path, arm, stop_step=None, resume=False):
             )
         if not torch.isfinite(actions).all():
             raise FloatingPointError("Inference produced nonfinite actions")
+        raw_actions = unnormalize(actions[0, :, :7].float().cpu().numpy(), stats["actions"])
         if rank == 0:
             write_json(
                 output / "inference_smoke.json",
@@ -262,6 +272,7 @@ def run(plan_path, arm, stop_step=None, resume=False):
                     finite=True,
                     shape=list(actions.shape),
                     actions_first7=actions[0, :, :7].float().cpu().tolist(),
+                    raw_actions_first7=raw_actions.tolist(),
                 ),
             )
     if rank == 0:

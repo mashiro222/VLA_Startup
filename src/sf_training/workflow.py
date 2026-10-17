@@ -7,7 +7,10 @@ import re
 import shlex
 import subprocess
 from pathlib import Path
+from types import SimpleNamespace
 from sf_training.utils import write_json, sha, accumulation
+from sf_training.normalization import METHOD, bounds
+from sf_training.validation import SMOKE_STEPS, SMOKE_RESUME_STEP, validate_metrics
 
 ROOT = Path(__file__).resolve().parents[2]
 SF_SHA = "372819b31ba9a2c8fc5989edc7d525cb187cecd5"
@@ -69,12 +72,21 @@ def assets():
         or data["episodes"] != 3018
     ):
         raise ValueError("Normalization identity mismatch")
+    if data.get("method") != METHOD:
+        raise ValueError("Legacy normalization; repair and audit before preparing a new run")
+    for value in data["norm_stats"].values():
+        bounds(value)
+    audit_path = home / "normalization_audit.json"
+    audit = json.loads(audit_path.read_text())
+    if audit["norm_stats_sha256"] != sha(stats) or audit["packed_manifest_sha256"] != sha(marker):
+        raise ValueError("Full-dataset normalization audit missing/stale")
     tokenizer = ROOT / ".runtime/cache/openpi/big_vision/paligemma_tokenizer.model"
     return dict(
         norm_stats=sha(stats),
         packed_manifest=sha(marker),
         tokenizer=sha(tokenizer),
         assets=sha(manifest),
+        normalization_audit=sha(audit_path),
     )
 
 
@@ -122,7 +134,7 @@ def prepare(a):
     asset_ids = assets()
     cfg = json.loads((ROOT / "config/sf_training/recipe.json").read_text())
     if a.profile == "smoke":
-        cfg.update(steps=3, global_batch=4, checkpoint_every=2, log_every=1)
+        cfg.update(steps=SMOKE_STEPS, checkpoint_every=SMOKE_RESUME_STEP, log_every=1)
     accumulation(cfg, a.gpus)
     plan = dict(
         schema=1,
@@ -158,34 +170,72 @@ def finish_smoke(a):
     plan = verify_plan(path)
     if plan["profile"] != "smoke":
         raise ValueError("Not a smoke plan")
+    evidence = {}
+    if plan["recipe"]["global_batch"] != 32 or plan["recipe"]["steps"] != SMOKE_STEPS:
+        raise ValueError("Smoke must use the formal batch and expanded validation budget")
     for arm in ("baseline", "sf"):
         status = json.loads((path.parent / arm / "status.json").read_text())
         inference = json.loads((path.parent / arm / "inference_smoke.json").read_text())
         if not (
             status["completed"]
-            and status["step"] == 3
-            and status["resumed_from"] == 2
+            and status["step"] == SMOKE_STEPS
+            and status["resumed_from"] == SMOKE_RESUME_STEP
             and inference["finite"]
             and inference["shape"] == [1, 10, 32]
         ):
             raise ValueError("Smoke training/resume/inference incomplete")
+        evidence[arm] = validate_metrics(path.parent / arm / "metrics.jsonl")
     write_json(
         path.parent / "smoke_passed.json",
-        {k: plan[k] for k in ("files", "assets", "environment", "gpus")},
+        {**{k: plan[k] for k in ("files", "assets", "environment", "gpus")}, "metrics": evidence},
     )
-    print("PASS: both arms trained, resumed, and produced finite inference actions.")
+    print("PASS: both arms completed 32 updates, sparse rotation batches, resume, and inference.")
+
+
+def matching_full(smoke, full):
+    if smoke["profile"] != "smoke" or full["profile"] != "full":
+        raise ValueError("Expected a smoke plan and a fresh full plan")
+    if any(smoke[k] != full[k] for k in ("files", "assets", "environment", "gpus")):
+        raise ValueError("Smoke/full code, data, environment or GPU count differs")
+    ignored = {"steps", "checkpoint_every", "log_every"}
+    if {k: v for k, v in smoke["recipe"].items() if k not in ignored} != {k: v for k, v in full["recipe"].items() if k not in ignored}:
+        raise ValueError("Smoke/full training recipes differ")
+
+
+def launch_full(a):
+    """Called on the allocated node only after finish-smoke and report succeed."""
+    full = verify_plan(ROOT / "runs" / a.full_run / "plan.json")
+    smoke = verify_plan(ROOT / "runs" / a.smoke_run / "plan.json")
+    matching_full(smoke, full)
+    smoke_gate(a.smoke_run, full)
+    # Also wait for this smoke allocation to exit, keeping the total GPU cap.
+    for arm in ("baseline", "sf"):
+        submit(SimpleNamespace(run_id=a.full_run, arm=arm, submit=True,
+                               smoke_run=a.smoke_run, after_smoke=True, resume=False))
 
 
 def submit(a):
     path = ROOT / "runs" / a.run_id / "plan.json"
     plan = verify_plan(path)
     mode = a.arm
+    skip_smoke = getattr(a, "skip_smoke", False)
+    then_full = getattr(a, "then_full_run", None)
+    if skip_smoke and (plan["profile"] != "full" or a.smoke_run or a.after_smoke or then_full):
+        raise ValueError("--skip-smoke requires a full plan without smoke/dependency options")
+    if then_full:
+        if mode != "smoke":
+            raise ValueError("--then-full-run is only valid for training smoke")
+        full = verify_plan(ROOT / "runs" / then_full / "plan.json")
+        matching_full(plan, full)
+        full_dir = ROOT / "runs" / then_full
+        if any(full_dir.glob("*/step-*.pt")) or any((full_dir / "submission").glob("*.json")):
+            raise ValueError("Automatic launch requires a fresh full run from pi05_base")
     if plan["profile"] == "smoke" and mode != "smoke":
         raise ValueError("Smoke plan must run both arms via --arm smoke")
     if plan["profile"] == "full" and mode == "smoke":
         raise ValueError("Full plan needs baseline or sf")
     dependency = None
-    if plan["profile"] == "full" and a.submit:
+    if plan["profile"] == "full" and a.submit and not skip_smoke:
         if not a.smoke_run:
             raise ValueError("Full submission requires --smoke-run")
         if a.after_smoke:
@@ -245,16 +295,19 @@ def submit(a):
         str(ROOT / "slurm/sf_train.sbatch"),
         a.run_id,
         mode,
-        a.smoke_run or "-",
+        "skip-smoke" if skip_smoke else (a.smoke_run or "-"),
     ]
     if dependency:
         cmd[1:1] = ["--dependency=afterok:" + dependency, "--kill-on-invalid-dep=yes"]
+    if then_full:
+        cmd.append(then_full)
     print(shlex.join(cmd), flush=True)
     if not a.submit:
         print("Dry run only. Add --submit to allocate paid GPUs.")
         return
     attempt = dict(
         command=cmd,
+        gpu_smoke="explicitly_skipped" if skip_smoke else (a.smoke_run or mode),
         attempted_at=datetime.datetime.now(datetime.timezone.utc).isoformat(),
         status="unknown",
     )
@@ -295,6 +348,9 @@ def main():
     p = subs.add_parser("verify-smoke")
     p.add_argument("run_id")
     p.add_argument("smoke_run")
+    p = subs.add_parser("launch-full")
+    p.add_argument("smoke_run")
+    p.add_argument("full_run")
     p = subs.add_parser("submit")
     p.add_argument("run_id")
     p.add_argument("--arm", choices=["smoke", "baseline", "sf"], required=True)
@@ -302,6 +358,9 @@ def main():
     p.add_argument("--after-smoke", action="store_true")
     p.add_argument("--submit", action="store_true")
     p.add_argument("--resume", action="store_true")
+    p.add_argument("--then-full-run")
+    p.add_argument("--skip-smoke", action="store_true",
+                   help="Explicitly submit full training without a GPU smoke; numerical and identity checks still apply")
     a = ap.parse_args()
     if a.cmd == "prepare":
         prepare(a)
@@ -309,6 +368,8 @@ def main():
         submit(a)
     elif a.cmd == "finish-smoke":
         finish_smoke(a)
+    elif a.cmd == "launch-full":
+        launch_full(a)
     elif a.cmd == "verify-smoke":
         smoke_gate(a.smoke_run, verify_plan(ROOT / "runs" / a.run_id / "plan.json"))
         print("Matching training smoke passed.")

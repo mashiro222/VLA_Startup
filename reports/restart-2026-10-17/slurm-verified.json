@@ -1,0 +1,41 @@
+{
+  "checked_at": "2026-10-17T19:45:19-04:00",
+  "account": "gts-jli741-paid",
+  "partition": "gpu-a100",
+  "qos": "inferno",
+  "jobs": [
+    {
+      "job_id": 14143587,
+      "arm": "baseline",
+      "state": "PENDING",
+      "reason": "Priority",
+      "gpus": 2,
+      "cpus": 16,
+      "memory": "96G",
+      "time_limit": "24:00:00",
+      "dependency": null
+    },
+    {
+      "job_id": 14143602,
+      "arm": "sf",
+      "state": "PENDING",
+      "reason": "Priority",
+      "gpus": 2,
+      "cpus": 16,
+      "memory": "96G",
+      "time_limit": "24:00:00",
+      "dependency": null
+    },
+    {
+      "job_id": 14143493,
+      "experiment": "pi05_libero balanced1500",
+      "state": "PENDING",
+      "array": "0-3%4",
+      "gpus_per_worker": 1,
+      "cpus_per_worker": 8,
+      "memory_per_worker": "64G",
+      "time_limit": "08:00:00",
+      "dependency": null
+    }
+  ]
+}

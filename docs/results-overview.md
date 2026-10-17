@@ -60,9 +60,11 @@ Clean 第 2 片原作业 `13974531_2` 在模型启动 900 秒限制下失败；�
 
 `reports/arena-smoke-002/` 已包含汇总、逐 episode 表、终止原因及 `safety_by_level.png`、`cumulative_success.png`。旧 smoke 没有逐谓词记录，诊断覆盖率标为 0；不从录像编造 cost 分解。
 
+`pi05_libero` 的 1,500 条正式迁移评测 `arena-balanced1500-001` 已提交为数组作业 `14143493`（最多 4 张 A100），沿用完成 15/15 条、无基础设施错误的 `arena-smoke-003` 代码和协议。正式 SR/CC 需等待评测数据。
+
 ## 配对训练状态
 
-2026-10-17：Arena LoRA baseline `14127636` 与 LoRA+SF `14127637` 已提交，各 2 张 A100。两组从 `pi05_base` 初始化，均依赖短训练验证 `14127618` 成功后启动，当前没有训练后评测成绩。配置、检查证据与监控命令见[训练说明](arena-sf-training.md)。
+2026-10-17：旧 Arena LoRA baseline `14127636` 与 LoRA+SF `14127637` 因稀疏旋转动作的分位数区间退化而停止，旧 checkpoint 不用于修复后的对照。归一化已增加训练范围回退和全数据往返检查，新验证采用正式 batch 32、每组 32 步，并检查稀疏动作覆盖。正式重启计划为 `arena-sf-train-full-002`，本次显式跳过新的 GPU smoke，直接提交 baseline `14143587` 与 SF `14143602`，各 2 张 A100，从 `pi05_base` 重新开始；修复版 GPU 正确性尚未确认。当前没有训练后 SR/CC 结果。详见[训练说明](arena-sf-training.md)、[异常诊断](../reports/training-audit-2026-10-17/README.md)及[修复与提交记录](../reports/restart-2026-10-17/README.md)。
 
 ## 总结
 

@@ -1,0 +1,11 @@
+{
+  "run": "arena-sf-train-full-001",
+  "invalidated_at": "2026-10-17T19:45:31.536765-04:00",
+  "reason": "Degenerate action quantile intervals; checkpoints excluded from corrected comparison",
+  "jobs": [
+    14127636,
+    14127637
+  ],
+  "replacement": "arena-sf-train-full-002",
+  "diagnosis": "reports/training-audit-2026-10-17/README.md"
+}

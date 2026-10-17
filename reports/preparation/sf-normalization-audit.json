@@ -1,0 +1,39 @@
+{
+  "arrays": {
+    "actions": {
+      "fallback_dimensions": [
+        3,
+        4
+      ],
+      "frames": 361736,
+      "normalized_abs_max_by_dimension": [
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        4.999986171722412,
+        1.0
+      ],
+      "roundtrip_abs_error": 5.960464477539063e-08
+    },
+    "state": {
+      "fallback_dimensions": [],
+      "frames": 361736,
+      "normalized_abs_max_by_dimension": [
+        1.4774019718170166,
+        1.3723976612091064,
+        1.1350231170654297,
+        1.7436540126800537,
+        1.132537841796875,
+        3.8116044998168945,
+        1.181807518005371,
+        1.316765546798706
+      ],
+      "roundtrip_abs_error": 7.152557373046875e-07
+    }
+  },
+  "method": "exact-frame-weighted-quantiles-clamped-chunks-safe-range-v2",
+  "norm_stats_sha256": "15b0a55241c6d8956c790b34f214f629cc16dee3329eadf4441e73dfb274bb1f",
+  "packed_manifest_sha256": "3290138cc94eed58f8c2db670fc1b576a36f42e965e5d234de87fdff5af10698"
+}

@@ -1,0 +1,22 @@
+{
+  "job_id": "14143493",
+  "command": [
+    "sbatch",
+    "--parsable",
+    "--account=gts-jli741-paid",
+    "--partition=gpu-a100",
+    "--qos=inferno",
+    "--gres=gpu:a100:1",
+    "--cpus-per-task=8",
+    "--mem=64G",
+    "--time=08:00:00",
+    "--array=0-3%4",
+    "--job-name=pi05-arena-balanced1500-001",
+    "--chdir=/storage/scratch1/1/gliu386/VLA_Startup",
+    "--output=/storage/scratch1/1/gliu386/VLA_Startup/logs/arena-balanced1500-001-%A_%a.out",
+    "/storage/scratch1/1/gliu386/VLA_Startup/slurm/arena.sbatch",
+    "arena-balanced1500-001",
+    "arena-smoke-003"
+  ],
+  "time": 1792280152.3809795
+}

@@ -1,30 +1,30 @@
 # Arena π0.5 LoRA / Spatial Forcing 训练
 
-## 提交记录（2026-10-17）
+## 运行状态与归一化修复（2026-10-17）
 
-01:00 EDT 已核对 Slurm 中的账户、资源和依赖。账户均为 **`gts-jli741-paid`**，分区 `gpu-a100`，每项申请同一节点的 2 张 A100、16 CPU、96 GB 主存。
+旧训练验证 `14127618` 完成了三步训练、恢复与推理，但未覆盖稀疏旋转动作。正式 baseline `14127636` 与 SF `14127637` 在约 44% 的更新中出现极大有限 loss：动作第 4、5 维的 q01/q99 同为 0，少量非零旋转被放大到百万量级。这两份作业已取消，其 checkpoint 不用于修复后的训练或性能比较。[异常诊断](../reports/training-audit-2026-10-17/README.md)保留原始证据。
 
-| 任务 | Job ID | 时限 | 核对时状态 |
+修复后的正式计划为 `arena-sf-train-full-002`，两组各申请同一节点 **2 张 A100、16 CPU、96 GB 主存**，账户 **`gts-jli741-paid`**。两组正式训练仍分别从官方 `pi05_base` 开始，不加载旧 run 的 checkpoint。
+
+本次正式重启显式使用 `--skip-smoke`，完成 CPU 回归、全数据归一化审计和稀疏 batch 回放后直接提交。**修复版 GPU 训练尚未验证，不能将跳过 smoke 记作验证通过。** 两组无 smoke 依赖；运行时仍检查冻结代码/数据身份、归一化输入范围及 loss/梯度的有限性，并在 flow MSE 超过保护阈值时退出。
+
+可选的增强 smoke 已实现：正式 global batch 32，每组 32 次 optimizer update；第 16 步保存并重启，再恢复至第 32 步。只有稀疏旋转覆盖、全部数值检查和两组推理通过后才生成标记。可通过 `--then-full-run` 在验证成功后自动提交两组，当前重启不使用此路径。
+
+| 本次任务 | Job ID | GPU 资源 | GPU smoke 依赖 |
 |---|---|---|---|
-| 两组短训练验证 | `14127618` | 3 小时 | PENDING / Priority |
-| 正式 LoRA baseline | `14127636` | 24 小时 | PENDING / Dependency |
-| 正式 LoRA + SF | `14127637` | 24 小时 | PENDING / Dependency |
-
-**两个正式任务已提交。** 二者均依赖 `afterok:14127618`，验证成功后自动进入资源调度，无需再次手工提交。GPU 正确性尚未确认；验证失败时正式任务不会启动。正式两组同时运行最多使用 4 张 A100。
-
-已完成 3,054 个文件（55,017,991,583 bytes）校验、3,018 条 / 361,736 帧数据打包与归一化、包含轨迹边界的 5 个真实样本等价检查，以及 26 项 CPU 测试。初版预处理在积累全数据集列表时被系统终止；现已改为磁盘数组，并隔离 PyTorch 导入，完整预处理正常退出，实测峰值 RSS 为 872,800 KiB。模型初始化时不需要的 Inductor 后台编译池也已限制为单线程。
-
-[准备检查](../reports/preparation/sf-validation.json)、[真实样本检查](../reports/preparation/sf-data-audit.json)、[Slurm 核对记录](../reports/training-submissions-2026-10-17/slurm-verified.json)与同目录内的两个冻结计划、三个提交回执保存于 GitHub。模型、数据、checkpoint 和运行日志保留在 scratch。
+| LoRA baseline | `14143587` | 同节点 2 × A100 | 无；显式跳过 |
+| LoRA + SF | `14143602` | 同节点 2 × A100 | 无；显式跳过 |
+| pi05_libero 1,500 条评测 | `14143493` | 最多 4 个单 A100 worker | 已完成匹配的评测 smoke |
 
 ```bash
-cd /storage/scratch1/1/gliu386/VLA_Startup
-squeue -j 14127618,14127636,14127637 -o '%.18i %.10T %.40j %.10M %R'
-sacct -j 14127618,14127636,14127637 --format=JobID%18,JobName%40,State,Elapsed,ExitCode
-# 日志在作业启动后创建；-F 可以等待文件出现。
-tail -F logs/arena-sf-train-smoke-001-smoke-14127618.out
+squeue -j 14143587,14143602,14143493 -r -o '%.20i %.10T %.40j %.10M %R'
+sacct -j 14143587,14143602,14143493 --format=JobID%20,JobName%40,State,Elapsed,ExitCode
+# 日志在作业启动后创建；-F 可等待文件出现。
+tail -F logs/arena-sf-train-full-002-baseline-14143587.out
+tail -F logs/arena-sf-train-full-002-sf-14143602.out
 ```
 
-正式日志分别为 `logs/arena-sf-train-full-001-baseline-14127636.out` 和 `logs/arena-sf-train-full-001-sf-14127637.out`。上表是提交时快照，实时进度以 Slurm、训练日志及 `runs/arena-sf-train-full-001/<arm>/metrics.jsonl` 为准。
+运行和提交回执保存在 `runs/<run_id>/submission/`，本次归档见 [修复与提交记录](../reports/restart-2026-10-17/README.md)。旧的三步验证不再作为当前训练的有效依据。训练 smoke 与 `pi05_libero` 的 Arena 评测 smoke 是独立流程。
 
 ## 实验定义
 
@@ -45,7 +45,7 @@ Arena 论文 Appendix H.3.4 / Table 29 描述 π0 的 LoRA，表格写 30,000 �
 
 训练集共 **3,018 条示范、361,736 帧、60 个任务**，覆盖 Arena 多个能力域的 L0-L，并非仅 Safety。每个样本包含当前 front/wrist 两路 RGB、8 维 state、任务语言，以及从当前时刻开始的 10×7 动作。轨迹末尾重复最后一个动作，绝不跨 episode 拼接。没有另做 delta-action 转换。
 
-图像由数据集已有方向直接缩放到 224×224；模拟器评测时的 180° 图像修正不能再应用于训练集。动作与 state 使用训练集 q01/q99 归一化，再补零到 32 维。遵循 Arena π0.5 配置，`discrete_state_input=false`；state 不被加入语言 token，π0.5 路径也不使用 π0 的连续 state projection。该选择在两组一致。
+图像由数据集已有方向直接缩放到 224×224；模拟器评测时的 180° 图像修正不能再应用于训练集。动作与 state 使用训练集 q01/q99 归一化，再补零到 32 维。若某维 q99−q01 ≤ 1e-6，则改用该维训练数据的实际最小值/最大值；恒定维度使用以该值为中心、宽度为 1 的区间。正常分位数维度保持原值，不裁剪动作，不丢弃稀疏旋转。原始分位数、实际范围和回退维度均保存在统计文件中。此回退是本实验的显式适配，两组完全一致，不应表述为严格复现 Arena 的原始统计实现。遵循 Arena π0.5 配置，`discrete_state_input=false`；state 不被加入语言 token，π0.5 路径也不使用 π0 的连续 state projection。该选择在两组一致。
 
 令动作 chunk 为 a，噪声 ε∼N(0,I)，t∼Beta(1.5,1)×0.999+0.001：
 
@@ -94,6 +94,7 @@ bash scripts/setup_sf.sh
 .runtime/server/bin/python scripts/sf_assets.py
 source scripts/sf_common.sh
 "$SF_ENV/bin/python" -m sf_training.pack
+"$SF_ENV/bin/python" -m sf_training.normalization --repair
 bash scripts/test_sf.sh
 ```
 
@@ -103,32 +104,28 @@ Parquet 原始图像采用有界并行读取，数值与索引直接写入预分
 
 ## 训练验证与正式提交
 
-训练 smoke 不是性能 benchmark。它验证真实模型加载、DDP、两组 loss/梯度、冻结教师、checkpoint 保存、进程重启后的 optimizer/projector/RNG 恢复，以及两组最终的 10 步动作推理。两组各执行 2 次更新，退出进程，然后恢复执行第 3 次；global batch 为 4，正式训练为 32。
+训练 smoke 不是性能 benchmark。它验证真实模型加载、DDP、两组 loss/梯度、冻结教师、checkpoint 保存、进程重启后的 optimizer/projector/RNG 恢复，以及两组最终的 10 步动作推理。两组各执行 16 次更新，退出进程，然后恢复至第 32 次；global batch 与正式训练均为 32。逐 batch 记录 `target_abs_max` 和 `rare_rotation_samples`；任何退化区间、非有限值、归一化输入绝对值超过 100 或 flow MSE 超过 1,000 都触发错误，不会只检查 NaN/Inf。阈值是发现异常的宽松保护线，不是收敛或安全性判据。
 
 ```bash
-# 仅准备，无计费提交
-bash scripts/sf.sh prepare smoke arena-sf-train-smoke-001 --gpus 2
-bash scripts/sf.sh prepare full arena-sf-train-full-001 --gpus 2
+# 重建时使用新的 run ID；当前 run 已存在时不要重复 prepare/submit
+bash scripts/sf.sh prepare full arena-sf-train-full-002 --gpus 2
 
-# 提交短训练验证
-bash scripts/sf.sh submit arena-sf-train-smoke-001 --arm smoke --submit
-
-# 允许现在排队；afterok 依赖 + 运行时身份检查确保验证通过后才开始正式训练
-bash scripts/sf.sh submit arena-sf-train-full-001 --arm baseline \
-  --smoke-run arena-sf-train-smoke-001 --after-smoke --submit
-bash scripts/sf.sh submit arena-sf-train-full-001 --arm sf \
-  --smoke-run arena-sf-train-smoke-001 --after-smoke --submit
+# 本次方案：显式跳过 GPU smoke，直接提交正式两组
+bash scripts/sf.sh submit arena-sf-train-full-002 --arm baseline --skip-smoke --submit
+bash scripts/sf.sh submit arena-sf-train-full-002 --arm sf --skip-smoke --submit
 ```
 
-去掉 `--submit` 只打印命令。账户固定为 `gts-jli741-paid`。训练验证失败时，依赖它的正式作业不会启动。评测 `arena-smoke-003` 与训练验证是两个独立实验；评测成功不能替代训练验证。
+去掉 `--submit` 只打印命令。账户固定为 `gts-jli741-paid`。`--skip-smoke` 只适用于 full，不能同时使用 `--smoke-run` 或 `--after-smoke`；回执明确记录 `gpu_smoke=explicitly_skipped`。省略此开关时，默认仍要求匹配的训练 smoke。两个正式回执分别为 `runs/arena-sf-train-full-002/submission/baseline.json` 和 `sf.json`。如果提交响应不确定，流程停止且不自动重试；先核对回执和 Slurm，避免重复任务。
+
+可选增强 smoke 的重建方式：先准备新的 smoke/full 两个 run（相同 GPU 数），再执行 `bash scripts/sf.sh submit SMOKE_RUN --arm smoke --then-full-run FULL_RUN --submit`。此路径仅在验证通过后创建两组任务，且等待 smoke 分配释放后启动；不是本次正式重启所用方式。
 
 如果同名作业已提交，不要再次执行上述提交命令。回执在 `runs/<run_id>/submission/`；网络超时也可能已经成功提交，必须先查询队列。正式训练由于时限停止且旧作业已退出时可续训：
 
 ```bash
-bash scripts/sf.sh submit arena-sf-train-full-001 --arm baseline \
-  --smoke-run arena-sf-train-smoke-001 --resume --submit
-bash scripts/sf.sh submit arena-sf-train-full-001 --arm sf \
-  --smoke-run arena-sf-train-smoke-001 --resume --submit
+bash scripts/sf.sh submit arena-sf-train-full-002 --arm baseline \
+  --skip-smoke --resume --submit
+bash scripts/sf.sh submit arena-sf-train-full-002 --arm sf \
+  --skip-smoke --resume --submit
 ```
 
 恢复要求配置、代码、数据、环境和 GPU 数一致。不要在 pending/running 作业期间修改训练代码。需改参数时新建 run，重新验证。
@@ -141,6 +138,7 @@ bash scripts/sf.sh submit arena-sf-train-full-001 --arm sf \
 | `src/sf_training/model.py` | π0.5 forward、FM loss、VGGT 特征和对齐 |
 | `src/sf_training/lora.py` | LoRA 注入、每 head 参数化、冻结范围 |
 | `src/sf_training/data.py`、`preparation.py`、`pack.py` | IL 样本、action chunk、tokenization、归一化与磁盘打包 |
+| `src/sf_training/normalization.py`、`validation.py` | 安全归一化、精确逆变换、全数据审计与 smoke 数值/覆盖门槛 |
 | `src/sf_training/train.py` | DDP、累积梯度、训练循环和诊断 |
 | `src/sf_training/checkpoint.py` | policy trainable、projector、optimizer、各 rank RNG 保存恢复 |
 | `src/sf_training/convert.py` | 官方 base checkpoint 转换和严格参数检查 |
@@ -152,7 +150,7 @@ bash scripts/sf.sh submit arena-sf-train-full-001 --arm sf \
 
 ```bash
 source scripts/sf_common.sh
-"$SF_ENV/bin/python" -m sf_training.report arena-sf-train-full-001
+"$SF_ENV/bin/python" -m sf_training.report arena-sf-train-full-002
 squeue -u gliu386 -r -o '%.20i %.10T %.36j %.12M %R'
 sacct -u gliu386 -S today --format=JobID%20,JobName%36,State,Elapsed,ExitCode
 ```
@@ -163,9 +161,15 @@ sacct -u gliu386 -S today --format=JobID%20,JobName%36,State,Elapsed,ExitCode
 
 ```bash
 "$SF_ENV/bin/python" -m sf_training.export \
-  --plan runs/arena-sf-train-full-001/plan.json --arm sf \
-  --checkpoint runs/arena-sf-train-full-001/sf/step-00060000.pt \
+  --plan runs/arena-sf-train-full-002/plan.json --arm sf \
+  --checkpoint runs/arena-sf-train-full-002/sf/step-00060000.pt \
   --output .runtime/training/export/arena-sf-step60000
 ```
 
-导出的 policy 保留同一归一化统计和配置；教师与 alignment projector 不进入动作推理。现有固定 `pi05_libero` 的 JAX 评测命令不能直接加载这种 PyTorch 训练产物，训练产物的 Arena 服务端接入需单独进行 smoke 验证后再启动比较评测。
+导出前核对归一化 SHA256 与训练计划一致；旧 run 不能误用修复后的统计。导出的 policy 保留同一归一化统计和配置；教师与 alignment projector 不进入动作推理。现有固定 `pi05_libero` 的 JAX 评测命令不能直接加载这种 PyTorch 训练产物，训练产物的 Arena 服务端接入需单独进行 smoke 验证后再启动比较评测。
+
+## 归一化审计与回归测试
+
+[全训练集审计](../reports/preparation/sf-normalization-audit.json)覆盖 361,736 帧的全部 state/action 坐标。每个 action chunk 只会选择这些帧并在轨迹末尾重复最后一帧，因此此扫描也覆盖所有可能的训练动作值；统计仍按 clamped chunk 加权。审计检查数值数组 SHA256、逐维归一化最大绝对值，以及 normalize/unnormalize 往返误差。原统计保存在 `.runtime/training/normalization_archive/`。新计划同时冻结统计文件和审计文件的 SHA256。[前 32 个正式 batch 的回放](../reports/preparation/sf-sparse-batch-replay.json)包含 17 个带稀疏旋转的样本；原异常第 5 步的归一化目标最大绝对值为 1，32 维 padded 平方均值约 0.119。
+
+训练与推理使用成对变换：`z = 2*(x-q01)/(q99-q01+1e-6)-1`，`x = (z+1)/2*(q99-q01+1e-6)+q01`。推理必须沿用训练时保存的有效 q01/q99；不能重新计算或换用 `pi05_libero` 的统计。`tests/sf_training/test_normalization.py` 覆盖低于 1% 的稀疏旋转、恒定维度、正常分位数保持、无裁剪往返、极大有限目标，以及 smoke 的逐步 loss 和稀疏样本门槛。`test_workflow.py` 验证 smoke 未通过时不会自动提交正式任务。

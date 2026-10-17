@@ -14,6 +14,9 @@ def export(plan_path, arm, step_file, destination):
     plan = json.loads(Path(plan_path).read_text())
     root = Path(plan["root"])
     cfg = plan["recipe"]
+    stats = root / ".runtime/training/norm_stats.json"
+    if sha(stats) != plan["assets"]["norm_stats"]:
+        raise ValueError("Normalization differs from the training plan; refusing mismatched export")
     checkpoint = torch.load(step_file, map_location="cpu", weights_only=False)
     if (
         checkpoint["identity"]["plan_sha256"] != sha(plan_path)
@@ -44,7 +47,6 @@ def export(plan_path, arm, step_file, destination):
     destination = Path(destination)
     destination.mkdir(parents=True, exist_ok=False)
     safetensors.torch.save_model(policy, str(destination / "model.safetensors"))
-    stats = root / ".runtime/training/norm_stats.json"
     (destination / "norm_stats.json").write_bytes(stats.read_bytes())
     write_json(
         destination / "policy.json",
@@ -56,6 +58,8 @@ def export(plan_path, arm, step_file, destination):
             action_dim=32,
             discrete_state_input=False,
             normalization="quantiles",
+            normalization_method=json.loads(stats.read_text())["method"],
+            normalization_inverse="(x + 1) / 2 * (q99 - q01 + 1e-6) + q01",
             extra_delta_transform=False,
             teacher_required=False,
             model_sha256=sha(destination / "model.safetensors"),

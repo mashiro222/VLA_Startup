@@ -5,6 +5,7 @@ from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 import numpy as np
 import pyarrow.parquet as pq
+from sf_training.normalization import METHOD, safe_bounds
 
 
 def read_episodes(paths, columns=None, prefetch=4):
@@ -68,10 +69,11 @@ def compute_stats(root, horizon=10):
                 q99=np.quantile(x, 0.99, axis=0),
             ).items()
         }
+        result[key] = safe_bounds(result[key], x.min(0), x.max(0))
     return dict(
         norm_stats=result,
         episodes=episodes,
         frames=frames,
         action_horizon=horizon,
-        method="exact-frame-weighted-quantiles-clamped-chunks-v1",
+        method=METHOD,
     )

@@ -1,0 +1,19 @@
+{
+  "initial_full_suite": {
+    "passed": 43,
+    "elapsed_seconds": 417.23
+  },
+  "targeted_updated_normalization_and_submission_tests": {
+    "passed": 23,
+    "elapsed_seconds": 86.54
+  },
+  "counts_overlap": true,
+  "gpu_training_smoke": "explicitly_skipped",
+  "syntax_checks": [
+    "bash -n slurm/sf_train.sbatch",
+    "python3 -m compileall -q src/sf_training tests/sf_training",
+    "git diff --check"
+  ],
+  "full_dataset_audit": "reports/preparation/sf-normalization-audit.json",
+  "first_32_batch_replay": "reports/preparation/sf-sparse-batch-replay.json"
+}

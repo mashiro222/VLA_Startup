@@ -13,6 +13,7 @@ import sentencepiece
 import torch
 from sf_training.preparation import compute_stats as compute_stats
 from sf_training.preparation import read_episodes as read_episodes
+from sf_training.normalization import normalize
 
 
 class ArenaData:
@@ -77,6 +78,7 @@ class ArenaData:
                 np.minimum(np.arange(index, index + self.horizon), self.ends[i] - 1)
             ]
             task_index = int(self.packed["task"][index])
+        rare_rotation = bool(np.any(actions[:, 3:5] != 0))
         state = normalize(state, self.stats["state"])
         actions = normalize(actions, self.stats["actions"])
         imgs = []
@@ -109,18 +111,13 @@ class ArenaData:
             ),
             tokens=torch.tensor(ids, dtype=torch.long),
             token_mask=torch.tensor(mask),
+            rare_rotation=torch.tensor(rare_rotation),
             sample_index=index,
         )
 
 
 def chunk(actions, t, horizon):
     return actions[np.minimum(np.arange(t, t + horizon), len(actions) - 1)]
-
-
-def normalize(x, stats):
-    low = np.asarray(stats["q01"], dtype=np.float32)
-    high = np.asarray(stats["q99"], dtype=np.float32)
-    return (x - low) / (high - low + 1e-6) * 2 - 1
 
 
 def batch_indices(size, seed, step, global_batch, rank=0, world=1):

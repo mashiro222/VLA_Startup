@@ -1,0 +1,122 @@
+{
+  "snapshot_time": "2026-10-17T19:24:17.708403-04:00",
+  "run": "arena-sf-train-full-001",
+  "conclusion": "Action quantile normalization has degenerate ranges on zero-based dimensions 3 and 4. Both training arms have extreme finite loss spikes. These runs are not a valid baseline/SF comparison.",
+  "norm_stats_sha256": "0be7da80e9d2d6880766edde185c7f138f74cfc16fc2c5efe5da3da0b95e36ca",
+  "method": "Replay deterministic global batches, clamp 10-step action chunks at episode boundaries, apply the current quantile transform, and compare extreme target batches (abs > 1000) against logged flow_mse > 1000. Targets are padded from 7 to 32 action dimensions.",
+  "action_dimensions": [
+    {
+      "dimension_zero_based": 0,
+      "q01": -1.0,
+      "q99": 1.0,
+      "raw_min": -1.0,
+      "raw_max": 1.0,
+      "nonzero_frames": 75666,
+      "normalized_abs_max": 1.0
+    },
+    {
+      "dimension_zero_based": 1,
+      "q01": -1.0,
+      "q99": 1.0,
+      "raw_min": -1.0,
+      "raw_max": 1.0,
+      "nonzero_frames": 109473,
+      "normalized_abs_max": 1.0
+    },
+    {
+      "dimension_zero_based": 2,
+      "q01": -1.0,
+      "q99": 1.0,
+      "raw_min": -1.0,
+      "raw_max": 1.0,
+      "nonzero_frames": 104016,
+      "normalized_abs_max": 1.0
+    },
+    {
+      "dimension_zero_based": 3,
+      "q01": 0.0,
+      "q99": 0.0,
+      "raw_min": 0.0,
+      "raw_max": 0.675000011920929,
+      "nonzero_frames": 2631,
+      "normalized_abs_max": 1349999.0
+    },
+    {
+      "dimension_zero_based": 4,
+      "q01": 0.0,
+      "q99": 0.0,
+      "raw_min": -0.675000011920929,
+      "raw_max": 0.675000011920929,
+      "nonzero_frames": 2722,
+      "normalized_abs_max": 1350001.0
+    },
+    {
+      "dimension_zero_based": 5,
+      "q01": -0.44999998807907104,
+      "q99": 0.0,
+      "raw_min": -0.675000011920929,
+      "raw_max": 0.8999999761581421,
+      "nonzero_frames": 6271,
+      "normalized_abs_max": 4.999986171722412
+    },
+    {
+      "dimension_zero_based": 6,
+      "q01": -1.0,
+      "q99": 1.0,
+      "raw_min": -1.0,
+      "raw_max": 1.0,
+      "nonzero_frames": 361736,
+      "normalized_abs_max": 1.0
+    }
+  ],
+  "arms": {
+    "baseline": {
+      "job_id": 14127636,
+      "logged_steps": 1771,
+      "latest_step": 1771,
+      "target_steps": 60000,
+      "extreme_loss_updates": 783,
+      "extreme_loss_fraction": 0.44212309429700736,
+      "target_loss_outlier_matches": 1771,
+      "max_flow_mse": 2808154112.0,
+      "first_extreme_update": {
+        "step": 5,
+        "flow_mse": 791030976.0,
+        "alignment": 0.0,
+        "grad_norm": 59877.46484375,
+        "target_abs_max": 899999.0,
+        "target_mean_square_padded": 791013867.3368161,
+        "extreme_target": true,
+        "extreme_loss": true,
+        "seconds": 11.691507701063529
+      },
+      "recent_mean_seconds_per_update": 13.208159392455126,
+      "checkpoints": [
+        "step-00001000.pt"
+      ]
+    },
+    "sf": {
+      "job_id": 14127637,
+      "logged_steps": 978,
+      "latest_step": 978,
+      "target_steps": 60000,
+      "extreme_loss_updates": 437,
+      "extreme_loss_fraction": 0.44683026584867075,
+      "target_loss_outlier_matches": 978,
+      "max_flow_mse": 2808154112.0,
+      "first_extreme_update": {
+        "step": 5,
+        "flow_mse": 791030976.0,
+        "alignment": 0.969203531742096,
+        "grad_norm": 59877.46875,
+        "target_abs_max": 899999.0,
+        "target_mean_square_padded": 791013867.3368161,
+        "extreme_target": true,
+        "extreme_loss": true,
+        "seconds": 16.053938550991006
+      },
+      "recent_mean_seconds_per_update": 14.79178681998048,
+      "checkpoints": []
+    }
+  }
+}
