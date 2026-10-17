@@ -4,10 +4,11 @@ import math
 import random
 from pathlib import Path
 import numpy as np
-import torch
 
 
 def seed_all(seed):
+    import torch
+
     random.seed(seed)
     np.random.seed(seed)
     torch.manual_seed(seed)

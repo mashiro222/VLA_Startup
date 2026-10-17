@@ -1,0 +1,113 @@
+{
+  "checks": [
+    {
+      "action_shape": [
+        10,
+        32
+      ],
+      "exact_match": true,
+      "image_shape": [
+        2,
+        3,
+        224,
+        224
+      ],
+      "index": 0,
+      "prompt_tokens": 14
+    },
+    {
+      "action_shape": [
+        10,
+        32
+      ],
+      "exact_match": true,
+      "image_shape": [
+        2,
+        3,
+        224,
+        224
+      ],
+      "index": 106,
+      "prompt_tokens": 14
+    },
+    {
+      "action_shape": [
+        10,
+        32
+      ],
+      "exact_match": true,
+      "image_shape": [
+        2,
+        3,
+        224,
+        224
+      ],
+      "index": 107,
+      "prompt_tokens": 17
+    },
+    {
+      "action_shape": [
+        10,
+        32
+      ],
+      "exact_match": true,
+      "image_shape": [
+        2,
+        3,
+        224,
+        224
+      ],
+      "index": 180868,
+      "prompt_tokens": 12
+    },
+    {
+      "action_shape": [
+        10,
+        32
+      ],
+      "exact_match": true,
+      "image_shape": [
+        2,
+        3,
+        224,
+        224
+      ],
+      "index": 361735,
+      "prompt_tokens": 20
+    }
+  ],
+  "episodes": 3018,
+  "frames": 361736,
+  "norm_stats_sha256": "0be7da80e9d2d6880766edde185c7f138f74cfc16fc2c5efe5da3da0b95e36ca",
+  "packed_manifest": {
+    "episodes": 3018,
+    "files": {
+      "actions.npy": {
+        "sha256": "0bd725dcc8cbb9b15406defd88c98ff9d3986e316eb80fea5be2d2fdc21820ff",
+        "size": 10128736
+      },
+      "ends.npy": {
+        "sha256": "5eac180769737dceae052f934c0d203c166d3be862327be357d2123377d54daa",
+        "size": 24272
+      },
+      "images.bin": {
+        "sha256": "e618e374b531b621765c3f96df7de5280d688a2ac5ea40ae36df65378542e4a4",
+        "size": 37494111114
+      },
+      "offsets.npy": {
+        "sha256": "f482cabb4b39fba4b6eea333118b5784bef9038eec7f87a3fcd0409ba9dffbdb",
+        "size": 11575680
+      },
+      "state.npy": {
+        "sha256": "7ed22315c74b6ff96cdfe95f40b0aff16d807c79c5ed6cb3fbff753714c81ca5",
+        "size": 11575680
+      },
+      "task.npy": {
+        "sha256": "76d28d942fc1dac2d20c6d6267261d4e7d83a505d09475b2dd0d188b6d506671",
+        "size": 2894016
+      }
+    },
+    "frames": 361736,
+    "source_manifest": "694062bd19195337dd6bbaf0b74a4fe53ad65e6a00da03898508b980acdd3c2b"
+  }
+}

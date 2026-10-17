@@ -221,25 +221,38 @@ def test_packed_and_parquet_sample_equivalence(tmp_path):
     }
     raw = ArenaData(root, tokenizer, stats)
     expected = raw[1]
-    packed = root / "packed"
-    packed.mkdir()
-    offsets = []
-    with (packed / "images.bin").open("wb") as out:
-        for _ in range(2):
-            pair = []
-            for _ in range(2):
-                pair.append([out.tell(), len(blob)])
-                out.write(blob)
-            offsets.append(pair)
-    for n, x in [
-        ("state", states),
-        ("actions", actions),
-        ("task", [0, 0]),
-        ("ends", [2]),
-        ("offsets", offsets),
-    ]:
-        np.save(packed / (n + ".npy"), x)
-    (packed / "complete.json").write_text("{}")
+    from sf_training import pack
+    from sf_training.utils import sha
+    from unittest.mock import patch
+
+    # Exercise the actual disk-backed writer, including final-frame chunk padding.
+    staging = tmp_path / "project"
+    home = staging / ".runtime/training"
+    home.mkdir(parents=True)
+    (home / "arena_l0").symlink_to(root, target_is_directory=True)
+    manifest = staging / "config/sf_training/assets.json"
+    manifest.parent.mkdir(parents=True)
+    manifest.write_text("{}")
+    (home / "assets_verified.json").write_text(
+        json.dumps({"manifest_sha256": sha(manifest)})
+    )
+    (home / "norm_stats.json").write_text("{}")
+    values["episode_index"] = [0, 0]
+    pq.write_table(
+        pa.Table.from_pydict(values), root / "data/chunk-000/episode_000000.parquet"
+    )
+    with (
+        patch.dict("os.environ", {"VLA_ROOT": str(staging)}),
+        patch.object(pack, "EXPECTED_EPISODES", 1),
+        patch.object(pack, "EXPECTED_FRAMES", 2),
+    ):
+        pack.main()
+    marker = json.loads((root / "packed/complete.json").read_text())
+    assert marker["frames"] == 2 and marker["episodes"] == 1
+    assert all(
+        sha(root / "packed" / name) == spec["sha256"]
+        for name, spec in marker["files"].items()
+    )
     actual = ArenaData(root, tokenizer, stats)[1]
     for k in expected:
         if k != "sample_index":
@@ -294,3 +307,22 @@ def test_sf_zero_weight_shares_policy_flow_and_keeps_teacher_frozen():
     torch.testing.assert_close(a, b)
     torch.testing.assert_close(baseline.policy.w.grad, sf.policy.w.grad)
     assert not any(n.startswith("teacher") for n, _ in sf.named_parameters())
+
+
+def test_prefetched_episodes_preserve_order_and_columns(tmp_path):
+    import pyarrow as pa
+    import pyarrow.parquet as pq
+    from sf_training.data import read_episodes
+
+    paths = []
+    for i in range(7):
+        path = tmp_path / f"episode-{i}.parquet"
+        pq.write_table(
+            pa.table({"state": [[float(i)]], "actions": [[float(i + 1)]]}), path
+        )
+        paths.append(path)
+    expected = [(p, pq.read_table(p, columns=["state"]).to_pydict()) for p in paths]
+    assert list(read_episodes(paths, columns=["state"], prefetch=3)) == expected
+    assert list(read_episodes([], prefetch=2)) == []
+    with pytest.raises(ValueError, match="prefetch"):
+        list(read_episodes(paths, prefetch=0))

@@ -1,11 +1,11 @@
 {
   "date": "2026-10-17",
   "cpu_tests": {
-    "tests": "25",
+    "tests": "26",
     "failures": "0",
     "errors": "0",
     "skipped": "0",
-    "time": "354.013"
+    "time": "139.853"
   },
   "conversion_shape_audit": {
     "expected_tensors": 813,
@@ -20,15 +20,27 @@
   },
   "policy_trainable_parameters": 466957072,
   "gpu_training_validated": false,
-  "training_submitted": false,
+  "training_submitted": true,
   "evaluation_smoke_job": "14126130",
   "prepared_scheme": "2 A100 GPUs per training arm; maximum 4 for paired formal training",
-  "note": "GPU validation is an automatic prerequisite, not established by CPU tests.",
+  "note": "CPU tests and real-data checks passed. Formal jobs are submitted with afterok:14127618. GPU training is not yet validated.",
   "evaluation_smoke_state": "COMPLETED",
   "assets": {
     "manifest_sha256": "694062bd19195337dd6bbaf0b74a4fe53ad65e6a00da03898508b980acdd3c2b",
     "files": 3054,
     "bytes": 55017991583,
     "verified_at_unix": 1792211516.636993
-  }
+  },
+  "unique_cpu_tests": 26,
+  "data_ready": true,
+  "real_sample_audit": "sf-data-audit.json",
+  "data_preparation_peak_rss_kib": 872800,
+  "data_preparation_exit_code": 0,
+  "cpu_test_exit_code": 0,
+  "training_validation_job": "14127618",
+  "formal_jobs": {
+    "baseline": "14127636",
+    "sf": "14127637"
+  },
+  "submission_evidence": "../training-submissions-2026-10-17/slurm-verified.json"
 }

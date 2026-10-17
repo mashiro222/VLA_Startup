@@ -6,9 +6,12 @@ import os
 import shutil
 from pathlib import Path
 import numpy as np
-import pyarrow.parquet as pq
-from sf_training.data import compute_stats
+from sf_training.preparation import compute_stats, read_episodes
 from sf_training.utils import write_json, sha
+
+
+EXPECTED_EPISODES = 3018
+EXPECTED_FRAMES = 361736
 
 
 def main():
@@ -30,24 +33,37 @@ def main():
         if tmp.exists():
             shutil.rmtree(tmp)
         tmp.mkdir()
-        states = []
-        actions = []
-        tasks = []
-        offsets = []
-        ends = []
+        specs = {
+            "state": ((EXPECTED_FRAMES, 8), "float32"),
+            "actions": ((EXPECTED_FRAMES, 7), "float32"),
+            "task": ((EXPECTED_FRAMES,), "int64"),
+            "offsets": ((EXPECTED_FRAMES, 2, 2), "int64"),
+            "ends": ((EXPECTED_EPISODES,), "int64"),
+        }
+        arrays = {
+            name: np.lib.format.open_memmap(
+                tmp / (name + ".npy"), mode="w+", dtype=dtype, shape=shape
+            )
+            for name, (shape, dtype) in specs.items()
+        }
+        episodes = 0
         total = 0
         image_hash = hashlib.sha256()
         with (tmp / "images.bin").open("wb") as out:
-            for i, p in enumerate(sorted((data / "data").glob("chunk-*/*.parquet"))):
-                e = pq.read_table(p).to_pydict()
+            paths = sorted((data / "data").glob("chunk-*/*.parquet"))
+            for i, (p, e) in enumerate(read_episodes(paths)):
                 length = len(e["state"])
                 if not all(int(x) == i for x in e["episode_index"]):
                     raise ValueError("Unexpected episode order")
-                states.extend(e["state"])
-                actions.extend(e["actions"])
-                tasks.extend(e["task_index"])
+                begin = total
                 total += length
-                ends.append(total)
+                if total > EXPECTED_FRAMES or i >= EXPECTED_EPISODES:
+                    raise ValueError("Dataset exceeds expected dimensions")
+                arrays["state"][begin:total] = e["state"]
+                arrays["actions"][begin:total] = e["actions"]
+                arrays["task"][begin:total] = e["task_index"]
+                arrays["ends"][i] = total
+                episodes = i + 1
                 for t in range(length):
                     pair = []
                     for key in ("image", "wrist_image"):
@@ -55,19 +71,14 @@ def main():
                         pair.append([out.tell(), len(b)])
                         out.write(b)
                         image_hash.update(b)
-                    offsets.append(pair)
+                    arrays["offsets"][begin + t] = pair
                 if (i + 1) % 250 == 0:
-                    print(f"Packed {i + 1}/3018 episodes", flush=True)
-        if (len(ends), total) != (3018, 361736):
+                    print(f"Packed {i + 1}/{EXPECTED_EPISODES} episodes", flush=True)
+        if (episodes, total) != (EXPECTED_EPISODES, EXPECTED_FRAMES):
             raise ValueError("Packed dataset incomplete")
-        for name, values, dtype in [
-            ("state", states, "float32"),
-            ("actions", actions, "float32"),
-            ("task", tasks, "int64"),
-            ("offsets", offsets, "int64"),
-            ("ends", ends, "int64"),
-        ]:
-            np.save(tmp / (name + ".npy"), np.asarray(values, dtype=dtype))
+        for array in arrays.values():
+            array.flush()
+        del arrays
         files = {
             p.name: dict(
                 size=p.stat().st_size,
@@ -78,7 +89,7 @@ def main():
         write_json(
             tmp / "complete.json",
             dict(
-                source_manifest=identity, frames=total, episodes=len(ends), files=files
+                source_manifest=identity, frames=total, episodes=episodes, files=files
             ),
         )
         tmp.replace(pack)

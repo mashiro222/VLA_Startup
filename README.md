@@ -8,6 +8,8 @@
 
 **Arena：** 通信修复后的单 A100 smoke `14074038_0` / `arena-smoke-002` 已完成 **15/15 条，SR 0%，平均 CC 41.05**；均在 300 步上限结束，未复现通信超时。见 [录像、接口与 CC 诊断](docs/arena-smoke-audit-2026-10-16.md)。新增终止原因、逐谓词 cost、接触段/持续步数记录，并通过 34 项回归检查；[1,500 条评测方案](docs/arena-diagnostics.md)已准备，新记录器的单卡诊断 smoke `14126130_0` 已完成 15/15 条，SR 0%、平均 CC 33.33，无基础设施错误，见[诊断结果](reports/arena-smoke-003/summary.md)。[π0.5 LoRA / Spatial Forcing 对照设计](docs/arena-spatial-forcing-plan.md)与[训练实现及运行说明](docs/arena-sf-training.md)定义了从 `pi05_base` 开始的配对实验。
 
+**训练（2026-10-17）：** `pi05_base` 的 Arena LoRA baseline `14127636` 与 LoRA+SF `14127637` 已正式提交，各 2 张 A100；均等待训练验证 `14127618` 成功后启动。[配置、提交记录及监控命令](docs/arena-sf-training.md)。
+
 | 内容 | 文档 |
 |---|---|
 | 实验结果与未完成实验记录 | [docs/results-overview.md](docs/results-overview.md) |

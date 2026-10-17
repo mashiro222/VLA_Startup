@@ -8,6 +8,9 @@ export PYTHONPATH="$ROOT/src:$SF_REPO/openpi-SF/src"
 export JAX_PLATFORMS=cpu
 export OMP_NUM_THREADS="${OMP_NUM_THREADS:-2}"
 export TOKENIZERS_PARALLELISM=false
+# Policy construction wraps an unused compiled inference method upstream.
+# Avoid spawning a 32-worker Inductor pool for that wrapper in each DDP rank.
+export TORCHINDUCTOR_COMPILE_THREADS=1
 export HF_HUB_OFFLINE=1
 export WANDB_MODE=disabled
 cd "$ROOT"

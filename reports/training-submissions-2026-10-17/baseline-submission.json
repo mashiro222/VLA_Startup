@@ -1,0 +1,30 @@
+{
+  "attempted_at": "2026-10-17T04:59:50.829317+00:00",
+  "command": [
+    "sbatch",
+    "--dependency=afterok:14127618",
+    "--kill-on-invalid-dep=yes",
+    "--parsable",
+    "--account=gts-jli741-paid",
+    "--partition=gpu-a100",
+    "--qos=inferno",
+    "--gres=gpu:a100:2",
+    "--nodes=1",
+    "--ntasks=1",
+    "--cpus-per-task=16",
+    "--mem=96G",
+    "--time=24:00:00",
+    "--job-name=sf-arena-sf-train-full-001-baseline",
+    "--chdir=/storage/scratch1/1/gliu386/VLA_Startup",
+    "--output=/storage/scratch1/1/gliu386/VLA_Startup/logs/arena-sf-train-full-001-baseline-%j.out",
+    "/storage/scratch1/1/gliu386/VLA_Startup/slurm/sf_train.sbatch",
+    "arena-sf-train-full-001",
+    "baseline",
+    "arena-sf-train-smoke-001"
+  ],
+  "job_id": "14127636",
+  "returncode": 0,
+  "status": "submitted",
+  "stderr": "",
+  "stdout": "14127636\n"
+}

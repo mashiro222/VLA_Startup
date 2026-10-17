@@ -1,5 +1,31 @@
 # Arena π0.5 LoRA / Spatial Forcing 训练
 
+## 提交记录（2026-10-17）
+
+01:00 EDT 已核对 Slurm 中的账户、资源和依赖。账户均为 **`gts-jli741-paid`**，分区 `gpu-a100`，每项申请同一节点的 2 张 A100、16 CPU、96 GB 主存。
+
+| 任务 | Job ID | 时限 | 核对时状态 |
+|---|---|---|---|
+| 两组短训练验证 | `14127618` | 3 小时 | PENDING / Priority |
+| 正式 LoRA baseline | `14127636` | 24 小时 | PENDING / Dependency |
+| 正式 LoRA + SF | `14127637` | 24 小时 | PENDING / Dependency |
+
+**两个正式任务已提交。** 二者均依赖 `afterok:14127618`，验证成功后自动进入资源调度，无需再次手工提交。GPU 正确性尚未确认；验证失败时正式任务不会启动。正式两组同时运行最多使用 4 张 A100。
+
+已完成 3,054 个文件（55,017,991,583 bytes）校验、3,018 条 / 361,736 帧数据打包与归一化、包含轨迹边界的 5 个真实样本等价检查，以及 26 项 CPU 测试。初版预处理在积累全数据集列表时被系统终止；现已改为磁盘数组，并隔离 PyTorch 导入，完整预处理正常退出，实测峰值 RSS 为 872,800 KiB。模型初始化时不需要的 Inductor 后台编译池也已限制为单线程。
+
+[准备检查](../reports/preparation/sf-validation.json)、[真实样本检查](../reports/preparation/sf-data-audit.json)、[Slurm 核对记录](../reports/training-submissions-2026-10-17/slurm-verified.json)与同目录内的两个冻结计划、三个提交回执保存于 GitHub。模型、数据、checkpoint 和运行日志保留在 scratch。
+
+```bash
+cd /storage/scratch1/1/gliu386/VLA_Startup
+squeue -j 14127618,14127636,14127637 -o '%.18i %.10T %.40j %.10M %R'
+sacct -j 14127618,14127636,14127637 --format=JobID%18,JobName%40,State,Elapsed,ExitCode
+# 日志在作业启动后创建；-F 可以等待文件出现。
+tail -F logs/arena-sf-train-smoke-001-smoke-14127618.out
+```
+
+正式日志分别为 `logs/arena-sf-train-full-001-baseline-14127636.out` 和 `logs/arena-sf-train-full-001-sf-14127637.out`。上表是提交时快照，实时进度以 Slurm、训练日志及 `runs/arena-sf-train-full-001/<arm>/metrics.jsonl` 为准。
+
 ## 实验定义
 
 两组均从官方 **`pi05_base`** 初始化，使用相同 Arena L0-L 示范、数据顺序、随机种子、可训练策略参数、优化器及训练预算。Baseline 只使用 flow-matching MSE；SF 增加冻结 VGGT 教师的视觉表示对齐损失。`pi05_libero` 只作为单独的迁移评测参照，不作为本次训练初始化。
@@ -73,7 +99,7 @@ bash scripts/test_sf.sh
 
 依赖由 uv 维护，锁文件为 `requirements/sf_train.lock`。只在 `.runtime/sf_train` 中安装 SF 要求的 transformers 4.53.2 overlay。下载清单固定 HF revision、GCS generation、文件大小和 SHA256/MD5/CRC32C；所有文件校验后才生成 `assets_verified.json`。
 
-Parquet 原始图像会打包成随机读取文件，避免每取一帧都重新解压整个 episode。归一化只使用训练示范，并按实际 clamped action chunk 统计。`pi05_base` 参数转换在首次训练验证的已分配节点上执行，不在登录节点运行大模型。转换检查全部参数名和 shape；唯一显式补零的是从不参与动作推理的 expert LM vocabulary head。
+Parquet 原始图像采用有界并行读取，数值与索引直接写入预分配磁盘数组，CPU 预处理不加载 PyTorch。按原 episode 顺序打包成随机读取文件，避免每取一帧都重新解压整个 episode。实际样本的打包前后等价性单独核对；数值、图像、语言 token 和轨迹末尾动作片段均须一致。归一化只使用训练示范，并按实际 clamped action chunk 统计。`pi05_base` 参数转换在首次训练验证的已分配节点上执行，不在登录节点运行大模型。转换检查全部参数名和 shape；唯一显式补零的是从不参与动作推理的 expert LM vocabulary head。
 
 ## 训练验证与正式提交
 
@@ -114,7 +140,7 @@ bash scripts/sf.sh submit arena-sf-train-full-001 --arm sf \
 | `config/sf_training/recipe.json` | 修改步数、batch、LR、LoRA、SF λ 和 layer |
 | `src/sf_training/model.py` | π0.5 forward、FM loss、VGGT 特征和对齐 |
 | `src/sf_training/lora.py` | LoRA 注入、每 head 参数化、冻结范围 |
-| `src/sf_training/data.py`、`pack.py` | IL 样本、action chunk、tokenization、归一化 |
+| `src/sf_training/data.py`、`preparation.py`、`pack.py` | IL 样本、action chunk、tokenization、归一化与磁盘打包 |
 | `src/sf_training/train.py` | DDP、累积梯度、训练循环和诊断 |
 | `src/sf_training/checkpoint.py` | policy trainable、projector、optimizer、各 rank RNG 保存恢复 |
 | `src/sf_training/convert.py` | 官方 base checkpoint 转换和严格参数检查 |

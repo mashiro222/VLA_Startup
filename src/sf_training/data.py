@@ -11,6 +11,8 @@ from PIL import Image
 import pyarrow.parquet as pq
 import sentencepiece
 import torch
+from sf_training.preparation import compute_stats as compute_stats
+from sf_training.preparation import read_episodes as read_episodes
 
 
 class ArenaData:
@@ -144,49 +146,3 @@ def collate(items, device):
         for k in items[0]
         if k != "sample_index"
     }
-
-
-def compute_stats(root, horizon=10):
-    root = Path(root)
-    state_parts = []
-    action_parts = []
-    frames = 0
-    episodes = 0
-    for p in sorted((root / "data").glob("chunk-*/*.parquet")):
-        e = pq.read_table(p, columns=["state", "actions"]).to_pydict()
-        s = np.asarray(e["state"], dtype=np.float32)
-        a = np.asarray(e["actions"], dtype=np.float32)
-        if (
-            s.shape[1] != 8
-            or a.shape[1] != 7
-            or not np.isfinite(s).all()
-            or not np.isfinite(a).all()
-        ):
-            raise ValueError(f"Invalid training data: {p}")
-        state_parts.append(s)
-        # Statistics cover the same clamped action chunks sampled in training.
-        ix = np.minimum(np.arange(len(a))[:, None] + np.arange(horizon), len(a) - 1)
-        action_parts.append(a[ix].reshape(-1, 7))
-        frames += len(a)
-        episodes += 1
-    if (episodes, frames) != (3018, 361736):
-        raise ValueError(f"Incomplete dataset: {episodes} episodes {frames} frames")
-    result = {}
-    for key, parts in [("state", state_parts), ("actions", action_parts)]:
-        x = np.concatenate(parts)
-        result[key] = {
-            k: v.tolist()
-            for k, v in dict(
-                mean=x.mean(0),
-                std=x.std(0),
-                q01=np.quantile(x, 0.01, axis=0),
-                q99=np.quantile(x, 0.99, axis=0),
-            ).items()
-        }
-    return dict(
-        norm_stats=result,
-        episodes=episodes,
-        frames=frames,
-        action_horizon=horizon,
-        method="exact-frame-weighted-quantiles-clamped-chunks-v1",
-    )
