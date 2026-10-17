@@ -77,7 +77,8 @@ class RolloutTests(unittest.TestCase):
     def fixture(self, final_success=False, error=False):
         np = self.np
         cfg = json.loads((ROOT / 'config/arena.json').read_text())
-        cfg['evaluation'].update(max_steps=3, wait_steps=1, replan_steps=2, render_resolution=8, policy_resolution=8)
+        cfg['evaluation'].update(max_steps=3, wait_steps=1, replan_steps=2, render_resolution=8, policy_resolution=8,
+                                 predicate_diagnostics=False)
         unit = {'id': 'test-s7', 'suite': 'safety_static_obstacles', 'level': 0, 'task_id': 0,
                 'name': 'test', 'prompt': 'test', 'seed': 7, 'bddl': 'unused', 'init_file': 'unused'}
         class FakeEnv:

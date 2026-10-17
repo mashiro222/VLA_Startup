@@ -23,7 +23,7 @@
 
 本项目最终报告会将 **Our zero-shot SR/CC** 和 **Paper Arena-finetuned SR/CC** 分列，明确训练条件不同。它们是背景对照，不是误差容限或“复现通过”的判据。
 
-对本次 zero-shot 的定性预期：LIBERO 中学到的抓取、放置能力可能迁移到部分 Arena 任务，但新场景、物体、细致抓取及动态避障要求可能让成绩明显下降，个别任务组出现零成功并不意外。目前没有同一 checkpoint 在本协议下的实测依据，不能承诺总体非零，也不宜给出数值预测。15 条 smoke 每类每级只有一次；即使 0/15，也不能据此断定全量成功率为零。须结合视频、动作、计分和错误日志，区分未完成任务与接口错误；低 CC 也可能只是模型没有有效行动。
+LIBERO 中学到的抓取、放置能力可能迁移到部分 Arena 任务，但新场景、物体、细致抓取及动态避障要求可能让成绩明显下降。修复后的 smoke 实测为 0/15；每类每级只有一次，不能据此断定更大样本成功率为零。须结合视频、动作、计分和错误日志，区分未完成任务与接口错误；低 CC 也可能只是模型没有有效行动。详细证据见 [smoke 诊断](arena-smoke-audit-2026-10-16.md)。
 
 ## 2. 环境与依赖
 
@@ -53,13 +53,16 @@ bash scripts/arena.sh preflight --imports
 
 ## 3. 当前 smoke 与后续计划
 
+2026-10-16 更新：`arena-smoke-002` 已完成，15/15、SR 0%、平均 CC 41.05，通信超时未复现。[录像/接口审查](arena-smoke-audit-2026-10-16.md)和[分项诊断协议](arena-diagnostics.md)记录其局限。当前后续计划采用 1,500 条，不提交旧 full。
+
 | Profile | 覆盖 | 单元数 | 默认 worker 数 / 时限 |
 |---|---:|---:|---|
 | smoke | 每类每级选 task 0 × 1 = 15 | 15 | 1 / 2 小时 |
 | pilot | 75 × 10 × 1 seed = 750 | 75 | 4 / 8 小时 |
+| **balanced1500** | **75 × 20 个初态 × 1 seed = 1,500** | **75** | **4 / 8 小时** |
 | full | 75 × 10 × 3 seeds = 2,250 | 225 | 4 / 12 小时 |
 
-当前运行只提交 `arena-smoke-002`。新计划通过下列命令生成；提交命令已执行，保留作记录，**不要重复提交**：
+历史运行 `arena-smoke-002` 已结束。提交命令保留作记录，**不要重复提交**：
 
 ```bash
 cd /storage/scratch1/1/gliu386/VLA_Startup
@@ -76,14 +79,16 @@ tail -F logs/arena-smoke-002-14074038_0.out
 
 Smoke 通过要求：15 条有效 episode、没有基础设施错误，不要求 15 次模型都成功。完成后运行 `bash scripts/arena.sh report arena-smoke-002`。未完成但已有记录可加 `--partial`；0 条记录不生成成功率图。
 
-新的 full 计划以匹配配置的 smoke 完成端到端验证为前提。以下命令用于准备与提交预览，**不申请 GPU 资源**：
+新的 1,500 条计划以匹配配置的 smoke 完成端到端验证为前提。新记录器更改了冻结代码，需要新的 smoke；以下命令用于准备与提交预览，**不申请 GPU 资源**：
 
 ```bash
-bash scripts/arena.sh prepare full arena-full-002
-bash scripts/arena.sh submit arena-full-002 --smoke-run arena-smoke-002 --gpu a100
+bash scripts/arena.sh prepare smoke arena-smoke-003 --workers 1
+bash scripts/arena.sh submit arena-smoke-003 --smoke-run arena-smoke-003 --gpu a100
+bash scripts/arena.sh prepare balanced1500 arena-balanced1500-001
+bash scripts/arena.sh submit arena-balanced1500-001 --smoke-run arena-smoke-003 --gpu a100
 ```
 
-将来实际提交才在第二条末尾加 `--submit`，普通入口会检查匹配的 smoke。截至本记录，尚未执行这些命令或提交依赖作业；旧 `arena-full-001` 不用新代码续跑。Pilot 同理需新 run ID。
+将来实际提交才在对应 submit 命令末尾加 `--submit`，普通入口会检查匹配的 smoke。没有提交新作业；旧 `arena-full-001` 不用新代码续跑。Pilot 同理需新 run ID。
 
 每个 Arena 单元为一项任务的一个评测 seed，full 单元含 10 条 episode。worker 完成一个单元后动态领取下一个，只排到一张卡也能继续领取。它不是 LIBERO 旧四卡方案的固定四分之一分片。GPU 资源选项为 `--gpu a100` 或 `--gpu h100`，每个 worker 各申请一张；时限用 `--time-limit` 覆盖。Arena 的 H100 路径尚未验证，GPU/时限选择不保证排队速度。
 
@@ -95,19 +100,19 @@ bash scripts/arena.sh submit arena-full-002 --smoke-run arena-smoke-002 --gpu a1
 
 旧数组已全部结束、错误已检查且没有修改冻结代码时，使用同一提交命令续跑。每个 worker 启动前核对冻结文件；如果需要修改评测代码、任务定义或关键参数，使用新 run ID，不把改变后的数据接到原成绩中。无需修改环境的临时排队或时限问题可原计划续跑。基础设施异常会记录到单元的 `errors.jsonl` 并使 worker 非零退出，不计入模型失败。
 
-未来 full-002 所有 episode 完成后，在登录节点合并、出图，不申请 GPU（目前没有该运行）：
+后续 1,500 条 episode 完成后，在登录节点合并、出图，不申请 GPU：
 
 ```bash
-bash scripts/arena.sh report arena-full-002
+bash scripts/arena.sh report arena-balanced1500-001
 ```
 
 不完整时默认拒绝生成完整报告。需要观察中途结果时可明确使用：
 
 ```bash
-bash scripts/arena.sh report arena-full-002 --partial
+bash scripts/arena.sh report arena-balanced1500-001 --partial
 ```
 
-输出目录 `reports/arena-full-002/`：
+输出目录 `reports/arena-balanced1500-001/`，新增终止原因和分项 cost 表详见 [diagnostics](arena-diagnostics.md)：
 
 - `summary.md` / `summary.csv`：各 suite × level 的 SR、CC、覆盖数、带代价的成功数和论文参考。
 - `by_seed.csv`：三个**评测** seeds 的分组结果，不是三个训练 seeds 的误差条。
@@ -119,7 +124,7 @@ bash scripts/arena.sh report arena-full-002 --partial
 未来审查结果后，以下命令会明确把该小型报告提交并推送到 GitHub：
 
 ```bash
-bash scripts/publish_arena.sh arena-full-002
+bash scripts/publish_arena.sh arena-balanced1500-001
 ```
 
 它只暂存指定 `reports/` 子目录；不上传 checkpoint、场景、环境、视频或原始服务日志。模型任务失败属于正常结果，不应删除失败记录来提高分数。
@@ -133,7 +138,7 @@ SR 是任务是否完成。CC 是上游安全谓词在整个轨迹上的累计�
 明确记录的实验选择：
 
 - normalization 来自原 `pi05_libero` checkpoint，没有用 Arena 数据重新计算。
-- 默认与当前上游 YAML 一样，每任务使用第一个预存初始状态；10 次重复仍有不同的策略采样种子。可以在新实验里改为 `episode_idx`，但必须标出协议差异。
+- 旧 `arena-smoke-002` 和更早计划与上游 YAML 一样，使用第一个预存初始状态。新计划改为 `episode_idx`；`balanced1500` 对每任务使用不同的 0–19 号初态，与原先固定首态协议不同，不合并旧结果。
 - 三个评测 seed 标签为 7/17/27。每条 episode 从“suite、level、task、seed、episode”生成稳定的独立随机状态，且每条新建环境。这样 worker 数量、执行顺序和断点续跑不改变已定义的 episode；它不同于上游串行运行的连续 RNG 流，也不承诺跨 GPU 型号逐位一致。
 - 没有开启额外视觉或语言扰动，没有加安全控制器。这是直接测试现有策略，不是增强策略。
 - 源码版本与论文发布时的环境可能有差异，因此最终数字是本次固定版本协议下的迁移评测，不能视为作者训练条件的严格复现。
@@ -149,6 +154,8 @@ SR 是任务是否完成。CC 是上游安全谓词在整个轨迹上的累计�
 | GPU 资源与作业入口 | `slurm/arena.sbatch`、`scripts/arena.py` 的 `submit()` |
 | 模型服务启动与关闭 | `src/arena_startup/runtime.py`、`server.py`；通信在 `transport.py` |
 | 观测如何进入模型、action chunk 如何执行、CC 如何累计 | `src/arena_startup/evaluate.py` |
+| 图像/状态/动作接口，cost 和目标谓词被动记录 | `src/arena_startup/adapter.py`、`diagnostics.py` |
+| 终止原因、cost 类别与四格 outcome 表 | `src/arena_startup/diagnostic_report.py` |
 | 任务领取、断点记录、episode seed 和计分函数 | `src/arena_startup/core.py` |
 | 表格、图片与原始记录导出 | `src/arena_startup/report.py` |
 | 计分、异常、并发领取、断点与提交测试 | `tests/test_arena.py`、`test_arena_direct.py` |

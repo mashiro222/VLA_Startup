@@ -1,0 +1,63 @@
+{
+  "checked_utc": "2026-10-17T03:19:26.802712+00:00",
+  "tests": {
+    "command": "bash scripts/test_arena.sh",
+    "passed": 34,
+    "failed": 0,
+    "gpu_used": false,
+    "real_simulator_constructed": false,
+    "localhost_websocket_tests": true
+  },
+  "prepared_plans": {
+    "arena-smoke-003": {
+      "episodes": 15,
+      "units": 15,
+      "workers": 1,
+      "sha256": "b1923a3f42b8e82f7fa7b8045ed2fabcf0d18a25ccd4cd2803329c7fcb307b9b",
+      "initial_state_mode": "episode_idx",
+      "min_available_initial_states": 50,
+      "submission_records": 0
+    },
+    "arena-balanced1500-001": {
+      "episodes": 1500,
+      "units": 75,
+      "workers": 4,
+      "sha256": "dc9f9df3cebe85a42070a5a0ef3d3bb9633964831d5f5aebaa1f9975f75d3bf4",
+      "initial_state_mode": "episode_idx",
+      "min_available_initial_states": 50,
+      "submission_records": 0
+    }
+  },
+  "new_slurm_jobs_submitted": false,
+  "new_diagnostic_gpu_validation": "not yet performed",
+  "sf_source_commit": "372819b31ba9a2c8fc5989edc7d525cb187cecd5",
+  "sf_training_implementation": "design only; LoRA/SF training integration not implemented",
+  "frozen_files": {
+    ".runtime/repos/openpi/uv.lock": "793488b5a55bb87200db90a61fd0af51922b686d94e1da4f4c587ab119b37d74",
+    "config/arena.json": "e527d96dd163a630bb1cd06b4261d589585037a9f8e3bcc53b7c678e566f17c8",
+    "config/checkpoint_files.json": "49e389064fb191d2f4ba5dc76af92a89ca770e5595c73f5d3606010332d34144",
+    "config/sources.json": "9033c266c3baf6105e0ce5672b457ccfb9a01461e6dd16437b16d4c4ae31848b",
+    "requirements/arena.lock": "6a10a244bc7fb57edd94220d26a86481e2acb03f7d6d8f960d02565a148a5963",
+    "scripts/arena.py": "7f8dad41d13fef3bcd43e357e4b5c6c94a409529a4079b135ca6e39a51a03a15",
+    "scripts/arena.sh": "754fc636f88f121ea88501a7d5ed4f0e7537bce050c9392c02734df8896af77e",
+    "scripts/patch_arena.py": "cbe282f46678643053a13495ab325e7a5f4f11fedb16f158724cebf4aed453b8",
+    "slurm/arena.sbatch": "d9fa8ae3d9eb15b843a5e7745db7a1d13dedf3817ecebf11491488ff1ac8c255",
+    "src/arena_startup/__init__.py": "917e69d2622cfeb1aa2ae08c361e7eb286d10a7dbfc8b4bd7c53c371b19080a3",
+    "src/arena_startup/adapter.py": "bb83ced8ceddae77ade12f96d1046bf9120ca2d62357152a5dd8916e61b8a2ab",
+    "src/arena_startup/catalog.py": "cfe8bb50021ee5aecc74b0bec0f7b76d383836fca0746864e18b8c881a775005",
+    "src/arena_startup/core.py": "a8bcd0d740e2e5ceed305a538aacac71ce955f3cd2507f73351bedb91d26ee45",
+    "src/arena_startup/diagnostic_report.py": "22dc206e2b0b1f289e6d32ec3e3b001f8bd9eafdc898af4ac4ea49eb89c9217a",
+    "src/arena_startup/diagnostics.py": "38084bb948d2d217a34c4615a4d4060a14b1c401cf59a311f3ff11967018150f",
+    "src/arena_startup/evaluate.py": "498d8f8916d570229bc6c8aef91b4a8888ae6b084926135c76b5ff971014a383",
+    "src/arena_startup/report.py": "e038099bd27d6a8b298680e4c35332f49a1a31f0552f87817b1874f1bf25c62c",
+    "src/arena_startup/runtime.py": "379927fccde8a18800a061d764d9b6e7a27696932b285351f22cfd962e44d4a9",
+    "src/arena_startup/server.py": "c2ad10c9a306d93efa4b6f403f3dbdd719b05c240dabee4db6695625683b2871",
+    "src/arena_startup/transport.py": "79c38b8ae8d19ac6768cdd286313a11ff4323724e3c76c4a25c140fb2c16e467",
+    "src/vla_startup/__init__.py": "28a9d13a05a834794f89520c799476686187156a992d6e7d72399f0b072baad3",
+    "src/vla_startup/evaluate.py": "0cb87bf6e02a03bcaea34437f1a292572e6d0a0025bea1c7d619ca1c17245028",
+    "src/vla_startup/journal.py": "ba426a18be34f40b1ce16521873365a50527c5a27292762f493cb5979dba106e",
+    "src/vla_startup/manifest.py": "e85ec7f2c65abd03e77332643dc6bf6e76c783a358966c3b22d1ee249f34511e",
+    "src/vla_startup/server.py": "3b7f261cf3d3392e4ad7cce15b994a841c5797bafe3f23fcba5997660148bc4f",
+    "src/vla_startup/summarize.py": "45a4994932f5b11ccd123654a1bf44ac18d8b4828c329a3c3beb7b9178c2129f"
+  }
+}

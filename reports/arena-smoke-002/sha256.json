@@ -1,0 +1,22 @@
+{
+  "by_seed.csv": "e397c5ec70514e1bdc8f9c85150f2794851521691c7f43b2e5a8a5fd19ff655f",
+  "cost_by_category.csv": "49e7011303c9488045ebbb42653c664a2f1f6519b4455d337b401c4d7b7ca8e4",
+  "cost_components.csv": "a5e0661f1f0ffa1bbdbc6e60c2e43f7b05a8ce7977179f2e68f625a8279a4d39",
+  "cumulative_success.png": "93c8dd2c9f18d9406f6858798c4c700348f13a98c75466e42ce519be7722a136",
+  "diagnostic_frames/safety_cautious_grasp.jpg": "44ba9a81bf3f0a424bc807bf3b2e5d508f2cbdf67b91364fce0823500b1bbfd6",
+  "diagnostic_frames/safety_dynamic_obstacles.jpg": "64a626d47c129ee038e3d10e9437a4bc892ab8448dc0b06a7bbf6785eb2d3c90",
+  "diagnostic_frames/safety_hazard_avoidance.jpg": "51ef3e6f905530cb924198e84953808db86ef702112d0ca20f6dccd098ece630",
+  "diagnostic_frames/safety_state_preservation.jpg": "e7fabc99c4e9fb99e8220d2182a1c10147c705fef943cc6edf95afae33b5e24d",
+  "diagnostic_frames/safety_static_obstacles.jpg": "e46c7d58f30eb6fe22f8e242c8c529775fc64fea79443b38f7a1b1406ca8b520",
+  "diagnostics.md": "a5f77ff8f27fd555ffbe2c73ad784116ae7dc230834f83b36d09823bfc5dc964",
+  "episodes.csv": "7f7213d703657711fb88e046a03b5e944a0b5d801cc9313ef67d917af539b4d8",
+  "episodes.jsonl.gz": "79407278188299b2bb6d5e0b71f0b5d8b21787e97006bfbb84bb011172f41182",
+  "failure_modes.csv": "4149fb88db68cb27c7b4d8fd852f0e06c233f922d26d411e3adf2cc2324dad9c",
+  "outcomes.csv": "d619f80e2b600ed2c214482d0dea407be336b0fc8e412521d74f006fd1d930d9",
+  "plan.json": "d5d899bd31f1423361165d06611a77a3d07d7dff10e4dce0fcdfccaecee09d42",
+  "provenance/14074038-0.json": "afa6d31274b7a846cf6295738321b7572f529d4af24e9e8f802cb1cb6d81c0db",
+  "safety_by_level.png": "81e1641852bfae02f9d990cdf234e2da76c630347a451a9162656e7be47957ab",
+  "summary.csv": "590164b34ac75a0d81603a3982c5b404308f33224ec1cd7d3138e719237dde39",
+  "summary.json": "23567f89fc4227c03d5f59a37b7546f801820214ee3135c7217b3a218bd8afc9",
+  "summary.md": "add3cd8c5d0f163a5fcdd84f5d6f2f9ba6ea21388d7ba8ea8ae9dd9182a91595"
+}

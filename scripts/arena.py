@@ -91,6 +91,8 @@ def prepare(args):
     for task in tasks:
         if task['task_id'] not in profile['task_ids']:
             continue
+        if proto['init_state_selection_mode'] == 'episode_idx' and task['init_count'] < profile['trials']:
+            raise ValueError('Insufficient distinct initial states; refusing repeated-state evaluation')
         for seed in profile['seeds']:
             units.append({**task, 'seed': seed, 'trials': profile['trials'],
                           'id': f"{task['suite']}-L{task['level']}-t{task['task_id']}-s{seed}"})
@@ -167,7 +169,7 @@ def main():
     p = argparse.ArgumentParser(description=__doc__)
     sub = p.add_subparsers(dest='command', required=True)
     q = sub.add_parser('preflight'); q.add_argument('--imports', action='store_true')
-    q = sub.add_parser('prepare'); q.add_argument('profile', choices=['smoke', 'pilot', 'full']); q.add_argument('run_id'); q.add_argument('--workers', type=int)
+    q = sub.add_parser('prepare'); q.add_argument('profile', choices=['smoke', 'pilot', 'balanced1500', 'full']); q.add_argument('run_id'); q.add_argument('--workers', type=int)
     q = sub.add_parser('submit'); q.add_argument('run_id'); q.add_argument('--submit', action='store_true'); q.add_argument('--gpu', choices=['a100', 'h100'], default='a100'); q.add_argument('--time-limit'); q.add_argument('--smoke-run', default='arena-smoke-001')
     for name in ['status', 'check', 'report', 'worker']:
         q = sub.add_parser(name); q.add_argument('run_id')

@@ -50,7 +50,7 @@ def build(run, allow_partial=False, output=None):
                                     'sr_percent': 100 * mean(r['success'] for r in part_seed) if part_seed else None,
                                     'cc': mean(r['cost'] for r in part_seed) if part_seed else None})
     save(output / 'plan.json', plan)
-    write_csv(output / 'episodes.csv', [{k: v for k, v in r.items() if k != 'rng_after'} for r in rows])
+    write_csv(output / 'episodes.csv', [{k: v for k, v in r.items() if k not in ('rng_after', 'diagnostics')} for r in rows])
     write_csv(output / 'summary.csv', groups)
     write_csv(output / 'by_seed.csv', seed_groups)
     with (output / 'episodes.jsonl.gz').open('wb') as f:
@@ -95,6 +95,9 @@ def build(run, allow_partial=False, output=None):
     matplotlib.use('Agg')
     import matplotlib.pyplot as plt
     import numpy as np
+    from .diagnostic_report import build_diagnostic_tables
+    result['diagnostic_summary'] = build_diagnostic_tables(output, rows, write_csv)
+    save(output / 'summary.json', result)
     fig, axes = plt.subplots(1, 2, figsize=(13, 4.8))
     for suite in cfg['suites']:
         selected = [g for g in groups if g['suite'] == suite]
