@@ -14,6 +14,7 @@
 | Arena 首轮 full | 0 / 2,250 | N/A | 四个 worker 都在首个动作返回前退出 | 同上 |
 | Arena 修复后 smoke `arena-smoke-002` | 15 / 15 | 0 / 15 = 0% | 通信正常；全部达到 300 步上限，平均 CC 41.05；仅为 smoke 样本 | [结果](../reports/arena-smoke-002/summary.md)、[录像与接口诊断](arena-smoke-audit-2026-10-16.md) |
 | Arena 归因 smoke `arena-smoke-003` | 15 / 15 | 0 / 15 = 0% | 逐谓词记录覆盖 15/15；均达 300 步，平均 CC 33.33，无基础设施错误 | [结果](../reports/arena-smoke-003/summary.md)、[终止与代价](../reports/arena-smoke-003/diagnostics.md) |
+| **Arena Safety balanced1500** | **1,500 / 1,500** | **172 / 1,500 = 11.47%** | 平均 CC 60.24，逐谓词记录 1,500/1,500，无基础设施错误 | [结果与归因](arena-results-2026-10-17.md)、[完整报告](../reports/arena-balanced1500-001/summary.md) |
 
 Clean 第 2 片原作业 `13974531_2` 在模型启动 900 秒限制下失败；补跑 `13988230_2` 于 **10 月 15 日 08:26:46–08:41:54** 再次以相同 `Policy startup timed out` 退出，没有新增有效 episode。启动超时的根因尚未确定；另外三片 H100 已运行成功，现有证据不足以认定 GPU 不兼容。该分片暂不继续补跑，clean 结果保留为部分覆盖。此问题与 Arena 的 WebSocket 心跳故障不同。历史记录与日志路径见 [clean 运行记录](full-clean-2026-10-12.md)。
 
@@ -60,16 +61,16 @@ Clean 第 2 片原作业 `13974531_2` 在模型启动 900 秒限制下失败；�
 
 `reports/arena-smoke-002/` 已包含汇总、逐 episode 表、终止原因及 `safety_by_level.png`、`cumulative_success.png`。旧 smoke 没有逐谓词记录，诊断覆盖率标为 0；不从录像编造 cost 分解。
 
-`pi05_libero` 的 1,500 条正式迁移评测 `arena-balanced1500-001` 已提交为数组作业 `14143493`（最多 4 张 A100），沿用完成 15/15 条、无基础设施错误的 `arena-smoke-003` 代码和协议。正式 SR/CC 需等待评测数据。
+`pi05_libero` 的 1,500 条正式迁移评测 `arena-balanced1500-001`（数组作业 `14143493`）已于 2026-10-17 22:00:40 EDT 全部完成。SR=11.47%，平均 CC=60.24；1,328 条失败均达到 300 步上限，无基础设施错误。Static SR=17%、CC=82.26；Dynamic SR=1%、CC=144.14。分组和接触代价详见[结果与归因](arena-results-2026-10-17.md)。
 
 ## 配对训练状态
 
-2026-10-17：旧 Arena LoRA baseline `14127636` 与 LoRA+SF `14127637` 因稀疏旋转动作的分位数区间退化而停止，旧 checkpoint 不用于修复后的对照。归一化已增加训练范围回退和全数据往返检查，新验证采用正式 batch 32、每组 32 步，并检查稀疏动作覆盖。正式重启计划为 `arena-sf-train-full-002`，本次显式跳过新的 GPU smoke，直接提交 baseline `14143587` 与 SF `14143602`，各 2 张 A100，从 `pi05_base` 重新开始；修复版 GPU 正确性尚未确认。当前没有训练后 SR/CC 结果。详见[训练说明](arena-sf-training.md)、[异常诊断](../reports/training-audit-2026-10-17/README.md)及[修复与提交记录](../reports/restart-2026-10-17/README.md)。
+2026-10-17：旧 Arena LoRA baseline `14127636` 与 LoRA+SF `14127637` 因稀疏旋转动作的分位数区间退化而停止，旧 checkpoint 不用于修复后的对照。归一化已增加训练范围回退和全数据往返检查，新验证采用正式 batch 32、每组 32 步，并检查稀疏动作覆盖。正式重启计划为 `arena-sf-train-full-002`，本次显式跳过新的 GPU smoke，直接提交 baseline `14143587` 与 SF `14143602`，各 2 张 A100，从 `pi05_base` 重新开始；修复版 GPU 正确性尚未确认。截至 22:25 EDT，两组均为 PENDING / Priority，尚未开始、尚无新 loss，因此不能判断修复后的 GPU 训练是否正常。当前没有训练后 SR/CC 结果。详见[训练说明](arena-sf-training.md)、[异常诊断](../reports/training-audit-2026-10-17/README.md)及[修复与提交记录](../reports/restart-2026-10-17/README.md)。
 
 ## 总结
 
 迁移评测使用官方 LIBERO 微调的 π0.5 固定 checkpoint。LIBERO-Plus 的 10,030 条测试已全部完成，成功率为 84.52%；七类扰动中，相机视角和机器人初态变化下的表现相对较弱。原版 LIBERO 对照完成 1,500/2,000 条，已完成部分成功率为 96.40%，完整评测尚未完成。
 
-VLA-Arena Safety 用于评估同一 checkpoint 的 zero-shot 迁移表现。首轮实验因通信超时未产生有效结果；修复后单卡 smoke 完成 15 条，SR 0%、平均 CC 41.05。现有证据更符合任务迁移不足，但不能排除全部适配问题，也不能用低 SR 单独证明安全性差。后续采用固定 1,500 条协议，并对 static/dynamic 的接触与终态代价进行分解；LoRA 与 LoRA+SF 为独立的后续对照实验。
+VLA-Arena Safety 用于评估同一 checkpoint 的 zero-shot 迁移表现。首轮实验因通信超时未产生有效结果；修复后单卡 smoke 完成 15 条，SR 0%、平均 CC 41.05。现有证据更符合任务迁移不足，但不能排除全部适配问题，也不能用低 SR 单独证明安全性差。固定 1,500 条评测现已完成，SR=11.47%、平均 CC=60.24，表明小样本 smoke 的零成功率不能代表全部任务。Static/Dynamic 的 CC 主要来自夹爪接触谓词；LoRA 与 LoRA+SF 为独立的后续对照实验。
 
 实际录像截图见 [场景图像](../reports/presentation-2026-10-15/README.md)。Arena 初始截图仅验证场景渲染，不代表动作执行或任务完成。小型报告随仓库备份；checkpoint、场景资产和视频保留在本地。

@@ -24,6 +24,8 @@ tail -F logs/arena-sf-train-full-002-baseline-14143587.out
 tail -F logs/arena-sf-train-full-002-sf-14143602.out
 ```
 
+2026-10-17 22:25 EDT 状态：baseline `14143587` 与 SF `14143602` 均为 **PENDING / Priority**，尚无训练日志或 loss。1,500 条 `pi05_libero` 评测已完成，结果见[独立评测报告](arena-results-2026-10-17.md)；这些 SR/CC 不属于待运行的 baseline/SF。
+
 运行和提交回执保存在 `runs/<run_id>/submission/`，本次归档见 [修复与提交记录](../reports/restart-2026-10-17/README.md)。旧的三步验证不再作为当前训练的有效依据。训练 smoke 与 `pi05_libero` 的 Arena 评测 smoke 是独立流程。
 
 ## 实验定义

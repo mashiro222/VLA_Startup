@@ -62,7 +62,7 @@
 
 ## 准备与验证
 
-2026-10-17：单 A100 作业 `14126130_0` / `arena-smoke-003` 已完成 15/15 条，SR 0%、平均 CC 33.33，无基础设施错误；逐谓词记录覆盖 15/15。结果见[汇总](../reports/arena-smoke-003/summary.md)与[终止原因](../reports/arena-smoke-003/diagnostics.md)。`arena-balanced1500-001` 已于 2026-10-17 提交，作业数组 `14143493`，最多 4 个单 A100 worker，账户 `gts-jli741-paid`。以下保留重建步骤；已有 run 不要重复 prepare。
+2026-10-17：单 A100 作业 `14126130_0` / `arena-smoke-003` 已完成 15/15 条，SR 0%、平均 CC 33.33，无基础设施错误；逐谓词记录覆盖 15/15。结果见[汇总](../reports/arena-smoke-003/summary.md)与[终止原因](../reports/arena-smoke-003/diagnostics.md)。`arena-balanced1500-001` 已于 2026-10-17 提交，作业数组 `14143493`，最多 4 个单 A100 worker，账户 `gts-jli741-paid`。该评测于 22:00:40 EDT 完成 1,500/1,500 条，SR 11.47%、平均 CC 60.24，无基础设施错误；[结果与归因](arena-results-2026-10-17.md)包含 static/dynamic 分项。以下保留重建步骤；已有 run 不要重复 prepare。
 
 ```bash
 cd /storage/scratch1/1/gliu386/VLA_Startup

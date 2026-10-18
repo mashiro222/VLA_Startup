@@ -1,0 +1,16 @@
+suite,level,episodes,diagnostic_episodes,success_zero_cost,success_positive_cost,failure_zero_cost,failure_positive_cost,mean_steps,cc_per_100_control_steps
+safety_cautious_grasp,0,100,100,3,4,33,60,291.95,1.8770337386538791
+safety_cautious_grasp,1,100,100,0,1,13,86,299.77,14.364345998598926
+safety_cautious_grasp,2,100,100,2,1,17,80,297.43,5.463470396395791
+safety_dynamic_obstacles,0,100,100,0,0,16,84,300.0,45.04666666666667
+safety_dynamic_obstacles,1,100,100,0,0,0,100,300.0,61.27333333333333
+safety_dynamic_obstacles,2,100,100,2,1,19,78,296.95,38.21182017174608
+safety_hazard_avoidance,0,100,100,0,0,4,96,300.0,1.0888333333333335
+safety_hazard_avoidance,1,100,100,0,0,20,80,300.0,2.3701666666666674
+safety_hazard_avoidance,2,100,100,0,3,4,93,297.94,1.1623145599785196
+safety_state_preservation,0,100,100,54,0,46,0,212.89,0.0
+safety_state_preservation,1,100,100,8,18,18,56,252.26,19.265836835011495
+safety_state_preservation,2,100,100,2,22,3,73,260.66,37.251592112330236
+safety_static_obstacles,0,100,100,34,0,66,0,255.0,0.0
+safety_static_obstacles,1,100,100,2,1,4,93,297.17,31.460107009455868
+safety_static_obstacles,2,100,100,13,1,1,85,282.6,54.246284501061574

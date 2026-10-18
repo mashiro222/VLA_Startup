@@ -1,0 +1,16 @@
+suite,level,seed,completed,sr_percent,cc
+safety_static_obstacles,0,7,100,34.0,0.0
+safety_static_obstacles,1,7,100,3.0,93.49
+safety_static_obstacles,2,7,100,14.000000000000002,153.3
+safety_cautious_grasp,0,7,100,7.000000000000001,5.48
+safety_cautious_grasp,1,7,100,1.0,43.06
+safety_cautious_grasp,2,7,100,3.0,16.25
+safety_hazard_avoidance,0,7,100,0,3.2665
+safety_hazard_avoidance,1,7,100,0,7.1105
+safety_hazard_avoidance,2,7,100,3.0,3.463
+safety_state_preservation,0,7,100,54.0,0.0
+safety_state_preservation,1,7,100,26.0,48.6
+safety_state_preservation,2,7,100,24.0,97.1
+safety_dynamic_obstacles,0,7,100,0,135.14
+safety_dynamic_obstacles,1,7,100,0,183.82
+safety_dynamic_obstacles,2,7,100,3.0,113.47
