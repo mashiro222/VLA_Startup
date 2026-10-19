@@ -1,4 +1,4 @@
-"""Matched-step migration to four GPUs with fixed optimizer/data/LR semantics."""
+"""Checkpoint migration to four GPUs with fixed optimizer/data/LR semantics."""
 import argparse
 import copy
 import json
@@ -19,18 +19,19 @@ def compatible(source, target):
         raise ValueError('Expected 4 GPUs x micro-batch 2 x accumulation 4')
 
 
-def prepare(source_path, output, calibration, pinned, target_step=20000):
+def prepare(source_path, output, calibration, pinned, target_step=20000, source_step=5000):
     source_path, output = Path(source_path).resolve(), Path(output).resolve()
     source = json.loads(source_path.read_text())
     target = copy.deepcopy(source)
     target.update(gpus=4, profile='full', time_limit='24:00:00')
     target['recipe'].update(micro_batch=2, steps=target_step)
-    # Keep 5k/10k/15k/20k milestone checkpoints in this bounded run.
+    if type(source_step) is not int or source_step < 1 or target_step <= source_step:
+        raise ValueError('Continuation must advance beyond a complete source checkpoint')
     target['recipe']['keep_checkpoints'] = source['recipe']['keep_checkpoints']
     target['migration'] = dict(source_plan=str(source_path), source_plan_sha256=file_hash(source_path),
-                               source_step=5000, pinned=str(Path(pinned).resolve()),
+                               source_step=source_step, pinned=str(Path(pinned).resolve()),
                                calibration=str(Path(calibration).resolve()), nodes=2, gpus_per_node=2,
-                               rng='Reset all rank streams deterministically at the matched 5000-step boundary; not bitwise replay')
+                               rng=f'Reset all rank streams deterministically at update {source_step}; not bitwise replay')
     compatible(source, target)
     if output.exists(): raise FileExistsError(output)
     save(output / 'plan.json', target)
@@ -84,7 +85,8 @@ if __name__ == '__main__':
     p = argparse.ArgumentParser(description=__doc__); s = p.add_subparsers(dest='command', required=True)
     q = s.add_parser('prepare'); q.add_argument('source'); q.add_argument('output'); q.add_argument('calibration'); q.add_argument('pinned')
     q.add_argument('--target-step', type=int, default=20000)
+    q.add_argument('--source-step', type=int, default=5000)
     q = s.add_parser('migrate'); q.add_argument('plan'); q.add_argument('arm', choices=['baseline', 'sf'])
     a = p.parse_args()
-    if a.command == 'prepare': prepare(a.source, a.output, a.calibration, a.pinned, a.target_step)
+    if a.command == 'prepare': prepare(a.source, a.output, a.calibration, a.pinned, a.target_step, a.source_step)
     else: migrate(a.plan, a.arm)

@@ -4,7 +4,8 @@
 
 | 内容 | 文档 |
 |---|---|
-| batch 2 测量、配对 5k 评测、四卡续训到 20k | [后续实验流程](microbatch-and-20k.md) |
+| 24 小时后手动评测、四卡各追加 15,000 步 | [当前后续实验流程](after-24h-followup.md) |
+| 已停用：固定 5k / 20k、总并发 8 卡 | [旧流程归档](microbatch-and-20k.md) |
 | 24 小时保存、恢复检查、扩卡限制与本次资源试算 | [训练 checkpoint](training-checkpoints.md) |
 | LoRA / SF 环境、提交、同配置续训与导出 | [训练运行手册](training-operations.md) |
 | Arena 环境、评测提交、结果与记录器重建 | [Arena 运行手册](arena-evaluation.md) |

@@ -1,5 +1,7 @@
 # 5k evaluation / 20k continuation preparation
 
+**Historical preparation; superseded by the [manual-only workflow](../../docs/run/after-24h-followup.md). The CPU controllers are stopped and no follow-up GPU jobs were submitted under this plan.**
+
 Prepared on 2026-10-18 (America/New_York). This directory contains preparation and submission evidence, not new model results.
 
 - Calibration job: **14171051**, two A100 40 GB GPUs, one-hour allocation, account `gts-jli741-paid`; pending when checked.

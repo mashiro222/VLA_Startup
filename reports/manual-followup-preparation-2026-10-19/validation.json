@@ -1,0 +1,23 @@
+{
+  "manual_preview_count": 4,
+  "automatic_submission": false,
+  "automatic_resubmission": false,
+  "new_jobs_submitted": 0,
+  "old_controller_cli_disabled": true,
+  "source_training_files_unchanged": true,
+  "original_jobs": {
+    "baseline": "14143587",
+    "sf": "14143602"
+  },
+  "existing_calibration_job": "14171051",
+  "evaluation_episodes_per_arm": 900,
+  "additional_training_updates": 15000,
+  "training_gpus": 4,
+  "micro_batch": 2,
+  "accumulation": 4,
+  "global_batch": 32,
+  "total_gpu_cap": null,
+  "tests_passed": 39,
+  "gpu_inference_verified": false,
+  "four_gpu_training_verified": false
+}

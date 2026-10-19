@@ -1,4 +1,4 @@
-"""Idempotent Slurm handoff: pin 5k, evaluate, and resume paired runs to 20k."""
+"""Legacy 5k controller and shared Slurm helpers. Current workflow: sf_followup.after24h."""
 import argparse
 import json
 import os
@@ -14,7 +14,7 @@ from sf_followup.checkpoints import pin
 def code_files():
     paths = list((ROOT / 'src/sf_followup').glob('*.py'))
     paths += list((ROOT / 'slurm').glob('sf_*.sbatch'))
-    paths += [ROOT / 'scripts/sf_multinode_worker.sh']
+    paths += [ROOT / 'scripts/sf_multinode_worker.sh', ROOT / 'scripts/sf_after24h.sh']
     paths += [ROOT / 'requirements/sf_followup.lock', ROOT / 'config/sf_followup_dependencies.json']
     return {str(p.relative_to(ROOT)): file_hash(p) for p in sorted(paths)}
 
@@ -30,7 +30,10 @@ def check(campaign):
     return c
 
 
-def command(name, script, args, gpus=0, nodes=1, hours=24, dependencies=(), constraint=None, time_limit=None):
+def command(name, script, args, gpus=0, nodes=1, hours=24, dependencies=(), constraint=None, time_limit=None,
+            dependency_type='afterany'):
+    if dependency_type not in ('afterany', 'afterok'):
+        raise ValueError('Unsupported dependency type')
     cmd = ['sbatch', '--parsable', '--account=gts-jli741-paid', '--qos=inferno',
            f'--partition={"gpu-a100" if gpus else "cpu-small"}', f'--nodes={nodes}',
            f'--ntasks={nodes}', '--ntasks-per-node=1', f'--cpus-per-task={8*gpus if gpus else 1}',
@@ -39,7 +42,7 @@ def command(name, script, args, gpus=0, nodes=1, hours=24, dependencies=(), cons
     if gpus: cmd.append(f'--gres=gpu:a100:{gpus}')
     if constraint: cmd.append(f'--constraint={constraint}')
     if dependencies:
-        cmd.append('--dependency=afterany:' + ':'.join(str(x) for x in dependencies))
+        cmd.append('--dependency=' + dependency_type + ':' + ':'.join(str(x) for x in dependencies))
         cmd.append('--kill-on-invalid-dep=yes')
     return cmd + [str(ROOT / script)] + list(map(str, args))
 
@@ -216,6 +219,8 @@ if __name__ == '__main__':
         q = s.add_parser(action); q.add_argument('campaign')
     q = s.add_parser('start'); q.add_argument('campaign'); q.add_argument('--submit', action='store_true')
     a = p.parse_args()
+    if a.action in ('start', 'tick', 'monitor'):
+        p.error('The capped 5k controller is retired. Use sf_followup.after24h for independent final-checkpoint follow-ups.')
     if a.action == 'start':
         c = check(a.campaign); directory = Path(a.campaign).parent
         jobs = [

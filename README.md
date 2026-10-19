@@ -13,7 +13,7 @@
 | 失败原因与 cost 归因 | [诊断协议](docs/arena-diagnostics.md) |
 | LoRA / SF 假设、数据、损失、参数冻结与代码 | [对照设计](docs/arena-spatial-forcing-plan.md)、[训练说明](docs/arena-sf-training.md) |
 | 24 小时 checkpoint、同配置恢复与扩卡限制 | [checkpoint 说明](docs/run/training-checkpoints.md) |
-| batch 2 测量、5k 配对评测、四卡续训至 20k | [后续实验流程](docs/run/microbatch-and-20k.md) |
+| 24 小时后手动评测、四卡各追加 15,000 步 | [后续实验流程](docs/run/after-24h-followup.md) |
 | 环境搭建、提交、监控与报告导出 | [操作目录](docs/run/README.md) |
 | 环境、Slurm、VS Code 问题 | [故障排查](docs/troubleshooting.md) |
 

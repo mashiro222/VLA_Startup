@@ -1,5 +1,7 @@
 # Paired 5k evaluation: 900 episodes per arm
 
+**Historical preparation; superseded by the [manual-only workflow](../../docs/run/after-24h-followup.md). The CPU controllers are stopped and no follow-up GPU jobs were submitted under this plan.**
+
 The evaluation budget increased before any evaluation job was submitted: 30 task configurations × 30 distinct initial states = **900 episodes per arm**, or **1,800** across baseline and SF. The original 300-episode manifests remain archived and are superseded for this comparison.
 
 | Scope | Task configurations | Episodes per arm |

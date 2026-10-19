@@ -285,16 +285,21 @@ def report(run):
                                     'L0 is within the training task distribution; L1/L2 evaluate difficulty generalization.\n')
 
 
-def compare(baseline, sf, output):
+def validate_comparison(plans, require_equal_steps=True):
+    for plan in plans: validate_plan(plan, check_files=False)
+    if (plans[0]['units'] != plans[1]['units'] or plans[0]['config']['evaluation'] != plans[1]['config']['evaluation']
+            or (require_equal_steps and plans[0]['trained_policy']['step'] != plans[1]['trained_policy']['step'])
+            or plans[0]['trained_policy']['plan_sha256'] != plans[1]['trained_policy']['plan_sha256']
+            or [p['trained_policy']['arm'] for p in plans] != ['baseline', 'sf']):
+        raise ValueError('Comparison requires the declared training budget, data and identical evaluation episodes')
+
+
+def compare(baseline, sf, output, require_equal_steps=True):
     import csv
     from statistics import mean
     plans = [json.loads((Path(r) / 'plan.json').read_text()) for r in (baseline, sf)]
-    for plan in plans: validate_plan(plan, check_files=False)
-    if (plans[0]['units'] != plans[1]['units'] or plans[0]['config']['evaluation'] != plans[1]['config']['evaluation']
-            or plans[0]['trained_policy']['step'] != plans[1]['trained_policy']['step']
-            or plans[0]['trained_policy']['plan_sha256'] != plans[1]['trained_policy']['plan_sha256']
-            or [p['trained_policy']['arm'] for p in plans] != ['baseline', 'sf']):
-        raise ValueError('Comparison requires identical training budget, data and evaluation episodes')
+    validate_comparison(plans, require_equal_steps)
+    steps = {p['trained_policy']['arm']: p['trained_policy']['step'] for p in plans}
     rows = [collect(Path(r), p) for r, p in zip((baseline, sf), plans)]
     if any(len(r) != p['expected_episodes'] for r, p in zip(rows, plans)):
         raise ValueError('Both evaluations must be complete')
@@ -304,11 +309,12 @@ def compare(baseline, sf, output):
         for level in plans[0]['config']['levels']:
             b, s = [[r for r in arm if r['suite'] == suite and r['level'] == level] for arm in rows]
             groups.append(dict(suite=suite, level=level, episodes=len(b),
+                               baseline_step=steps['baseline'], sf_step=steps['sf'],
                                baseline_sr=100*mean(r['success'] for r in b), sf_sr=100*mean(r['success'] for r in s),
                                baseline_cc=mean(r['cost'] for r in b), sf_cc=mean(r['cost'] for r in s)))
     with (output / 'comparison.csv').open('w') as f:
         w = csv.DictWriter(f, fieldnames=list(groups[0])); w.writeheader(); w.writerows(groups)
-    save(output / 'comparison.json', dict(step=plans[0]['trained_policy']['step'], groups=groups,
+    save(output / 'comparison.json', dict(steps=steps, matched_updates=require_equal_steps, groups=groups,
                                          baseline=str(baseline), sf=str(sf), training_seed_count=1))
     import matplotlib
     matplotlib.use('Agg')
@@ -322,10 +328,13 @@ def compare(baseline, sf, output):
             axes[i, j].set(title=suite, xlabel='Difficulty level', ylabel='SR (%)' if metric == 'sr' else 'Mean CC')
             axes[i, j].set_xticks([0, 1, 2]); axes[i, j].legend(); axes[i, j].grid(alpha=.2)
     fig.tight_layout(); fig.savefig(output / 'comparison.png', dpi=160); plt.close(fig)
-    (output / 'README.md').write_text('# Matched 5,000-step comparison\n\n'
+    title = f"Matched {steps['baseline']:,}-step comparison" if require_equal_steps else 'Final checkpoints from initial 24-hour training allocations'
+    (output / 'README.md').write_text(f'# {title}\n\n'
+                                    f"Baseline: {steps['baseline']:,} updates; SF: {steps['sf']:,} updates.\n"
                                     f"Each arm: global batch 32, {plans[0]['expected_episodes']} episodes, identical task/initial-state schedule.\n"
                                     'See comparison.csv and comparison.png; per-arm reports contain failure and cost attribution.\n'
-                                    'One paired training seed and an early checkpoint; convergence is not established.\n')
+                                    'One training seed; convergence is not established.\n'
+                                    + ('' if require_equal_steps else 'Training allocation limits are equal; optimizer update counts may differ. This is not an equal-update comparison.\n'))
 
 
 if __name__ == '__main__':

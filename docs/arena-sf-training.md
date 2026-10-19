@@ -4,7 +4,7 @@
 
 ## 实验定义
 
-2026-10-18 后续预算调整为 **5k 配对评测、再续训到累计 20k**，原两卡任务保留本次 24 小时分配。独立校准通过后使用四卡、micro-batch 2、累积 4，global batch 仍为 32；参见[后续流程](run/microbatch-and-20k.md)。下文 60k / micro-batch 1 表格描述最初冻结的上游参考配方。
+2026-10-19 后续协议调整为：两组分别完成原两卡任务的 24 小时分配，使用各自最后保存的 checkpoint 评测 **900 episodes**，并分别以四卡、micro-batch 2、累积 4 **追加 15,000 步**，global batch 仍为 32。两组分别手动提交，不自动调度，不设置总卡数上限，不固定 5k/20k 步数；参见[后续流程](run/after-24h-followup.md)。下文 60k / micro-batch 1 表格描述最初冻结的上游参考配方。
 
 两组均从官方 **`pi05_base`** 初始化，使用相同 Arena L0-L 示范、数据顺序、随机种子、可训练策略参数、优化器及训练预算。Baseline 只使用 flow-matching MSE；SF 增加冻结 VGGT 教师的视觉表示对齐损失。`pi05_libero` 只作为单独的迁移评测参照，不作为本次训练初始化。
 

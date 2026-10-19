@@ -7,7 +7,7 @@
 | LIBERO-Plus | 10,030 / 10,030 episodes | SR **84.52%** |
 | LIBERO clean | 1,500 / 2,000 episodes | 已完成部分 SR **96.40%**；停止补跑缺失分片 |
 | Arena Safety balanced1500 | 1,500 / 1,500 episodes | SR **11.47%**，平均 CC **60.24** |
-| Arena LoRA / LoRA+SF | 5k 初步评测；后续累计 20k | baseline 正在训练，SF 排队；准备 batch 2 测量与配对评测，尚无训练后 SR/CC |
+| Arena LoRA / LoRA+SF | 各组 24 小时最终 checkpoint 评测；四卡各追加 15k | 原训练与校准保留；后续仅准备手动提交入口，尚无训练后 SR/CC |
 
 ## 2026-10-11：LIBERO 环境与 smoke
 
@@ -95,6 +95,8 @@ Clean：[分片 00](../reports/fullclean-4gpu-001-full-clean-shard-00/summary.md
 
 ## 2026-10-18：固定 5k 初步评测，测量 batch 2，续训目标调整为 20k
 
+**本节方案已停用，保留历史准备记录；当前采用下节的手动后续流程。**
+
 **调整原因：** 两卡 micro-batch 1 的实测吞吐使 60k 预算过长；baseline 峰值显存约 16.8 GiB，因此测量更大的 micro-batch，而不按累积次数直接推断倍速。
 
 **决定：** 原两卡作业保持本次 24 小时，独立保留 3k/5k checkpoint。两组同为 5k 时评测 StaticObstacles / DynamicObstacles 的 L0/L1/L2，每组 **900 episodes**：2 个 suite × 3 个难度 × 5 个任务 × 30 个不同初态，两组共 1,800 条。相同任务与初态配对，输出 SR、CC、失败原因及 cost 分解。不足 5k 的正常时限退出作业按原配置补齐。
@@ -106,6 +108,16 @@ Clean：[分片 00](../reports/fullclean-4gpu-001-full-clean-shard-00/summary.md
 新的入口与冻结训练代码分离，包括 PyTorch 权重的 Arena 服务、严格步数/归一化检查、配对表图及提交衔接。18 项 CPU/通信回归测试通过，不能替代真实 GPU/EGL、多节点通信或吞吐结果。23:27 EDT，校准作业 **14171051** 已提交并排队，CPU 控制作业 **14171052** 已运行；四卡训练尚未提交。[执行说明](run/microbatch-and-20k.md) · [提交与验证证据](../reports/followup-preparation-2026-10-18/README.md)。
 
 900-episode 修订后，CPU 控制器替换为 **14171526**；原训练和校准作业保持不变。7 项预算、任务覆盖、初态边界与提交依赖检查通过。新计划待两组 5k checkpoint 就绪后自动执行，当前没有将计划条数记为已完成结果。[修订与验证证据](../reports/followup-evaluation-900-2026-10-18/README.md)。
+
+## 2026-10-19：各组使用 24 小时最终 checkpoint，后续改为手动提交
+
+**修订原因：** 固定 5k checkpoint、两组互等和总并发 8 卡会增加等待，且不能直接对应本次 24 小时结束后的权重。常驻控制器与自动续提不再使用。
+
+**当前协议：** baseline 与 SF 各自结束后，使用各自最后一份完整 checkpoint，手动提交 **900-episode** 单卡评测，计算 SR、CC、失败原因和 cost 归因；另行手动提交 **4 张 A100 × micro-batch 2 × 累积 4** 的续训，global batch=32，目标为各自最终步数 **+15,000**。评测与续训不互相等待，不设置总卡数上限。实际训练步数可以不同，结果会明确标注。
+
+**作业状态：** 原训练 **14143587 / 14143602** 与 batch 2 校准 **14171051** 保持原样。旧 CPU 控制器均已停止，未提交任何后续评测或四卡续训。脚本默认预览，只有手动执行指定任务并添加 `--submit` 才申请作业；本段训练结束后不自动申请下一段。
+
+39 项 CPU/通信回归测试通过，四个手动入口的预览检查通过；GPU 推理及四卡训练仍需实际分配验证。[手动命令、文件与输出](run/after-24h-followup.md) · [准备与测试证据](../reports/manual-followup-preparation-2026-10-19/README.md)。
 
 ## 阅读与证据索引
 
