@@ -1,0 +1,26 @@
+{
+  "command": [
+    "sbatch",
+    "--parsable",
+    "--account=gts-jli741-paid",
+    "--qos=inferno",
+    "--partition=cpu-small",
+    "--nodes=1",
+    "--ntasks=1",
+    "--ntasks-per-node=1",
+    "--cpus-per-task=1",
+    "--mem=2G",
+    "--time=72:00:00",
+    "--job-name=sf-followup-watch",
+    "--chdir=/storage/scratch1/1/gliu386/VLA_Startup",
+    "--output=/storage/scratch1/1/gliu386/VLA_Startup/logs/sf-followup-watch-%j.out",
+    "/storage/scratch1/1/gliu386/VLA_Startup/slurm/sf_watch.sbatch",
+    "/storage/scratch1/1/gliu386/VLA_Startup/runs/arena-followup-20261018-001/campaign.json"
+  ],
+  "attempted_unix": 1792381613.0852227,
+  "status": "submitted",
+  "stdout": "14171526\n",
+  "stderr": "",
+  "returncode": 0,
+  "job_id": "14171526"
+}

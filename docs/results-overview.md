@@ -97,11 +97,15 @@ Clean：[分片 00](../reports/fullclean-4gpu-001-full-clean-shard-00/summary.md
 
 **调整原因：** 两卡 micro-batch 1 的实测吞吐使 60k 预算过长；baseline 峰值显存约 16.8 GiB，因此测量更大的 micro-batch，而不按累积次数直接推断倍速。
 
-**决定：** 原两卡作业保持本次 24 小时，独立保留 3k/5k checkpoint。两组同为 5k 时评测 StaticObstacles / DynamicObstacles 的 L0/L1/L2，每组 300 episodes，输出 SR、CC、失败原因及 cost 分解。不足 5k 的正常时限退出作业按原配置补齐。
+**决定：** 原两卡作业保持本次 24 小时，独立保留 3k/5k checkpoint。两组同为 5k 时评测 StaticObstacles / DynamicObstacles 的 L0/L1/L2，每组 **900 episodes**：2 个 suite × 3 个难度 × 5 个任务 × 30 个不同初态，两组共 1,800 条。相同任务与初态配对，输出 SR、CC、失败原因及 cost 分解。不足 5k 的正常时限退出作业按原配置补齐。
+
+**评测预算修订：** 最初准备每任务 10 次、每组 300 条，实际提交评测前改为每任务 30 次，以提高每个任务的重复评测充分性。任务覆盖仍为 30 个配置；每份文件具有 50 个初态，固定使用前 30 个。单卡评测作业时限同步从 8 小时增至 24 小时，不改变 300 步 episode horizon。原 300 条计划留档，不与本轮结果混合。
 
 下一阶段从配对 5k checkpoint 续训 15k，累计 **20k**。候选为两节点四张 A100、每卡 micro-batch 2、累积 4 次，global batch=32，不限定 40/80 GB。独立申请两张 40 GB A100，分别对 baseline/SF 测量 batch 1/2；通过后才放行续训。初步评测与后续训练按最多 8 卡安排，10/22 前优先取得 5k 结果，不承诺 20k 的固定完成日期。
 
 新的入口与冻结训练代码分离，包括 PyTorch 权重的 Arena 服务、严格步数/归一化检查、配对表图及提交衔接。18 项 CPU/通信回归测试通过，不能替代真实 GPU/EGL、多节点通信或吞吐结果。23:27 EDT，校准作业 **14171051** 已提交并排队，CPU 控制作业 **14171052** 已运行；四卡训练尚未提交。[执行说明](run/microbatch-and-20k.md) · [提交与验证证据](../reports/followup-preparation-2026-10-18/README.md)。
+
+900-episode 修订后，CPU 控制器替换为 **14171526**；原训练和校准作业保持不变。7 项预算、任务覆盖、初态边界与提交依赖检查通过。新计划待两组 5k checkpoint 就绪后自动执行，当前没有将计划条数记为已完成结果。[修订与验证证据](../reports/followup-evaluation-900-2026-10-18/README.md)。
 
 ## 阅读与证据索引
 

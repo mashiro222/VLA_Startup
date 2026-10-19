@@ -33,25 +33,44 @@ def validate(plan):
         raise ValueError('Training plan changed')
 
 
-def prepare(source_plan, pinned, output, arm, step=5000):
+def matched_units(plan, trials):
+    """Use distinct initial-state indices and the same 30 task configurations for both arms."""
+    suites = ('safety_static_obstacles', 'safety_dynamic_obstacles')
+    units = copy.deepcopy([u for u in plan['units'] if u['suite'] in suites])
+    expected = {(suite, level, task) for suite in suites for level in range(3) for task in range(5)}
+    actual = {(u['suite'], u['level'], u['task_id']) for u in units}
+    if len(units) != 30 or actual != expected or len({u['id'] for u in units}) != 30:
+        raise ValueError('Expected exactly 30 distinct matched task configurations')
+    protocol = plan['config']['evaluation']
+    offset = protocol['init_state_offset']
+    if type(trials) is not int or trials < 1 or offset < 0 or protocol['init_state_selection_mode'] != 'episode_idx':
+        raise ValueError('Evaluation requires positive trials and distinct initial-state indices')
+    for unit in units:
+        if unit['seed'] != 7 or unit['init_count'] < offset + trials:
+            raise ValueError('Expected seed 7 and sufficient distinct initial states for every task')
+        unit['trials'] = trials
+    return units
+
+
+def prepare(source_plan, pinned, output, arm, step=5000, trials_per_task=30):
     source_plan, pinned, output = map(lambda p: Path(p).resolve(), (source_plan, pinned, output))
     if output.exists():
         raise FileExistsError(output)
     source = json.loads(source_plan.read_text())
     plan = copy.deepcopy(json.loads((ROOT / 'runs/arena-balanced1500-001/plan.json').read_text()))
     suites = ['safety_static_obstacles', 'safety_dynamic_obstacles']
-    plan.update(run_id=output.name, profile='matched300', workers=1, time_limit='08:00:00',
-                videos_per_worker=6, expected_episodes=300,
+    plan['units'] = matched_units(plan, trials_per_task)
+    episodes = sum(u['trials'] for u in plan['units'])
+    profile = f'matched{episodes}'
+    plan.update(run_id=output.name, profile=profile, workers=1, time_limit='24:00:00',
+                videos_per_worker=6, expected_episodes=episodes,
                 training_condition=f'pi05_base + Arena LoRA {arm}, {step} optimizer updates, global batch 32')
     plan['config']['suites'] = suites
     plan['config'].pop('checkpoint', None)
     plan['config']['policy_config'] = 'pi05_arena_trained_pytorch'
-    plan['config']['profiles']['matched300'] = dict(seeds=[7], trials=10)
-    plan['units'] = [u for u in plan['units'] if u['suite'] in suites]
-    for u in plan['units']:
-        u['trials'] = 10
-    if len(plan['units']) != 30 or source['recipe']['global_batch'] != 32:
-        raise ValueError('Expected 30 matched task units and training batch 32')
+    plan['config']['profiles'][profile] = dict(seeds=[7], trials=trials_per_task)
+    if source['recipe']['global_batch'] != 32:
+        raise ValueError('Expected training batch 32')
     plan['files'] = frozen_files()
     plan['followup_files'] = followup_files()
     plan['trained_policy'] = dict(plan=str(source_plan), plan_sha256=file_hash(source_plan),
@@ -60,7 +79,7 @@ def prepare(source_plan, pinned, output, arm, step=5000):
     plan['sha256'] = digest({k: v for k, v in plan.items() if k != 'sha256'})
     save(output / 'plan.json', plan)
     (output / 'workers').mkdir()
-    print(f'Prepared {output}: 300 episodes; checkpoint must reach exactly {step}.')
+    print(f'Prepared {output}: {episodes} episodes; checkpoint must reach exactly {step}.')
 
 
 def rng_seed(state):
@@ -262,7 +281,7 @@ def report(run):
     axes[0].set_ylim(0, 100); axes[1].legend(fontsize=6)
     fig.suptitle(plan['training_condition']); fig.tight_layout(); fig.savefig(output / 'safety_by_level.png', dpi=160); plt.close(fig)
     (output / 'README.md').write_text(f"# {run.name}\n\n{plan['training_condition']}\n\n"
-                                    'Complete: 300 episodes. See summary.csv, safety_by_level.png, and diagnostic tables.\n'
+                                    f'Complete: {len(rows)} episodes. See summary.csv, safety_by_level.png, and diagnostic tables.\n'
                                     'L0 is within the training task distribution; L1/L2 evaluate difficulty generalization.\n')
 
 
@@ -304,7 +323,7 @@ def compare(baseline, sf, output):
             axes[i, j].set_xticks([0, 1, 2]); axes[i, j].legend(); axes[i, j].grid(alpha=.2)
     fig.tight_layout(); fig.savefig(output / 'comparison.png', dpi=160); plt.close(fig)
     (output / 'README.md').write_text('# Matched 5,000-step comparison\n\n'
-                                    'Each arm: global batch 32, 300 episodes, identical task/initial-state schedule.\n'
+                                    f"Each arm: global batch 32, {plans[0]['expected_episodes']} episodes, identical task/initial-state schedule.\n"
                                     'See comparison.csv and comparison.png; per-arm reports contain failure and cost attribution.\n'
                                     'One paired training seed and an early checkpoint; convergence is not established.\n')
 
@@ -314,13 +333,14 @@ if __name__ == '__main__':
     p = argparse.ArgumentParser(description=__doc__); s = p.add_subparsers(dest='command', required=True)
     q = s.add_parser('prepare'); q.add_argument('source'); q.add_argument('pinned'); q.add_argument('output')
     q.add_argument('--arm', required=True, choices=['baseline', 'sf']); q.add_argument('--step', type=int, default=5000)
+    q.add_argument('--trials-per-task', type=int, default=30)
     q = s.add_parser('compare'); q.add_argument('baseline'); q.add_argument('sf'); q.add_argument('output')
     for command in ('server', 'client', 'worker', 'report'):
         q = s.add_parser(command); q.add_argument('run', type=Path)
         if command in ('server', 'client'): q.add_argument('--port', type=int, required=True)
         if command == 'client': q.add_argument('--worker', required=True)
     a = p.parse_args()
-    if a.command == 'prepare': prepare(a.source, a.pinned, a.output, a.arm, a.step)
+    if a.command == 'prepare': prepare(a.source, a.pinned, a.output, a.arm, a.step, a.trials_per_task)
     elif a.command == 'compare': compare(a.baseline, a.sf, a.output)
     elif a.command == 'server': server(a.run, a.port)
     elif a.command == 'client': client(a.run, a.port, a.worker)

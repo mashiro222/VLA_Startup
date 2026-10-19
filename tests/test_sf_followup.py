@@ -9,7 +9,7 @@ from arena_startup.core import save
 from sf_followup.checkpoints import pin
 from sf_followup.continuation import compatible
 from sf_followup.control import command, submit_once
-from sf_followup.evaluation import rng_seed, input_batch, validate_checkpoint
+from sf_followup.evaluation import rng_seed, input_batch, validate_checkpoint, matched_units
 
 
 def test_pin_survives_original_retention(tmp_path):
@@ -110,6 +110,8 @@ def test_controller_refreshes_new_evaluation_jobs_before_four_gpu_submissions(tm
              calibration=str(probe), continuation_plan=str(tmp_path / 'future/plan.json'),
              evaluations={'baseline': str(tmp_path / 'eval-base'), 'sf': str(tmp_path / 'eval-sf')})
     calls = []
+    for run in c['evaluations'].values():
+        save(Path(run) / 'plan.json', {'time_limit': '24:00:00'})
     def submitted(directory, label, cmd):
         calls.append((label, cmd)); return {'eval-baseline': '101', 'eval-sf': '102'}.get(label, '200')
     with mock.patch.object(control, 'check', return_value=c), \
@@ -122,3 +124,41 @@ def test_controller_refreshes_new_evaluation_jobs_before_four_gpu_submissions(tm
     sf = next(cmd for label, cmd in calls if label.startswith('continue-sf'))
     assert not any(x.startswith('--dependency=') for x in base)
     assert '--dependency=afterany:101:102' in sf
+    for label, cmd in calls:
+        if label.startswith('eval-'):
+            assert '--time=24:00:00' in cmd and '--gres=gpu:a100:1' in cmd
+
+
+@pytest.fixture
+def evaluation_catalog():
+    return dict(config={'evaluation': dict(init_state_selection_mode='episode_idx', init_state_offset=0)},
+                units=[dict(suite=suite, level=level, task_id=task, id=f'{suite}-{level}-{task}',
+                            init_count=50, seed=7, trials=20)
+                       for suite in ('safety_static_obstacles', 'safety_dynamic_obstacles')
+                       for level in range(3) for task in range(5)])
+
+
+def test_900_episodes_cover_identical_tasks_and_initial_states(evaluation_catalog):
+    from collections import Counter
+    baseline = matched_units(evaluation_catalog, 30)
+    sf = matched_units(evaluation_catalog, 30)
+    assert baseline == sf
+    assert len({(u['id'], i) for u in baseline for i in range(u['trials'])}) == 900
+    by_suite = Counter()
+    by_level = Counter()
+    for unit in baseline:
+        by_suite[unit['suite']] += unit['trials']
+        by_level[(unit['suite'], unit['level'])] += unit['trials']
+    assert set(by_suite.values()) == {450} and set(by_level.values()) == {150}
+    assert all(u['trials'] == 20 for u in evaluation_catalog['units'])
+
+
+@pytest.mark.parametrize('offset,trials', [(0, 51), (21, 30), (0, 0), (0, -1)])
+def test_evaluation_rejects_repeated_or_invalid_initial_states(evaluation_catalog, offset, trials):
+    evaluation_catalog['config']['evaluation']['init_state_offset'] = offset
+    with pytest.raises(ValueError): matched_units(evaluation_catalog, trials)
+
+
+def test_evaluation_rejects_missing_task_even_if_total_count_is_30(evaluation_catalog):
+    evaluation_catalog['units'][0] = copy.deepcopy(evaluation_catalog['units'][1])
+    with pytest.raises(ValueError, match='30 distinct'): matched_units(evaluation_catalog, 30)

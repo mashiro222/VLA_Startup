@@ -1,0 +1,36 @@
+{
+  "paired_units_equal": true,
+  "evaluations": [
+    {
+      "arm": "baseline",
+      "run": "arena-sf-5k-baseline-900-002",
+      "episodes": 900,
+      "task_configurations": 30,
+      "trials_per_task": [
+        30
+      ],
+      "initial_states_available": [
+        50
+      ],
+      "time_limit": "24:00:00",
+      "sha256": "400ab08b1b9fb7ec9245b174963bd850bad6eb6f83fc76cc350c00e895282e09"
+    },
+    {
+      "arm": "sf",
+      "run": "arena-sf-5k-sf-900-002",
+      "episodes": 900,
+      "task_configurations": 30,
+      "trials_per_task": [
+        30
+      ],
+      "initial_states_available": [
+        50
+      ],
+      "time_limit": "24:00:00",
+      "sha256": "ee07ca47a8f7e4d514d2cc8f3936c10c5fed49de5d2cae89ea9476d7c819fe7d"
+    }
+  ],
+  "episodes_total": 1800,
+  "evaluation_submitted": false,
+  "gpu_training_and_calibration_jobs_unchanged": true
+}

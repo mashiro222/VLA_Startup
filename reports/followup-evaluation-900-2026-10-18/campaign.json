@@ -1,0 +1,60 @@
+{
+  "schema": 1,
+  "source_plan": "/storage/scratch1/1/gliu386/VLA_Startup/runs/arena-sf-train-full-002/plan.json",
+  "original_jobs": {
+    "baseline": "14143587",
+    "sf": "14143602"
+  },
+  "calibration": "/storage/scratch1/1/gliu386/VLA_Startup/runs/arena-microbatch-20261018-001",
+  "pinned": "/storage/scratch1/1/gliu386/VLA_Startup/runs/arena-followup-20261018-001/pinned-5k",
+  "continuation_plan": "/storage/scratch1/1/gliu386/VLA_Startup/runs/arena-sf-train-20k-mb2-001/plan.json",
+  "evaluations": {
+    "baseline": "/storage/scratch1/1/gliu386/VLA_Startup/runs/arena-sf-5k-baseline-900-002",
+    "sf": "/storage/scratch1/1/gliu386/VLA_Startup/runs/arena-sf-5k-sf-900-002"
+  },
+  "initial_step": 5000,
+  "target_step": 20000,
+  "global_batch": 32,
+  "max_concurrent_gpus": 8,
+  "files": {
+    "config/sf_followup_dependencies.json": "891f49c387a254eeddeb78db91f8d3214c7e6434333923e31360b7bb1fa44276",
+    "requirements/sf_followup.lock": "2a774b764484a1036ca4dcea9c5cc1815619880d4578c79472a10027396f71d5",
+    "scripts/sf_multinode_worker.sh": "2ef23d7f589591dae0c410772cca5b8e93794af78904cceea50230ab741c661b",
+    "slurm/sf_calibration.sbatch": "3d92ca2f8e83d799242cb515066acde367df62735a330d61821a11b6bc881908",
+    "slurm/sf_catchup.sbatch": "cec21e7b3c30b6cc17a3ce07ba7c074bfaa3de728ed2a5ff9262432a352e3741",
+    "slurm/sf_continue.sbatch": "3d5e75f530864b52dc4b505b6a9100aebdf510523514d83f8765bca6edba7288",
+    "slurm/sf_evaluation.sbatch": "d70d61c317b0e061200a320d454cf5e1caa4eeae2377eb2772c7b763af54aee8",
+    "slurm/sf_train.sbatch": "fd6cc965b9a02c6ffe82063afb265cac99e73d9d69ac48bdcfb1e7f907aa07bc",
+    "slurm/sf_watch.sbatch": "d27793b412c5a350ea5e31aa5e1ba318a55fe029ec6ee6885198e98dd4704008",
+    "src/sf_followup/__init__.py": "6ecf80776ad41ac26cbf4a4e9002f5211cc0a85a08d224428624bf6b56d917e3",
+    "src/sf_followup/calibration.py": "07bca966e45b41ab2c904c7594cbf97973cae2f24c797b2a7639d5749c656160",
+    "src/sf_followup/checkpoints.py": "661f25bb93a6a55001c5e197cf39e2b1e29855ed06efb5572c51934a115994c6",
+    "src/sf_followup/continuation.py": "9231f926ee3bf287e564ea188d9405260266690b1b8a0f18dc9ced9390155117",
+    "src/sf_followup/control.py": "37ff5f825157205d63c41a5f94519139f2491553c5ed8f502286930ad39698c8",
+    "src/sf_followup/evaluation.py": "a571c3623854cdb5e6e3d41b90971e4a0196def07652b88b53424ef0753f3df0"
+  },
+  "plans": {
+    "/storage/scratch1/1/gliu386/VLA_Startup/runs/arena-sf-train-full-002/plan.json": "6d12764a3ceb5cb2b51329dab6f67ec827912417088b663eab3ff8665f43291c",
+    "/storage/scratch1/1/gliu386/VLA_Startup/runs/arena-sf-train-20k-mb2-001/plan.json": "a668e8933171acb999b55397675d148c80618a332eb18f2a4a0417d3737b4e9d",
+    "/storage/scratch1/1/gliu386/VLA_Startup/runs/arena-microbatch-20261018-001/mb1/plan.json": "18a084ea615f72d598a42c25b4a6c7289b2fa8bc60ad73c482b1eb01f1d90ab5",
+    "/storage/scratch1/1/gliu386/VLA_Startup/runs/arena-microbatch-20261018-001/mb2/plan.json": "1feb187312193e7b06361d947960b929e2d04f48c907ac4e4b654e32999dafda",
+    "/storage/scratch1/1/gliu386/VLA_Startup/runs/arena-sf-5k-baseline-900-002/plan.json": "970693d2bab994d09455550e56772e368f6f51538127a8d176573360b7ca40e5",
+    "/storage/scratch1/1/gliu386/VLA_Startup/runs/arena-sf-5k-sf-900-002/plan.json": "6d5247f043836bbc3873d6d4705f8e60ea7d5fae1ac4dc2dc6041baff6710419"
+  },
+  "note": "Initial training untouched. Catch-up only if 5k is missing after a normal time-budget exit. Continuation uses matched 5k checkpoints; SF four-GPU start waits for evaluation allocations to exit.",
+  "evaluation_budget": {
+    "episodes_per_arm": 900,
+    "episodes_total": 1800,
+    "task_configurations": 30,
+    "trials_per_task": 30,
+    "initial_state_indices": [
+      0,
+      29
+    ]
+  },
+  "revision": {
+    "reason": "Increase evaluation coverage per task from 10 to 30 distinct initial states",
+    "superseded_controller": "14171052",
+    "original_jobs_unchanged": true
+  }
+}

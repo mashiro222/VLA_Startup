@@ -30,11 +30,11 @@ def check(campaign):
     return c
 
 
-def command(name, script, args, gpus=0, nodes=1, hours=24, dependencies=(), constraint=None):
+def command(name, script, args, gpus=0, nodes=1, hours=24, dependencies=(), constraint=None, time_limit=None):
     cmd = ['sbatch', '--parsable', '--account=gts-jli741-paid', '--qos=inferno',
            f'--partition={"gpu-a100" if gpus else "cpu-small"}', f'--nodes={nodes}',
            f'--ntasks={nodes}', '--ntasks-per-node=1', f'--cpus-per-task={8*gpus if gpus else 1}',
-           f'--mem={96 if gpus else 2}G', f'--time={hours:02d}:00:00',
+           f'--mem={96 if gpus else 2}G', f'--time={time_limit or format(hours, "02d") + ":00:00"}',
            f'--job-name={name}', f'--chdir={ROOT}', f'--output={ROOT}/logs/{name}-%j.out']
     if gpus: cmd.append(f'--gres=gpu:a100:{gpus}')
     if constraint: cmd.append(f'--constraint={constraint}')
@@ -136,7 +136,9 @@ def tick(campaign):
     eval_jobs = []
     if pinned_5k == {'baseline', 'sf'}:
         for arm, run in c['evaluations'].items():
-            cmd = command('sf-eval5k-' + arm, 'slurm/sf_evaluation.sbatch', [run], gpus=1, hours=8)
+            evaluation = json.loads((Path(run) / 'plan.json').read_text())
+            cmd = command('sf-eval5k-' + arm, 'slurm/sf_evaluation.sbatch', [run],
+                          gpus=1, time_limit=evaluation['time_limit'])
             eval_jobs.append(submit_once(directory, 'eval-' + arm, cmd))
 
     evidence_path = Path(c['calibration']) / 'calibration.json'
