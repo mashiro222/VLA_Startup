@@ -7,7 +7,7 @@
 | LIBERO-Plus | 10,030 / 10,030 episodes | SR **84.52%** |
 | LIBERO clean | 1,500 / 2,000 episodes | 已完成部分 SR **96.40%**；停止补跑缺失分片 |
 | Arena Safety balanced1500 | 1,500 / 1,500 episodes | SR **11.47%**，平均 CC **60.24** |
-| Arena LoRA / LoRA+SF | 每组目标 60,000 updates | 修复后 baseline 正在训练，SF 排队；尚无训练后 SR/CC |
+| Arena LoRA / LoRA+SF | 5k 初步评测；后续累计 20k | baseline 正在训练，SF 排队；准备 batch 2 测量与配对评测，尚无训练后 SR/CC |
 
 ## 2026-10-11：LIBERO 环境与 smoke
 
@@ -92,6 +92,16 @@ Clean：[分片 00](../reports/fullclean-4gpu-001-full-clean-shard-00/summary.md
 检查中另发现安装环境的 `modeling_paligemma.py` 比冻结源码多出 **85 个空字节**，触发 `SyntaxError`，SHA256 不匹配。固定上游源码完整，因此仅原子替换这个安装文件，恢复到原计划要求的哈希；损坏副本保留在本地。**修复原因：** 避免排队中的 SF 在导入或计划校验时失败。未更改模型配方、依赖版本、训练步数或现有作业，文件损坏的根因尚未确定。随后同计划的完整本地校验与 policy/teacher 导入均通过。这与此前动作归一化异常是两个独立问题。
 
 证据：[退出保存测试](../reports/training-progress-2026-10-18/checkpoint-tests.xml)、[安装文件修复记录](../reports/training-progress-2026-10-18/environment-repair.json)。
+
+## 2026-10-18：固定 5k 初步评测，测量 batch 2，续训目标调整为 20k
+
+**调整原因：** 两卡 micro-batch 1 的实测吞吐使 60k 预算过长；baseline 峰值显存约 16.8 GiB，因此测量更大的 micro-batch，而不按累积次数直接推断倍速。
+
+**决定：** 原两卡作业保持本次 24 小时，独立保留 3k/5k checkpoint。两组同为 5k 时评测 StaticObstacles / DynamicObstacles 的 L0/L1/L2，每组 300 episodes，输出 SR、CC、失败原因及 cost 分解。不足 5k 的正常时限退出作业按原配置补齐。
+
+下一阶段从配对 5k checkpoint 续训 15k，累计 **20k**。候选为两节点四张 A100、每卡 micro-batch 2、累积 4 次，global batch=32，不限定 40/80 GB。独立申请两张 40 GB A100，分别对 baseline/SF 测量 batch 1/2；通过后才放行续训。初步评测与后续训练按最多 8 卡安排，10/22 前优先取得 5k 结果，不承诺 20k 的固定完成日期。
+
+新的入口与冻结训练代码分离，包括 PyTorch 权重的 Arena 服务、严格步数/归一化检查、配对表图及提交衔接。18 项 CPU/通信回归测试通过，不能替代真实 GPU/EGL、多节点通信或吞吐结果。23:27 EDT，校准作业 **14171051** 已提交并排队，CPU 控制作业 **14171052** 已运行；四卡训练尚未提交。[执行说明](run/microbatch-and-20k.md) · [提交与验证证据](../reports/followup-preparation-2026-10-18/README.md)。
 
 ## 阅读与证据索引
 

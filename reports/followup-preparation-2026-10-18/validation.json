@@ -1,0 +1,26 @@
+{
+  "checked_at": "2026-10-19T03:27:13.752438+00:00",
+  "cpu_tests": 18,
+  "original_training_files_changed": false,
+  "original_training_jobs_changed": false,
+  "baseline_last": {
+    "step": 810,
+    "loss": 0.02533666417002678,
+    "flow_mse": 0.02533666417002678,
+    "alignment": 0.0,
+    "lr": 2.0229770229770232e-05,
+    "grad_norm": 0.14571338891983032,
+    "target_abs_max": 1.0,
+    "rare_rotation_samples": 1,
+    "seconds": 13.792371629038826,
+    "peak_allocated_gib": 16.792282581329346,
+    "peak_reserved_gib": 17.365234375,
+    "samples_per_second": 2.3201230985268952
+  },
+  "global_batch": 32,
+  "initial_evaluation_step": 5000,
+  "continuation_target_step": 20000,
+  "gpu_calibration_verified": false,
+  "trained_arena_gpu_bridge_verified": false,
+  "four_gpu_training_verified": false
+}

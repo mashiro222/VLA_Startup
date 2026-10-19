@@ -47,6 +47,8 @@ cat runs/arena-sf-train-full-002/sf/status.json
 
 ## 两卡到四卡的边界
 
+后续已新增隔离的显式迁移入口，按两组相同 5k checkpoint 迁移到两节点四卡、每卡 batch 2；原入口的严格检查保留。实施方式与尚待 GPU 验证的边界见[5k / 20k 流程](microbatch-and-20k.md)。以下描述原始训练入口本身的限制。
+
 当前 DDP 每张卡持有完整模型；两卡训练的运行中进程不能热加两张 GPU。四卡是新分配下恢复训练，不是把两个独立训练任务合并。
 
 当前恢复严格校验 plan hash、模型组、base 身份和 world size。因此**现有实现不能直接把两卡 checkpoint 放到四卡计划里恢复**。后续扩卡需要完成以下工作后才能提交：
