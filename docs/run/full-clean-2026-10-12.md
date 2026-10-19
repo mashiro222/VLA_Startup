@@ -1,8 +1,10 @@
 # 2026-10-12：full-clean 的提交与检查
 
+> 阶段性技术归档；实验结果、调整原因与最新记录统一见[实验记录](../results-overview.md)。文中的排队状态仅对应原检查时间。
+
 ## 2026-10-15 更新
 
-旧补跑 `13988230_2` 于 08:26:46 开始，08:41:54 以 `FAILED / 1:0` 退出，日志为 `TimeoutError: Policy startup timed out`，仍触发 900 秒模型启动限制，0 个新增 episode。完整 clean 仍缺第 2 片的 500 条，已完成部分 1,446/1,500（96.40%）。这不是 Arena 的 WebSocket 故障。第 2 片暂不继续补跑，结果保留为部分覆盖。下面 10 月 12/13 日的排队信息是历史记录，不能当作当前状态。最新总览见 [results-overview.md](results-overview.md)。
+旧补跑 `13988230_2` 于 08:26:46 开始，08:41:54 以 `FAILED / 1:0` 退出，日志为 `TimeoutError: Policy startup timed out`，仍触发 900 秒模型启动限制，0 个新增 episode。完整 clean 仍缺第 2 片的 500 条，已完成部分 1,446/1,500（96.40%）。这不是 Arena 的 WebSocket 故障。第 2 片暂不继续补跑，结果保留为部分覆盖。下面 10 月 12/13 日的排队信息是历史记录，不能当作当前状态。最新总览见 [results-overview.md](../results-overview.md)。
 
 本地证据：`logs/fullclean-4gpu-001-13988230_2.out` 与 `sacct -j 13988230 --format=JobID,State,ExitCode,Start,End,Elapsed`。
 
@@ -13,19 +15,19 @@
 | Full-plus | 10,030 / 10,030 | 8,477（84.52%） | 四片均 COMPLETED，ExitCode 0:0 |
 | Full-clean | 1,500 / 2,000 | 1,446（已完成部分的 96.40%） | 0、1、3 片完成；补跑第 2 片仍 PENDING (Priority) |
 
-Plus 最后一片于 **10 月 12 日 23:06:16 EDT** 结束，每片实际用时约 13 小时 35 分至 14 小时 20 分。合并检查通过：10,030 条唯一 episode，无缺失、重复或程序错误记录；报告文件 SHA256 校验通过。[完整汇总](../reports/fullplus-4gpu-001-full-plus/summary.md)包含 CSV 表、逐条记录及两张 PNG 图。累计成功率图按合并后的任务清单顺序绘制，不是四片同时运行时的墙钟时间曲线。
+Plus 最后一片于 **10 月 12 日 23:06:16 EDT** 结束，每片实际用时约 13 小时 35 分至 14 小时 20 分。合并检查通过：10,030 条唯一 episode，无缺失、重复或程序错误记录；报告文件 SHA256 校验通过。[完整汇总](../../reports/fullplus-4gpu-001-full-plus/summary.md)包含 CSV 表、逐条记录及两张 PNG 图。累计成功率图按合并后的任务清单顺序绘制，不是四片同时运行时的墙钟时间曲线。
 
 本次 Plus 的 84.52% 比[社区报告的 84.2%](https://github.com/sylvestf/LIBERO-plus/issues/57)高 0.32 个百分点。这是描述性比较：该社区结果不是官方排行榜，公开协议不完整；本次每个分片也各自从相同初始随机状态开始，不能宣称与单进程连续随机流完全一致。各扰动类别仍有差异，详见汇总表。
 
 Clean 原数组第 2 片 `13974531_2` 在 10 月 12 日 16:25:03 以 `1:0` 退出，直接错误为 `TimeoutError: Policy startup timed out`（900 秒启动上限），尚未完成任何 episode。日志没有给出明确 CUDA/OOM 证据，启动变慢的根因尚未确认。10 月 12 日 18:09:44 单独提交第 2 片补跑，作业号为 **`13988230_2`**，资源为 1 张 H100、8 CPU、64 GB、8 小时，账户 `gts-jli741-paid`。截至 10 月 13 日 08:23 EDT 检查，该补跑尚未启动，启动时间为 `N/A`；后续状态见本文顶部更新。其它三片在 H100 上已正常完成，每片约 58–75 分钟；补跑实际耗时仍需以运行结果为准。
 
-已完成的 Clean 分片也分别备份为 [shard 00](../reports/fullclean-4gpu-001-full-clean-shard-00/summary.md)、[shard 01](../reports/fullclean-4gpu-001-full-clean-shard-01/summary.md)、[shard 03](../reports/fullclean-4gpu-001-full-clean-shard-03/summary.md)。它们只是部分结果，等剩余 500 条完成后才能合并和比较 full-clean 成绩。
+已完成的 Clean 分片也分别备份为 [shard 00](../../reports/fullclean-4gpu-001-full-clean-shard-00/summary.md)、[shard 01](../../reports/fullclean-4gpu-001-full-clean-shard-01/summary.md)、[shard 03](../../reports/fullclean-4gpu-001-full-clean-shard-03/summary.md)。它们只是部分结果，等剩余 500 条完成后才能合并和比较 full-clean 成绩。
 
 ## 10 月 12 日提交与调度历史
 
 `fullplus-4gpu-001` 的 Slurm 数组编号为 `13967217`：4 个 A100 worker，评测 10,030 个 Plus episode。`fullclean-4gpu-001` 于 2026-10-12 08:26 EDT 提交为数组 **`13974531`**：4 个 H100 worker，每个 1 张 H100、8 CPU、64 GB，评测原版 LIBERO 的 2,000 个 episode，每片 500 个。提交后核对四片均为 `PENDING (Priority)`、`Dependency=(null)`。`ArrayTaskThrottle=4` 只是同时运行的上限，各分片可以分别启动，不要求同时拿到四张卡。两批使用不同的 `runs/`、`logs/` 和 `reports/` 目录，不会覆盖结果。两批作业的总并发上限为 8 张 GPU；full-clean **不设置**等待 full-plus 的作业依赖。两批都使用付费账户 `gts-jli741-paid`、`inferno` QoS。
 
-2026-10-12 08:13 EDT 的 `sbatch --test-only` 比较记录在 [clean-queue-probe-2026-10-12.json](../reports/preparation/clean-queue-probe-2026-10-12.json)。当时新申请的 H100 1/2/4 worker 均显示首个候选约 10 月 15 日 06:09；A100 则约 10 月 16 日 17:40。**这不是预约时间，也不代表四个成员会同时启动**。已有 full-plus 的候选时间从 10 月 12 日变到 10 月 13 日，说明估计会随调度重算。4 个 H100 是当时被测试的有效选项中较早的候选，选 2 个 H100 并没有显示更早排到，反而会让每卡承担更多 episode。
+2026-10-12 08:13 EDT 的 `sbatch --test-only` 比较记录在 [clean-queue-probe-2026-10-12.json](../../reports/preparation/clean-queue-probe-2026-10-12.json)。当时新申请的 H100 1/2/4 worker 均显示首个候选约 10 月 15 日 06:09；A100 则约 10 月 16 日 17:40。**这不是预约时间，也不代表四个成员会同时启动**。已有 full-plus 的候选时间从 10 月 12 日变到 10 月 13 日，说明估计会随调度重算。4 个 H100 是当时被测试的有效选项中较早的候选，选 2 个 H100 并没有显示更早排到，反而会让每卡承担更多 episode。
 
 同日约 08:35 EDT 的实时 `sinfo -N` 在 `gpu-h100` 分区列出 4 台节点、31 张 H100（7+8+8+8），其中 7 卡节点状态为 `inval`；其它 3 台、24 张处于可调度节点，但已有作业占用。新作业试算的 2×H100 与 4×H100 首个候选同为约 10 月 15 日 07:12，4×A100 则约 10 月 16 日 12:30。现有作业的 `squeue --start` 一度显示 `N/A`，它表示没有得到当前估计，**不表示永远排不到**；[Slurm 官方 FAQ](https://slurm.schedmd.com/faq.html)说明待排作业并不一定都有 backfill 启动预测。
 
@@ -90,4 +92,4 @@ bash scripts/publish_results.sh fullclean-4gpu-001-full-clean
 bash scripts/publish_results.sh fullplus-4gpu-001-full-plus
 ```
 
-GitHub 仅备份代码、文档和小型报告；模型 checkpoint、LIBERO 场景资产、视频、环境、原始作业日志都被 `.gitignore` 排除。模型运行路径和参数看 [代码地图](code-map.md)，benchmark 组成和分数比较限制看 [实验说明](experiment.md)，完整四卡设计与作业查询看 [overnight.md](overnight.md)。
+GitHub 仅备份代码、文档和小型报告；模型 checkpoint、LIBERO 场景资产、视频、环境、原始作业日志都被 `.gitignore` 排除。模型运行路径和参数看 [代码地图](../code-map.md)，benchmark 组成和分数比较限制看 [实验说明](../experiment.md)，完整四卡设计与作业查询看 [overnight.md](overnight.md)。

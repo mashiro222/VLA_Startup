@@ -1,8 +1,10 @@
 # 四张 A100 优先运行 full-plus
 
+> 阶段性技术归档；实验结果、调整原因与最新记录统一见[实验记录](../results-overview.md)。文中的排队状态仅对应原检查时间。
+
 本页记录 full-plus 设计、排队试算与通用四卡操作。**最新作业状态和 full-clean H100 方案请先看 [2026-10-12 提交与检查说明](full-clean-2026-10-12.md)。**下面的脚本不自动接续 smoke、不取消任何作业；默认仅预览，只有 `--submit` 才创建计费作业。
 
-2026-10-11 的 Plus smoke 作业 `13966714` 正常退出（0:0），14 分 32 秒，七类共 7/7 条有效记录、6 次成功、1 次任务失败，没有程序异常。见 [真实报告](../reports/smoke-plus-001/summary.md)和 [检查记录](validation.md)。四卡 full-plus 计划 `fullplus-4gpu-001` 已准备并通过 smoke gate，随后提交为 Slurm 数组 `13967217`。
+2026-10-11 的 Plus smoke 作业 `13966714` 正常退出（0:0），14 分 32 秒，七类共 7/7 条有效记录、6 次成功、1 次任务失败，没有程序异常。见 [真实报告](../../reports/smoke-plus-001/summary.md)和 [检查记录](validation.md)。四卡 full-plus 计划 `fullplus-4gpu-001` 已准备并通过 smoke gate，随后提交为 Slurm 数组 `13967217`。
 
 ## 作业查询
 
@@ -52,7 +54,7 @@ sacct -u gliu386 -S today --format=JobID%22,JobName%34,State%22,ExitCode,Elapsed
 
 这些检查说明资源请求可被接受，不表示有四张空闲卡、保证同时启动或保证账户 credit 充足。此次 12、8、4 小时时限的试算都给出约 **10 月 13 日晚**的启动估计。队列会变化，不能承诺 10 月 11 日当晚启动或完成；`--test-only` 输出中的编号是试算信息，不是已提交的计费作业。
 
-10 月 11 日 21:10–21:13（EDT）的额外比较如下，均为 12 小时时限、每个 worker 一张卡，原始请求与响应在 [queue-probe-2026-10-11.json](../reports/preparation/queue-probe-2026-10-11.json)。
+10 月 11 日 21:10–21:13（EDT）的额外比较如下，均为 12 小时时限、每个 worker 一张卡，原始请求与响应在 [queue-probe-2026-10-11.json](../../reports/preparation/queue-probe-2026-10-11.json)。
 
 | GPU | CPU/worker | 数组并发上限 | 当时返回的启动估计 |
 |---|---:|---:|---|
@@ -167,4 +169,4 @@ bash scripts/publish_results.sh fullplus-4gpu-001-full-plus
 - `tests/test_parallel.py`：分片覆盖和错误合并拒绝测试。
 - `tests/test_submission.py`：使用假的 Slurm 命令测试默认不提交、smoke gate、重复作业、超时不重试。
 
-上述内容记录并行功能的设计与提交前验证。后续 full 结果见 [结果总览](results-overview.md)；单卡 smoke 结果见 [smoke-clean 报告](../reports/smoke-clean-001/summary.md)和 [smoke-plus 报告](../reports/smoke-plus-001/summary.md)。
+上述内容记录并行功能的设计与提交前验证。后续 full 结果见 [结果总览](../results-overview.md)；单卡 smoke 结果见 [smoke-clean 报告](../../reports/smoke-clean-001/summary.md)和 [smoke-plus 报告](../../reports/smoke-plus-001/summary.md)。

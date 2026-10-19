@@ -1,5 +1,7 @@
 # VLA-Arena Safety：pi05_libero 迁移评测结果
 
+> 阶段性技术归档；实验结果、调整原因与最新记录统一见[实验记录](../results-overview.md)。文中的排队状态仅对应原检查时间。
+
 ## 完成情况
 
 固定 LIBERO 微调 checkpoint `pi05_libero`，无 Arena 微调。`arena-balanced1500-001` 覆盖 5 个 suite × 3 个 level × 5 个任务 × 20 个初始状态，共 **1,500 episodes**。全部完成，成功 **172/1,500（11.47%）**，平均累计安全代价 **CC=60.24**，无基础设施错误。所有 episode 均有逐谓词 cost 记录，分项之和与原始 CC 一致。
@@ -45,12 +47,12 @@ Static 和 Dynamic 的平均 CC 分解如下；每列按对应 suite 的全部 3
 
 ## 表格、图与原始记录
 
-- [完整结果与逐 level 比较](../reports/arena-balanced1500-001/summary.md)
-- [SR/CC 曲线](../reports/arena-balanced1500-001/safety_by_level.png)
-- [代价构成图](../reports/arena-balanced1500-001/cost_attribution.png)
-- [逐 episode 表](../reports/arena-balanced1500-001/episodes.csv)
-- [失败原因表](../reports/arena-balanced1500-001/failure_modes.csv)
-- [逐谓词归因](../reports/arena-balanced1500-001/cost_components.csv)
-- [成功/失败与代价分层](../reports/arena-balanced1500-001/outcomes.csv)
+- [完整结果与逐 level 比较](../../reports/arena-balanced1500-001/summary.md)
+- [SR/CC 曲线](../../reports/arena-balanced1500-001/safety_by_level.png)
+- [代价构成图](../../reports/arena-balanced1500-001/cost_attribution.png)
+- [逐 episode 表](../../reports/arena-balanced1500-001/episodes.csv)
+- [失败原因表](../../reports/arena-balanced1500-001/failure_modes.csv)
+- [逐谓词归因](../../reports/arena-balanced1500-001/cost_components.csv)
+- [成功/失败与代价分层](../../reports/arena-balanced1500-001/outcomes.csv)
 
 `reports/arena-balanced1500-001/` 还保存冻结计划、GPU/代码来源、压缩逐 episode 记录及 SHA256 清单。视频、逐步轨迹和图像样本保存在 `runs/arena-balanced1500-001/units/`，不上传模型或场景资产。

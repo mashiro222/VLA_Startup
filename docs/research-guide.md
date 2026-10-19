@@ -1,6 +1,6 @@
 # 代码结构、训练与推理开发指南
 
-本页以 2026-10-15 的代码为准。项目根目录为 `/storage/scratch1/1/gliu386/VLA_Startup`，下文代码路径均相对根目录。上游源码在 `.runtime/repos/`，本地可以查看，但不重复上传 GitHub；版本固定在配置中。
+本页区分固定权重评测与新增的 π0.5 LoRA / SF 训练实现。项目根目录为 `/storage/scratch1/1/gliu386/VLA_Startup`，下文代码路径均相对根目录。上游源码在 `.runtime/repos/`，本地可以查看，但不重复上传 GitHub；版本固定在配置中。
 
 ## 文档索引
 
@@ -9,11 +9,11 @@
 | 实验结果 | [results-overview.md](results-overview.md) | 已完成结果、覆盖范围与未完成实验记录 |
 | 开发指南 | 本页 | 文件分工、训练与推理配置、评测接口、测试图像导出 |
 | LIBERO 协议 | [experiment.md](experiment.md) | π0.5 的闭环推理、LIBERO/Plus 评测协议和参考分数 |
-| Arena 协议 | [arena-safety.md](arena-safety.md) | Arena 五类安全任务、SR/CC、zero-shot 边界、运行命令 |
+| Arena 协议 | [arena-safety.md](arena-safety.md) | Arena 五类安全任务、SR/CC 与 zero-shot 边界；命令见 [运行手册](run/arena-evaluation.md) |
 | 模块索引 | [code-map.md](code-map.md) | LIBERO 文件逐项地图、修改 seed/prompt 的例子 |
-| 故障排查 | [arena-transport-fix-2026-10-15.md](arena-transport-fix-2026-10-15.md)、[troubleshooting.md](troubleshooting.md) | 此次通信故障、测试和 smoke；环境与 Slurm 排错 |
+| 故障排查 | [arena-transport-fix-2026-10-15.md](run/arena-transport-fix-2026-10-15.md)、[troubleshooting.md](troubleshooting.md) | 此次通信故障、测试和 smoke；环境与 Slurm 排错 |
 
-`validation.md`、`overnight.md`、`arena-full-review-2026-10-13.md` 保留特定阶段的检查与提交记录，其中队列状态仅对应记录时间。实时状态通过 Slurm 查询，实验汇总见 `results-overview.md`。
+[docs/run/](run/) 保留检查、提交命令和详细技术归档。所有实验结果、故障和调整原因统一按时间记录在 [results-overview.md](results-overview.md)。
 
 ## 系统架构与实现范围
 
@@ -86,7 +86,7 @@ OpenPI 根目录是 `.runtime/repos/openpi/`，固定版本 [215abfb… 源码](
 
 ## 训练流程与配置
 
-本仓库目前没有自定义训练流程、训练数据集或训练作业。训练源码在上游 OpenPI，当前实现是基于演示动作的 flow-matching 监督学习；不是 RL，也不是在评测 rollout 上在线学习。
+本仓库已实现 `src/sf_training/` 中的 π0.5 LoRA / SF 训练流程，使用 Arena 示范数据进行 flow-matching 监督学习。实际训练配方在 `config/sf_training/recipe.json`，损失与模型在 `model.py`，更新循环在 `train.py`；详见[训练代码导航](arena-sf-training.md#文件导航与结果)。下表为上游 OpenPI 的参考入口，不应与本仓库当前执行入口混淆。
 
 | 配置或算法 | OpenPI 路径 / 关键入口 |
 |---|---|
@@ -106,7 +106,7 @@ OpenPI 根目录是 `.runtime/repos/openpi/`，固定版本 [215abfb… 源码](
 
 当前上游 `pi05_libero` **配置条目**写有 batch=256、warmup=10,000、学习率=5e-5、训练步数=30,000、EMA=0.999、初始化 `pi05_base/params`。这些是该源码的训练设置，不能仅凭配置推断发布权重的完整历史。当前评测显式加载的是下载好的 **`pi05_libero` 成品权重**，不会因为配置中的 `weight_loader` 写了 base 就改用 base 模型。
 
-训练扩展应使用独立的 OpenPI checkout/分支和新配置，并记录 commit 与数据版本；已有评测依赖的源码快照保持固定。LoRA 需要同时匹配模型 variant、freeze filter、权重加载和 EMA 设置。训练 seed 与 Arena 的评测 seeds 7/17/27 分别控制训练和评测随机性。新权重使用独立评测 run 及匹配的 norm stats；当前仓库不包含训练作业或演示数据。
+训练扩展应使用独立的 OpenPI checkout/分支和新配置，并记录 commit 与数据版本；已有评测依赖的源码快照保持固定。LoRA 需要同时匹配模型 variant、freeze filter、权重加载和 EMA 设置。训练 seed 与 Arena 的评测 seeds 7/17/27 分别控制训练和评测随机性。新权重使用独立评测 run 及匹配的 norm stats；训练作业入口为 `slurm/sf_train.sbatch`，示范数据在本地 `.runtime/training/arena_l0/`，不上传 GitHub。
 
 ## Benchmark 任务与计分协议
 

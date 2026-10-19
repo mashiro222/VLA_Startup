@@ -8,12 +8,12 @@
 
 | 目的 | 文件 |
 |---|---|
-| 准备、提交、监控、续跑、备份的完整命令 | [README.md](../README.md) |
+| 准备、提交、监控、续跑、备份的完整命令 | [操作目录](run/README.md) |
 | 实现范围、参数配置与源码索引 | 当前文件 `docs/code-map.md` |
 | 闭环推理、benchmark 协议、公开结果的比较限制 | [experiment.md](experiment.md) |
-| 哪些检查已实际完成，哪些要等 GPU smoke | [validation.md](validation.md) |
+| 哪些检查已实际完成，哪些要等 GPU smoke | [validation.md](run/validation.md) |
 | 环境与作业排错 | [troubleshooting.md](troubleshooting.md) |
-| 查看全部作业、手动提交四卡 full、合并报告 | [overnight.md](overnight.md) |
+| 查看全部作业、手动提交四卡 full、合并报告 | [overnight.md](run/overnight.md) |
 
 ## 模块与文件职责
 

@@ -60,21 +60,6 @@
 
 `cc_per_100_control_steps` 只是辅助暴露量指标：包含终态罚分，不是碰撞概率或瞬时风险。主结果始终保留原 SR/CC、成功与失败分层和轨迹长度，避免把“更早结束或不行动”当成安全改进。
 
-## 准备与验证
+## 验证与运行
 
-2026-10-17：单 A100 作业 `14126130_0` / `arena-smoke-003` 已完成 15/15 条，SR 0%、平均 CC 33.33，无基础设施错误；逐谓词记录覆盖 15/15。结果见[汇总](../reports/arena-smoke-003/summary.md)与[终止原因](../reports/arena-smoke-003/diagnostics.md)。`arena-balanced1500-001` 已于 2026-10-17 提交，作业数组 `14143493`，最多 4 个单 A100 worker，账户 `gts-jli741-paid`。该评测于 22:00:40 EDT 完成 1,500/1,500 条，SR 11.47%、平均 CC 60.24，无基础设施错误；[结果与归因](arena-results-2026-10-17.md)包含 static/dynamic 分项。以下保留重建步骤；已有 run 不要重复 prepare。
-
-```bash
-cd /storage/scratch1/1/gliu386/VLA_Startup
-bash scripts/test_arena.sh
-bash scripts/arena.sh prepare smoke arena-smoke-003 --workers 1
-bash scripts/arena.sh prepare balanced1500 arena-balanced1500-001 --workers 4
-
-# 以下只打印提交预览，不联系 sbatch。
-bash scripts/arena.sh submit arena-smoke-003 --gpu a100 --smoke-run arena-smoke-003
-bash scripts/arena.sh submit arena-balanced1500-001 --gpu a100 --smoke-run arena-smoke-003
-```
-
-新 instrumentation 的 GPU 验证来自 `arena-smoke-003`；旧 `arena-smoke-002` 的冻结配置不同。上述命令不含 `--submit`；显式添加该开关才会提交 1,500 条计划。
-
-生成结果：`bash scripts/arena.sh report arena-balanced1500-001`。未完成时显式加 `--partial`；基础设施错误与模型失败分开。所有任务和失败记录都保留，不根据观测结果选择性删样本。
+协议验证、结果和调整原因见[实验记录](results-overview.md)；重建与提交命令见[运行手册](run/arena-evaluation.md)。已完成结果的分组表和 cost 分解见[详细报告](run/arena-results-2026-10-17.md)。

@@ -80,4 +80,4 @@ Scratch 的自动清理周期由 PACE 当前政策决定。本仓库不依赖其
 
 ## Arena：1011 keepalive ping timeout
 
-首轮 Arena 在首次动作前遇到该错误，不能把它当成模型任务失败。2026-10-15 的修复把连接推迟到场景就绪、关闭本机短心跳并保留请求/episode deadline；具体证据、测试和 `arena-smoke-002` 作业命令见 [修复记录](arena-transport-fix-2026-10-15.md)。不能把新代码直接接到旧 run，需要新计划。旧记录仍可 `check/status`，执行的哈希检查没有放宽。
+首轮 Arena 在首次动作前遇到该错误，不能把它当成模型任务失败。2026-10-15 的修复把连接推迟到场景就绪、关闭本机短心跳并保留请求/episode deadline；具体证据、测试和 `arena-smoke-002` 作业命令见 [修复记录](run/arena-transport-fix-2026-10-15.md)。不能把新代码直接接到旧 run，需要新计划。旧记录仍可 `check/status`，执行的哈希检查没有放宽。

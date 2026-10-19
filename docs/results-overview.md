@@ -1,76 +1,100 @@
-# 实验结果与未完成项目总览
+# 实验记录
 
-检查日期：2026-10-17，时区 America/New_York（EDT）。作业实时变化需查看 Slurm。已有实测模型均为官方 LIBERO 微调后的 **`pi05_libero`**，Arena LoRA / Spatial Forcing 训练配置与状态见[训练说明](arena-sf-training.md)。
+按实验推进时间排列，统一记录结果、故障、调整原因和后续决定。时间使用 America/New_York（EDT）；队列与训练进度为注明时间的快照。迁移评测使用官方 `pi05_libero`，LoRA / SF 配对训练从 `pi05_base` 初始化，两类结果分开解释。
 
-## 实验结果
+| 主要实验 | 覆盖 / 预算 | 结果或状态 |
+|---|---:|---|
+| LIBERO-Plus | 10,030 / 10,030 episodes | SR **84.52%** |
+| LIBERO clean | 1,500 / 2,000 episodes | 已完成部分 SR **96.40%**；停止补跑缺失分片 |
+| Arena Safety balanced1500 | 1,500 / 1,500 episodes | SR **11.47%**，平均 CC **60.24** |
+| Arena LoRA / LoRA+SF | 每组目标 60,000 updates | 修复后 baseline 正在训练，SF 排队；尚无训练后 SR/CC |
 
-| 实验 | 有效完成 / 计划 | 成功 / 有效完成 | 结果说明 | 详细文件 |
-|---|---:|---:|---|---|
-| LIBERO smoke-clean | 4 / 4 | 4 / 4 | 链路检查，不是正式分数 | [报告](../reports/smoke-clean-001/summary.md) |
-| LIBERO-Plus smoke | 7 / 7 | 6 / 7 | 七类代表用例，无程序异常 | [报告](../reports/smoke-plus-001/summary.md) |
-| **LIBERO-Plus full** | **10,030 / 10,030** | **8,477 / 10,030 = 84.52%** | 本次完整鲁棒性评测结果 | [完整报告](../reports/fullplus-4gpu-001-full-plus/summary.md) |
-| LIBERO clean full（部分） | 1,500 / 2,000 | 1,446 / 1,500 = 96.40% | 只代表已完成样本，不能称 full 最终分数 | [片 00](../reports/fullclean-4gpu-001-full-clean-shard-00/summary.md)、[片 01](../reports/fullclean-4gpu-001-full-clean-shard-01/summary.md)、[片 03](../reports/fullclean-4gpu-001-full-clean-shard-03/summary.md) |
-| Arena 首轮 smoke | 0 / 15 | N/A | 通信故障，没有有效成功率 | [失败诊断](../reports/arena-diagnostics-2026-10-15/summary.md) |
-| Arena 首轮 full | 0 / 2,250 | N/A | 四个 worker 都在首个动作返回前退出 | 同上 |
-| Arena 修复后 smoke `arena-smoke-002` | 15 / 15 | 0 / 15 = 0% | 通信正常；全部达到 300 步上限，平均 CC 41.05；仅为 smoke 样本 | [结果](../reports/arena-smoke-002/summary.md)、[录像与接口诊断](arena-smoke-audit-2026-10-16.md) |
-| Arena 归因 smoke `arena-smoke-003` | 15 / 15 | 0 / 15 = 0% | 逐谓词记录覆盖 15/15；均达 300 步，平均 CC 33.33，无基础设施错误 | [结果](../reports/arena-smoke-003/summary.md)、[终止与代价](../reports/arena-smoke-003/diagnostics.md) |
-| **Arena Safety balanced1500** | **1,500 / 1,500** | **172 / 1,500 = 11.47%** | 平均 CC 60.24，逐谓词记录 1,500/1,500，无基础设施错误 | [结果与归因](arena-results-2026-10-17.md)、[完整报告](../reports/arena-balanced1500-001/summary.md) |
+## 2026-10-11：LIBERO 环境与 smoke
 
-Clean 第 2 片原作业 `13974531_2` 在模型启动 900 秒限制下失败；补跑 `13988230_2` 于 **10 月 15 日 08:26:46–08:41:54** 再次以相同 `Policy startup timed out` 退出，没有新增有效 episode。启动超时的根因尚未确定；另外三片 H100 已运行成功，现有证据不足以认定 GPU 不兼容。该分片暂不继续补跑，clean 结果保留为部分覆盖。此问题与 Arena 的 WebSocket 心跳故障不同。历史记录与日志路径见 [clean 运行记录](full-clean-2026-10-12.md)。
+`pi05_libero` 完成原版 smoke **4/4 成功**，Plus 七类扰动 smoke **6/7 成功**，均无基础设施错误。Plus 的机器人初态用例达到 horizon 后记为任务失败。权重加载、JIT、EGL、动作闭环及视频抽查通过；少量 smoke 不用于估计正式分数。
 
-## Plus 的表和图
+**后续决定：** 扩展到完整 Plus 和 clean 对照，用四个独立单卡 worker 分片。证据：[clean smoke](../reports/smoke-clean-001/summary.md)、[Plus smoke](../reports/smoke-plus-001/summary.md)、[环境与检查归档](run/validation.md)。
 
-结果目录：`reports/fullplus-4gpu-001-full-plus/`。
+## 2026-10-12—15：LIBERO-Plus 完成，clean 保留部分覆盖
 
-| 文件 | 用途 |
-|---|---|
-| [summary.md](../reports/fullplus-4gpu-001-full-plus/summary.md) | 实验结果汇总 |
-| [summary.csv](../reports/fullplus-4gpu-001-full-plus/summary.csv) | 按 suite、类别、难度的表，导入 Excel/Numbers |
-| [episodes.csv](../reports/fullplus-4gpu-001-full-plus/episodes.csv) | 10,030 条逐任务结果、prompt、步数、耗时 |
-| [success_by_group.png](../reports/fullplus-4gpu-001-full-plus/success_by_group.png) | 分组成功率柱状图 |
-| [cumulative_success.png](../reports/fullplus-4gpu-001-full-plus/cumulative_success.png) | 累计成功率折线；不是训练 loss，也不是墙钟进度 |
-| `manifest.json`、`run_config.json`、`provenance-*.json`、`sha256.json` | 任务清单、版本/参数、来源和校验 |
+Plus 完成 **10,030/10,030**，成功 **8,477 条（84.52%）**。分组成功率：背景 96.19%、光照 96.41%、噪声 86.76%、布局 86.62%、语言 85.49%、机器人初态 74.45%、相机视角 72.73%。相机视角与机器人初态是当前较弱的扰动类别，尚不能归因于特定网络模块。
 
-按扰动类别，成功率为：背景 96.19%、光照 96.41%、噪声 86.76%、布局 86.62%、语言 85.49%、机器人初态 74.45%、相机视角 72.73%。在本评测协议下，该 checkpoint 对相机视角和机器人初态变化更敏感。这一观察来自分组统计，尚不能归因于特定网络模块。
+社区自报参考值为 84.2%，本次高约 0.32 个百分点；该值不是官方排行榜，协议可能不同，见[比较边界](experiment.md#公开结果对照)。
 
-总体 84.52% 比社区自报的 84.2% 高约 0.32 个百分点；该参考值来自社区 issue，不是官方排行榜。同名 checkpoint 不保证环境、prompt、随机流等协议完全一致，细节见 [比较边界](experiment.md#公开结果对照)。Clean 的部分 96.40% 和 Plus 的完整 84.52% 不构成严格配对的鲁棒性对照。
+Clean 已完成 **1,500/2,000**，成功 **1,446 条（96.40%）**。缺失分片首次及补跑均在模型启动 900 秒限制下退出，没有新增有效 episode；其余三个 H100 分片成功运行，不能据此认定 H100 不兼容。**调整原因与决定：** 重复启动超时且根因未明，停止补跑这一片，保留部分覆盖结果，不报告完整 clean 分数。此结果与完整 Plus 也不是严格配对对照。
 
-## Arena 实验与诊断记录
+**Plus 的表和图：** [汇总](../reports/fullplus-4gpu-001-full-plus/summary.md)、[分组 CSV](../reports/fullplus-4gpu-001-full-plus/summary.csv)、[逐 episode CSV](../reports/fullplus-4gpu-001-full-plus/episodes.csv)、[分组图](../reports/fullplus-4gpu-001-full-plus/success_by_group.png)、[累计成功率](../reports/fullplus-4gpu-001-full-plus/cumulative_success.png)。累计曲线按任务顺序排列，不是训练曲线。
 
-- [首轮失败总结](../reports/arena-diagnostics-2026-10-15/summary.md)：五个 worker 的时间、状态和共性故障。
-- [结构化诊断](../reports/arena-diagnostics-2026-10-15/summary.json)与 [原始异常](../reports/arena-diagnostics-2026-10-15/errors.jsonl)：可追溯证据。
-- [修复与测试说明](arena-transport-fix-2026-10-15.md)：改动、回归测试和新 smoke 的具体查看命令。
-- [Arena 协议](arena-safety.md)：训练条件、五类 × 三级、SR/CC、与论文结果的比较限制。
-- [Smoke 录像与接口诊断](arena-smoke-audit-2026-10-16.md)：15 条失败的可见行为、分级 CC、接口检查和证据局限。
-- [1,500 条评测与 cost 明细](arena-diagnostics.md)：新初态协议、终止原因、逐谓词 cost 与接触持续时间。新记录器已通过 `arena-smoke-003` 的单 A100 运行验证。
-- [LoRA / Spatial Forcing 对照设计](arena-spatial-forcing-plan.md)：从同一 `pi05_base` 出发的两组训练；[训练实现及提交记录](arena-sf-training.md)列出配置、验证与恢复方式。
+Clean：[分片 00](../reports/fullclean-4gpu-001-full-clean-shard-00/summary.md)、[01](../reports/fullclean-4gpu-001-full-clean-shard-01/summary.md)、[03](../reports/fullclean-4gpu-001-full-clean-shard-03/summary.md)。[详细故障与运行归档](run/full-clean-2026-10-12.md)。
 
-本地原始文件：
+## 2026-10-13—15：Arena 首轮通信失败与修复
 
-| 路径 | 内容 |
-|---|---|
-| `runs/arena-smoke-001/plan.json`、`runs/arena-full-001/plan.json` | 原失败实验的冻结计划 |
-| `runs/arena-smoke-002/plan.json` | 修复后的新计划；不合并到旧 run |
-| `runs/arena-*/units/*/episodes.jsonl` | 完成的有效 episode，每条刷盘 |
-| `runs/arena-*/units/*/errors.jsonl` | 运行时错误，不算入模型失败分母 |
-| `runs/arena-*/workers/*.json`、`*-server.log` | 作业/GPU/版本来源和模型服务日志 |
-| `logs/arena-*.out` | Slurm stdout/stderr |
-| `runs/arena-*/units/*/videos/*.mp4` | 实际轨迹录像，本地保留 |
+首轮 smoke **0/15**、full **0/2,250**：所有 worker 均在首个动作返回前退出，WebSocket 心跳超时，没有有效模型成功率。
 
-`reports/arena-smoke-003/` 包含 15/15 条逐谓词诊断，新增 `failure_modes.csv`、`cost_components.csv`、`cost_by_category.csv`、`cost_attribution.png`。均在 horizon 结束只说明终止条件，不能直接确定物理失败原因。
+**调整原因与修复：** 仿真初始化/同步调用期间的心跳处理不可靠；连接推迟到场景就绪，关闭本机短心跳，保留请求与 episode deadline，并补充通信回归测试。旧计划保留审计，修复代码使用新 run，不合并旧数据。
 
-`reports/arena-smoke-002/` 已包含汇总、逐 episode 表、终止原因及 `safety_by_level.png`、`cumulative_success.png`。旧 smoke 没有逐谓词记录，诊断覆盖率标为 0；不从录像编造 cost 分解。
+证据：[失败诊断](../reports/arena-diagnostics-2026-10-15/summary.md)、[异常明细](../reports/arena-diagnostics-2026-10-15/errors.jsonl)、[修复与测试](run/arena-transport-fix-2026-10-15.md)。提交试算等背景材料见[首轮技术归档](run/arena-full-review-2026-10-13.md)。
 
-`pi05_libero` 的 1,500 条正式迁移评测 `arena-balanced1500-001`（数组作业 `14143493`）已于 2026-10-17 22:00:40 EDT 全部完成。SR=11.47%，平均 CC=60.24；1,328 条失败均达到 300 步上限，无基础设施错误。Static SR=17%、CC=82.26；Dynamic SR=1%、CC=144.14。分组和接触代价详见[结果与归因](arena-results-2026-10-17.md)。
+## 2026-10-16：Arena smoke 跑通，增加失败与 cost 诊断
 
-## 配对训练状态
+`arena-smoke-002` 完成 **15/15**，SR **0%**，平均 CC **41.05**，全部达到 300 步上限；通信故障未复现。录像、图像和动作接口检查未发现足以解释全部失败的明确适配错误，但不能排除所有实现问题。
 
-2026-10-17：旧 Arena LoRA baseline `14127636` 与 LoRA+SF `14127637` 因稀疏旋转动作的分位数区间退化而停止，旧 checkpoint 不用于修复后的对照。归一化已增加训练范围回退和全数据往返检查，新验证采用正式 batch 32、每组 32 步，并检查稀疏动作覆盖。正式重启计划为 `arena-sf-train-full-002`，本次显式跳过新的 GPU smoke，直接提交 baseline `14143587` 与 SF `14143602`，各 2 张 A100，从 `pi05_base` 重新开始；修复版 GPU 正确性尚未确认。截至 22:25 EDT，两组均为 PENDING / Priority，尚未开始、尚无新 loss，因此不能判断修复后的 GPU 训练是否正常。当前没有训练后 SR/CC 结果。详见[训练说明](arena-sf-training.md)、[异常诊断](../reports/training-audit-2026-10-17/README.md)及[修复与提交记录](../reports/restart-2026-10-17/README.md)。
+**调整原因与决定：** 少量零成功样本不足以概括迁移性能；新增终止原因、逐谓词 cost、接触段与持续步数记录。正式评测改为固定 **1,500 episodes**，覆盖全部 75 项 Safety 任务、每项 20 个不同初态，以控制规模并保留分组覆盖。协议先固定，不因已观察成绩挑选样本。
 
-## 总结
+证据：[smoke 结果](../reports/arena-smoke-002/summary.md)、[录像与接口审查](run/arena-smoke-audit-2026-10-16.md)。定义见[诊断协议](arena-diagnostics.md)。
 
-迁移评测使用官方 LIBERO 微调的 π0.5 固定 checkpoint。LIBERO-Plus 的 10,030 条测试已全部完成，成功率为 84.52%；七类扰动中，相机视角和机器人初态变化下的表现相对较弱。原版 LIBERO 对照完成 1,500/2,000 条，已完成部分成功率为 96.40%，完整评测尚未完成。
+## 2026-10-17：训练归一化异常，停止并从 base 重启
 
-VLA-Arena Safety 用于评估同一 checkpoint 的 zero-shot 迁移表现。首轮实验因通信超时未产生有效结果；修复后单卡 smoke 完成 15 条，SR 0%、平均 CC 41.05。现有证据更符合任务迁移不足，但不能排除全部适配问题，也不能用低 SR 单独证明安全性差。固定 1,500 条评测现已完成，SR=11.47%、平均 CC=60.24，表明小样本 smoke 的零成功率不能代表全部任务。Static/Dynamic 的 CC 主要来自夹爪接触谓词；LoRA 与 LoRA+SF 为独立的后续对照实验。
+首轮 LoRA baseline / LoRA+SF 的三步训练验证通过了保存、恢复与推理，却没有覆盖稀疏旋转动作。正式训练约 **44% 更新出现极大有限 loss**，最高约 **2.8×10⁹**：动作第 4、5 维的 q01=q99=0，稀疏非零值被近零分母放大至百万量级。
 
-实际录像截图见 [场景图像](../reports/presentation-2026-10-15/README.md)。Arena 初始截图仅验证场景渲染，不代表动作执行或任务完成。小型报告随仓库备份；checkpoint、场景资产和视频保留在本地。
+**中断原因：** 归一化数值异常使训练结果无效。两组旧任务于约 19:32 停止，旧 checkpoint 不用于修复后的训练或对照。
+
+**修复与重启：** 退化分位数范围回退到训练数据实际范围，恒定维度使用单位宽度；不裁剪动作、不删除稀疏样本。完成 361,736 帧归一化/逆变换审计和正式 batch 回放，增加极大有限 loss 检查。`arena-sf-train-full-002` 两组重新从 `pi05_base` 开始，各 2 张 A100；这次显式跳过新的 GPU smoke，不能将其记为通过。
+
+证据：[异常分析与曲线](../reports/training-audit-2026-10-17/README.md)、[全数据审计](../reports/preparation/sf-normalization-audit.json)、[稀疏 batch 回放](../reports/preparation/sf-sparse-batch-replay.json)、[重启配置归档](../reports/restart-2026-10-17/README.md)。配方与源码见[训练说明](arena-sf-training.md)，命令见[运行手册](run/training-operations.md)。
+
+## 2026-10-17：Arena 诊断 smoke 与 1,500 条评测完成
+
+新记录器的 `arena-smoke-003` 完成 **15/15**，SR **0%**，平均 CC **33.33**，逐谓词诊断完整且无基础设施错误。随后固定 `pi05_libero` 的 `arena-balanced1500-001` 于 22:00:40 全部完成：**172/1,500 成功，SR 11.47%，平均 CC 60.24**。
+
+| Safety suite | 成功 / 完成 | SR | 平均 CC |
+|---|---:|---:|---:|
+| Static obstacles | 51 / 300 | 17.00% | 82.26 |
+| Dynamic obstacles | 3 / 300 | 1.00% | 144.14 |
+| Cautious grasp | 11 / 300 | 3.67% | 21.60 |
+| Hazard avoidance | 3 / 300 | 1.00% | 4.61 |
+| State preservation | 104 / 300 | 34.67% | 48.57 |
+
+1,328 条失败全部达到 300 步上限；这是终止条件，不是抓取/规划失败的完整物理原因。1,500 条记录均有 cost 分解且总和一致，无通信、渲染或计分错误。Static / Dynamic 的夹爪接触分别贡献平均 CC **67.13 / 139.67**；CC 累积谓词激活和终态代价，不等于独立碰撞次数。成功但有代价 52 条，失败但零代价 264 条，SR 与安全性必须分开分析。
+
+**后续决定：** 固定这套任务、初态和指标用于训练后 baseline/SF 对照；不再以 15 条 smoke 的零成功率代表整体。当前完成的是 LIBERO 权重的迁移参照，并非 Arena 微调模型结果。
+
+[完整报告](../reports/arena-balanced1500-001/summary.md) · [SR/CC 图](../reports/arena-balanced1500-001/safety_by_level.png) · [cost 构成图](../reports/arena-balanced1500-001/cost_attribution.png) · [逐 episode 表](../reports/arena-balanced1500-001/episodes.csv) · [失败原因](../reports/arena-balanced1500-001/failure_modes.csv) · [详细分解与运行归档](run/arena-results-2026-10-17.md)
+
+## 2026-10-18：修复后训练正常推进，速度促使重新评估资源
+
+21:42 EDT 快照：baseline 已完成 **360/60,000 updates**，最新 FM loss **0.0430**，最近 100 步中位数 **0.0461**；已覆盖 207 个稀疏旋转样本，未发现非有限或超过保护阈值的 loss。实际设备为 **2 × A100 PCIe 40 GB**，每卡峰值已分配显存约 **16.79 GiB**。SF 仍在等待资源，尚无修复后的 SF loss。一次 rendezvous 心跳警告后 baseline 继续更新，未形成训练退出。
+
+**调整动机：** 先前约 14 秒/update，60,000 步线性外推约 **9.7 天纯计算**；当前最近 100 步约 13.5 秒，对应约 9.4 天。两者均不含排队和保存开销，说明现有预算无法一晚完成。四卡即使理想翻倍也仍约需 4.7–4.9 天；SF 另有教师计算，不能照搬 baseline 的耗时。
+
+**本次决定：** 保留 baseline 与 SF 现有两卡作业，各运行本次 24 小时分配，不取消、不重新提交。Baseline 预计于 **10/19 19:57 左右**进入保存退出流程，Slurm 硬时限约 **20:07**。SF 的 24 小时从实际启动计算。每 1,000 步及临近时限保存，保留最近两份完整 checkpoint；到时停止不代表完成 60,000 步。
+
+**扩卡计划与限制：** 后续评估从 checkpoint 续训到四卡。当前恢复校验要求 GPU 数一致，尚不能仅把 `--gpus 2` 改成 4；需显式迁移优化器、步数和随机状态并验证。保持 global batch=32，四卡时每卡累积从 16 降为 8。改变卡数后的随机流与规约顺序不保证逐位一致。
+
+21:36—21:40 的只读试算中，两卡 SF 候选 10/19 08:40；四 H100 候选 10/27；单节点四 A100 请求被拒，跨两节点四 A100 候选 10/30。它们是可变排队估计，不是预约。**因此本次保留较早的两卡队列，四卡尚未提交。** 当前只实现单节点训练，跨节点方案还需分布式启动支持；未把试算通过写成运行验证。
+
+[进度快照](../reports/training-progress-2026-10-18/snapshot.json) · [checkpoint 机制、检查与资源比较](run/training-checkpoints.md)。恢复后的训练成果仍需独立 Arena 评测；loss 正常不代表安全性已经改善。
+
+### 同日检查：退出保存与安装文件修复
+
+新增 **8 项 CPU 检查通过**：覆盖内部 deadline、停止信号触发的非定期 checkpoint、模型/优化器恢复、原子写入失败保护及全局 batch 划分；不把这些检查当作真实 GPU 存储验证。
+
+检查中另发现安装环境的 `modeling_paligemma.py` 比冻结源码多出 **85 个空字节**，触发 `SyntaxError`，SHA256 不匹配。固定上游源码完整，因此仅原子替换这个安装文件，恢复到原计划要求的哈希；损坏副本保留在本地。**修复原因：** 避免排队中的 SF 在导入或计划校验时失败。未更改模型配方、依赖版本、训练步数或现有作业，文件损坏的根因尚未确定。随后同计划的完整本地校验与 policy/teacher 导入均通过。这与此前动作归一化异常是两个独立问题。
+
+证据：[退出保存测试](../reports/training-progress-2026-10-18/checkpoint-tests.xml)、[安装文件修复记录](../reports/training-progress-2026-10-18/environment-repair.json)。
+
+## 阅读与证据索引
+
+[模型与 benchmark 开发指南](research-guide.md) · [LIBERO/Plus 协议](experiment.md) · [Arena 协议](arena-safety.md) · [LoRA/SF 配方与代码](arena-sf-training.md) · [操作与详细技术归档](run/README.md)
+
+`reports/` 保存可核对的 CSV、图表、配置和小型诊断；`runs/` 保存本地逐步日志、checkpoint 与视频。GitHub 备份代码、文档和小型报告，不上传权重或场景资产；scratch 中的 checkpoint 不等于长期备份。

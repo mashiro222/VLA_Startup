@@ -1,0 +1,12 @@
+{
+  "checked_date": "2026-10-18 EDT",
+  "filesystem": "/storage/scratch1",
+  "user": "gliu386",
+  "used": "179.3 GiB (lfs human-readable output)",
+  "block_quota": "15 TiB",
+  "block_limit": "15 TiB",
+  "files_used": 664520,
+  "file_limit": 1000000,
+  "filesystem_available": "1.2 PiB (df human-readable output)",
+  "checkpoint_capacity_concern": false
+}

@@ -1,12 +1,14 @@
 # 提交前检查记录
 
-2026-10-15 Arena 通信修复、25 项测试和新单卡 smoke 的记录见 [专门说明](arena-transport-fix-2026-10-15.md)。所有实验现状见 [结果总览](results-overview.md)；下文保留最初 LIBERO 准备阶段的检查。
+> 阶段性技术归档；实验结果、调整原因与最新记录统一见[实验记录](../results-overview.md)。文中的排队状态仅对应原检查时间。
+
+2026-10-15 Arena 通信修复、25 项测试和新单卡 smoke 的记录见 [专门说明](arena-transport-fix-2026-10-15.md)。所有实验现状见 [结果总览](../results-overview.md)；下文保留最初 LIBERO 准备阶段的检查。
 
 ## 后续实际 GPU 验证与并行准备
 
-`smoke-clean-001`，Slurm Job `13965730`，在 2026-10-11 正常结束：`COMPLETED`、`ExitCode=0:0`、运行 13 分 02 秒、1 张 A100 / 8 CPU / 64 GB，记账 MaxRSS 为 `26506992K`（约 25.3 GiB 主机内存）。4/4 episode 均成功，缺失为 0；真实结果在 [reports/smoke-clean-001](../reports/smoke-clean-001)。这验证了原版完整权重加载、JIT、EGL 和闭环运行，不能用四条记录推断全量成功率，也尚不能替代 Plus smoke。
+`smoke-clean-001`，Slurm Job `13965730`，在 2026-10-11 正常结束：`COMPLETED`、`ExitCode=0:0`、运行 13 分 02 秒、1 张 A100 / 8 CPU / 64 GB，记账 MaxRSS 为 `26506992K`（约 25.3 GiB 主机内存）。4/4 episode 均成功，缺失为 0；真实结果在 [reports/smoke-clean-001](../../reports/smoke-clean-001)。这验证了原版完整权重加载、JIT、EGL 和闭环运行，不能用四条记录推断全量成功率，也尚不能替代 Plus smoke。
 
-`smoke-plus-001`，Slurm Job `13966714`，在 2026-10-11 21:07:39–21:22:11（EDT）运行并正常结束：`COMPLETED`、`ExitCode=0:0`、14 分 32 秒、1 张 A100 / 8 CPU / 64 GB，MaxRSS `25483756K`（约 24.3 GiB 主机内存）。七类扰动各有一条完整记录，6 次成功，Robot Initial States 用例达到 220 步上限后记为任务失败；没有 `errors.jsonl`。真实表格、图、压缩记录和校验和见 [reports/smoke-plus-001](../reports/smoke-plus-001)。
+`smoke-plus-001`，Slurm Job `13966714`，在 2026-10-11 21:07:39–21:22:11（EDT）运行并正常结束：`COMPLETED`、`ExitCode=0:0`、14 分 32 秒、1 张 A100 / 8 CPU / 64 GB，MaxRSS `25483756K`（约 24.3 GiB 主机内存）。七类扰动各有一条完整记录，6 次成功，Robot Initial States 用例达到 220 步上限后记为任务失败；没有 `errors.jsonl`。真实表格、图、压缩记录和校验和见 [reports/smoke-plus-001](../../reports/smoke-plus-001)。
 
 Plus 两段视频分别有 126 / 220 帧、10 fps、224×224；抽查首末画面正常，成功用例最终把碗放入盘子，失败用例未完成放置。报告 SHA256、运行时记录的评测器源码指纹均已核对，`parallel.py check fullplus-4gpu-001 --require-smoke` 通过。说明七个代表性用例已跑通，不保证其它 10,023 个变体和其它 suite 均无异常；smoke 的 85.71% 不能当作 full-plus 分数。
 
@@ -44,7 +46,7 @@ Plus 两段视频分别有 126 / 220 帧、10 fps、224×224；抽查首末画�
 
 场景资产已完整校验、解压；最终 `preflight.py --imports` 检查通过。`smoke-clean-001` 和 `smoke-plus-001` 的任务清单已准备好，提交命令只做了 dry-run。
 
-实际预览：[原版 smoke](../reports/preparation/submit-smoke-clean-dry-run.txt)、[Plus smoke](../reports/preparation/submit-smoke-plus-dry-run.txt)。两份均使用 `gts-jli741-paid` / `gpu-a100` / `inferno` / 1 张 A100 / 8 CPU / 64 GB / 45 分钟。未执行 `--submit`。
+实际预览：[原版 smoke](../../reports/preparation/submit-smoke-clean-dry-run.txt)、[Plus smoke](../../reports/preparation/submit-smoke-plus-dry-run.txt)。两份均使用 `gts-jli741-paid` / `gpu-a100` / `inferno` / 1 张 A100 / 8 CPU / 64 GB / 45 分钟。未执行 `--submit`。
 
 补充检查：登录节点启动保护会拒绝没有 Slurm allocation 的评测进程；MP4 编码器可以生成并删除小型测试视频。运行中报告导出会固定同一份 episode 快照，已用“导出期间追加记录”的测试验证 CSV、Markdown 与压缩 journal 的一致性。独立 preflight 的缓存路径也已统一到 scratch。
 

@@ -1,0 +1,13 @@
+{
+  "checked_at": "2026-10-18T21:59:12.345659-04:00",
+  "installed_file": ".runtime/sf_train/lib/python3.11/site-packages/transformers/models/paligemma/modeling_paligemma.py",
+  "before_sha256": "a971717d52b1de4a80451cea209e9788b3ceb9c872fad0a0434b65f7434e863a",
+  "expected_and_restored_sha256": "c945d330b829264f927f3ee5339f977238631772de07a28e855e265bb85fd53c",
+  "before_bytes": 27773,
+  "restored_bytes": 27688,
+  "before_null_bytes": 85,
+  "corrupt_copy": ".runtime/training/environment_audit/2026-10-18/modeling_paligemma.py.corrupt",
+  "repair": "Atomic replacement from unchanged pinned repository; breaks installed hardlink rather than altering its other links.",
+  "root_cause": "Not established; observed installed file corruption. No package/version/recipe change.",
+  "gpu_jobs_cancelled_or_resubmitted": false
+}

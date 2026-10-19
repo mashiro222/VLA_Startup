@@ -272,7 +272,7 @@ websockets 库默认每 20 秒发一次 ping，20 秒内收不到 pong 就以 10
 
 - **LIBERO**：这条路径在实际运行中（smoke 加一万多条 full episode）没有触发问题。
 - **Arena**：环境初始化时间更长，首轮 5 个 worker 全部因心跳超时断开。
-- **修复范围**：Arena 的修复（`src/arena_startup/transport.py`：场景就绪后再连接、关闭心跳、改用请求超时）没有改动 LIBERO 的代码。详见 [arena-transport-fix-2026-10-15.md](../arena-transport-fix-2026-10-15.md)。
+- **修复范围**：Arena 的修复（`src/arena_startup/transport.py`：场景就绪后再连接、关闭心跳、改用请求超时）没有改动 LIBERO 的代码。详见 [arena-transport-fix-2026-10-15.md](../run/arena-transport-fix-2026-10-15.md)。
 
 ---
 

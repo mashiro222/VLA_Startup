@@ -1,0 +1,12 @@
+{
+  "checked_at": "2026-10-18T22:01:24.071445-04:00",
+  "plan_sha256": "6d12764a3ceb5cb2b51329dab6f67ec827912417088b663eab3ff8665f43291c",
+  "frozen_training_files_match": true,
+  "transformers_overlay_matches_frozen_plan": true,
+  "workflow_check_exit_code": 0,
+  "policy_teacher_import_exit_code": 0,
+  "checkpoint_cpu_tests": 8,
+  "cpu_test_failures": 0,
+  "gpu_checkpoint_write_tested_this_turn": false,
+  "jobs_cancelled_modified_or_resubmitted": false
+}

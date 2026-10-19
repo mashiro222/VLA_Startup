@@ -1,0 +1,43 @@
+{
+  "checked_at": "2026-10-18T21:42:28.924585-04:00",
+  "run": "arena-sf-train-full-002",
+  "baseline_job": 14143587,
+  "sf_job": 14143602,
+  "baseline": {
+    "step": 360,
+    "target": 60000,
+    "last": {
+      "step": 360,
+      "loss": 0.04295936971902847,
+      "flow_mse": 0.04295936971902847,
+      "alignment": 0.0,
+      "lr": 8.991008991008991e-06,
+      "grad_norm": 0.2548161447048187,
+      "target_abs_max": 1.0,
+      "rare_rotation_samples": 0,
+      "seconds": 12.135364962974563,
+      "peak_allocated_gib": 16.792282581329346,
+      "peak_reserved_gib": 17.365234375,
+      "samples_per_second": 2.6369211060098445
+    },
+    "recent100_seconds_mean": 13.505009430756326,
+    "recent100_flow_mse_median": 0.04608279466629028,
+    "loss_max": 0.16139757633209229,
+    "nonfinite_or_extreme_updates": 0,
+    "rare_rotation_samples": 207,
+    "checkpoints": [],
+    "runtime": {
+      "accumulation": 16,
+      "arm": "baseline",
+      "global_batch": 32,
+      "gpu": "NVIDIA A100-PCIE-40GB",
+      "micro_batch": 1,
+      "torch": "2.7.1+cu126",
+      "total_memory": 42436526080,
+      "world": 2
+    }
+  },
+  "frozen_files_match": true,
+  "changes_to_jobs": false,
+  "decision": "Keep both existing 2-A100 jobs for their current 24-hour allocation; assess scaling after checkpoint."
+}

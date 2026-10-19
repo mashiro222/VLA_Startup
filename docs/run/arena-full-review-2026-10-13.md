@@ -1,10 +1,12 @@
 # Arena Safety full：代码复查与资源配置
 
-**2026-10-15 后续检查：数组四个成员均已在 10 月 14 日凌晨运行后失败（退出码 1:0），错误为 WebSocket `keepalive ping timeout`，完成 0/2,250。Smoke 也遇到同一错误。** 详情见 [失败诊断](../reports/arena-diagnostics-2026-10-15/summary.md)。本文下方保留提交前复查及提交当时的历史信息，不表示作业仍在排队。
+> 阶段性技术归档；实验结果、调整原因与最新记录统一见[实验记录](../results-overview.md)。文中的排队状态仅对应原检查时间。
+
+**2026-10-15 后续检查：数组四个成员均已在 10 月 14 日凌晨运行后失败（退出码 1:0），错误为 WebSocket `keepalive ping timeout`，完成 0/2,250。Smoke 也遇到同一错误。** 详情见 [失败诊断](../../reports/arena-diagnostics-2026-10-15/summary.md)。本文下方保留提交前复查及提交当时的历史信息，不表示作业仍在排队。
 
 2026-10-13 的 full 评测采用独立提交配置，未以 smoke 完成为前提；资源方案为 **最多 4 张 A100**。**16:03:18 EDT 已提交 full 数组 `14020266`，成员 `_0` 至 `_3`，每成员 1 张 A100、8 CPU、64 GB、12 小时时限，账户 `gts-jli741-paid`、QoS `inferno`。** 原 smoke `14016239_0` 没有修改或取消。
 
-提交后核对 `ArrayTaskThrottle=4`、`Dependency=(null)`；四个成员均为 `PENDING (Priority)`，候选时间 `N/A`，已完成 0/2,250，尚无运行结果。提交命令与校验摘要见 [实际提交记录](../reports/preparation/arena-full-submission-2026-10-13.json)。这与下方历史 `--test-only` 的候选日期是不同信息；实际启动仍由调度器决定。
+提交后核对 `ArrayTaskThrottle=4`、`Dependency=(null)`；四个成员均为 `PENDING (Priority)`，候选时间 `N/A`，已完成 0/2,250，尚无运行结果。提交命令与校验摘要见 [实际提交记录](../../reports/preparation/arena-full-submission-2026-10-13.json)。这与下方历史 `--test-only` 的候选日期是不同信息；实际启动仍由调度器决定。
 
 ## 复查结论与范围
 
@@ -29,7 +31,7 @@
 | A100 | 8 小时 | 10 月 19 日 22:29:12 |
 | H100 | 8 小时 | 10 月 22 日 16:28:35 |
 
-15:19 EDT 使用最终独立提交入口再次试算 12 小时方案：A100 仍为 **10 月 19 日 22:29:12**，H100 调整为 **10 月 22 日 16:25:00**。原始输出和检查摘要见 [复查记录 JSON](../reports/preparation/arena-full-review-2026-10-13.json)。
+15:19 EDT 使用最终独立提交入口再次试算 12 小时方案：A100 仍为 **10 月 19 日 22:29:12**，H100 调整为 **10 月 22 日 16:25:00**。原始输出和检查摘要见 [复查记录 JSON](../../reports/preparation/arena-full-review-2026-10-13.json)。
 
 这是新请求的当前估计，不是预约、最早保证时间或四个成员全部启动时间，可以提前或延后。试算只返回一个候选，无法据此算出四张卡全部开始的时刻。原 smoke 自己的候选仍为 `N/A`。约 15:05 的资源快照中 A100 分区 32 张卡全部已分配；H100 正常节点的 24 张全部已分配，另一个配置 8 卡的节点因只注册 7 卡处于 `DRAIN+INVALID_REG`。
 
@@ -63,7 +65,7 @@ python3 scripts/arena_direct.py submit arena-full-001 --gpu a100
 python3 scripts/arena_direct.py submit arena-full-001 --gpu h100
 ```
 
-A100 配置通过 `--submit` 提交，返回作业号 `14020266`；H100 配置未提交。该 full 与独立 smoke 并行运行，没有完成依赖。上述入口与命令保留为历史记录；后续实验使用匹配配置的 smoke 验证条件，详见 [运行说明](arena-safety.md)。
+A100 配置通过 `--submit` 提交，返回作业号 `14020266`；H100 配置未提交。该 full 与独立 smoke 并行运行，没有完成依赖。上述入口与命令保留为历史记录；后续实验使用匹配配置的 smoke 验证条件，详见 [运行说明](../arena-safety.md)。
 
 之后仍可用统一的检查和报告入口：
 

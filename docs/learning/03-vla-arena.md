@@ -434,7 +434,7 @@ for unit in plan['units']:
 - **身份证加字段**：metadata 里加入 `transport` 版本号，防止新客户端连上旧服务。
 - **不重试**：出错不自动重发请求，也不把出错的 episode 记成失败。
 
-LIBERO 那套代码没有改动。详见 [arena-transport-fix-2026-10-15.md](../arena-transport-fix-2026-10-15.md)。
+LIBERO 那套代码没有改动。详见 [arena-transport-fix-2026-10-15.md](../run/arena-transport-fix-2026-10-15.md)。
 
 ### 6.5 报告
 

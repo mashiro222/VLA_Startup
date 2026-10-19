@@ -146,7 +146,7 @@ LIBERO 源码（`libero/libero/envs/env_wrapper.py`）里的几个关键设定�
 - 两边的 Python 版本和库版本冲突。
 - 真机部署也是这个结构：机器人端只发观测、收动作。
 
-Arena 首轮失败就出在这一格：客户端在初始化场景时太忙，没能及时回应服务端的心跳，连接被判定断开（见 [arena-transport-fix-2026-10-15.md](../arena-transport-fix-2026-10-15.md)）。
+Arena 首轮失败就出在这一格：客户端在初始化场景时太忙，没能及时回应服务端的心跳，连接被判定断开（见 [arena-transport-fix-2026-10-15.md](../run/arena-transport-fix-2026-10-15.md)）。
 
 server.py 还加了一点自己的逻辑：每次请求带上随机数状态，返回更新后的状态。这样中断后续跑，能接上同一条随机序列。
 

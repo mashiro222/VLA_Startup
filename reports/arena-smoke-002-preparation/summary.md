@@ -15,4 +15,4 @@
 
 本目录备份 `plan.json`、`submission.json`、`checks.json`。旧 smoke/full 仍保留原始失败记录；新运行不续接旧计划。这个目录是准备记录，不是模型成绩报告。
 
-[修复说明与查看命令](../../docs/arena-transport-fix-2026-10-15.md) · [结果总览](../../docs/results-overview.md) · [阅读导航](../../docs/research-guide.md)
+[修复说明与查看命令](../../docs/run/arena-transport-fix-2026-10-15.md) · [结果总览](../../docs/results-overview.md) · [阅读导航](../../docs/research-guide.md)
