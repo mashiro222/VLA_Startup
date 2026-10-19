@@ -119,6 +119,16 @@ Clean：[分片 00](../reports/fullclean-4gpu-001-full-clean-shard-00/summary.md
 
 39 项 CPU/通信回归测试通过，四个手动入口的预览检查通过；GPU 推理及四卡训练仍需实际分配验证。[手动命令、文件与输出](run/after-24h-followup.md) · [准备与测试证据](../reports/manual-followup-preparation-2026-10-19/README.md)。
 
+## 2026-10-19：batch 2 校准超时后单独补测
+
+首次校准 **14171051** 于 00:51 EDT 达到一小时时限。Baseline / SF 的 batch 1 对照均完成 **12/12 更新**并通过有限动作推理检查，但 batch 2 尚无训练记录；没有 OOM 证据，校准未通过。
+
+**调整原因与决定：** 一小时时限未覆盖整套初始化、训练与验证。保留已完成的 batch 1 记录，仅补跑 batch 2 的两组，各 12 步。新作业 **14179857** 于 **10:13 EDT** 提交：2 张 A100 40GB、4 小时时限，global batch=32、每卡 micro-batch=2、累积 8，完成即退出。提交后为 `PENDING (Priority)`，尚无 batch 2 结果。原 baseline **14143587** 正常运行、SF **14143602** 继续排队，两份作业及冻结训练代码未修改。
+
+**最终 checkpoint 核对：** 后续 900-episode 评测使用各组 24 小时结束时保存的实际最终步数，包括超过 5,000 步的情况；续训目标为该步数 +15,000。补充存在旧 5,000 步权重、最终为 6,200 步时的选择测试，以及仅运行未完成 batch 2、复用 batch 1、拒绝覆盖不完整输出的检查。共 **45 项 CPU/通信检查通过**；未将这些检查记为 GPU batch 2 通过。
+
+[补测配置、回执与测试证据](../reports/microbatch2-retry-2026-10-19/README.md) · [手动后续流程](run/after-24h-followup.md)。本次仅提交校准，没有提交评测或四卡续训。
+
 ## 阅读与证据索引
 
 [模型与 benchmark 开发指南](research-guide.md) · [LIBERO/Plus 协议](experiment.md) · [Arena 协议](arena-safety.md) · [LoRA/SF 配方与代码](arena-sf-training.md) · [操作与详细技术归档](run/README.md)

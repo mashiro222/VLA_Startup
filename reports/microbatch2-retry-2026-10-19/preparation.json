@@ -1,0 +1,57 @@
+{
+  "command": [
+    "sbatch",
+    "--parsable",
+    "--account=gts-jli741-paid",
+    "--qos=inferno",
+    "--partition=gpu-a100",
+    "--nodes=1",
+    "--ntasks=1",
+    "--ntasks-per-node=1",
+    "--cpus-per-task=16",
+    "--mem=96G",
+    "--time=04:00:00",
+    "--job-name=sf-mb2-only",
+    "--chdir=/storage/scratch1/1/gliu386/VLA_Startup",
+    "--output=/storage/scratch1/1/gliu386/VLA_Startup/logs/sf-mb2-only-%j.out",
+    "--gres=gpu:a100:2",
+    "--constraint=A100-40GB",
+    "/storage/scratch1/1/gliu386/VLA_Startup/slurm/microbatch2_retry.sbatch",
+    "/storage/scratch1/1/gliu386/VLA_Startup/runs/arena-microbatch-20261018-001"
+  ],
+  "old_calibration_job": "14171051",
+  "original_training_jobs": {
+    "baseline": "14143587",
+    "sf": "14143602"
+  },
+  "pending_cases": [
+    "mb2/baseline",
+    "mb2/sf"
+  ],
+  "reused_batch1_evidence": {
+    "runs/arena-microbatch-20261018-001/mb1/sf/status.json": "d9ec1ee7d0a2de6bfc5ce8d0c11d04177a46a506793f04f06be7ec4c7a687cce",
+    "runs/arena-microbatch-20261018-001/mb1/sf/inference_smoke.json": "74e8919d21f6ff1d524311b1931159bcda7ff288410d9599ad902feaffdfb5df",
+    "runs/arena-microbatch-20261018-001/mb1/sf/gradients-step-1.json": "350ba1035ecca8d6e1eae43434cc1bed528e8d3142629b174ecdb4aaea84784f",
+    "runs/arena-microbatch-20261018-001/mb1/sf/metrics.jsonl": "5083aec8482eb74897a250e1c1cba14d2d3ebd0910931d170e633afb1b948115",
+    "runs/arena-microbatch-20261018-001/mb1/sf/parameters.json": "3d234ebb4cda9d5484bf220d25d5fb364638fc05476c57baabf58acdb329e259",
+    "runs/arena-microbatch-20261018-001/mb1/sf/runtime.json": "1fc19e699b05baad9a47133fd0cbb5ef84b62918a3b06fbf93720b42b57b5202",
+    "runs/arena-microbatch-20261018-001/mb1/baseline/status.json": "31753d418290b34eff40a2f8d789f5f61c3f251d22d39e1d495b9411c6aa9dec",
+    "runs/arena-microbatch-20261018-001/mb1/baseline/inference_smoke.json": "2b07e3c17fbdf8e5f38bf2da0527068cd377d772f9ff6c1a2250d4e7dad97f7f",
+    "runs/arena-microbatch-20261018-001/mb1/baseline/gradients-step-1.json": "df7ec8b4d949f3d6241d9622b330d34db2295ad5c35dae07e0c14d5e689bc9f6",
+    "runs/arena-microbatch-20261018-001/mb1/baseline/metrics.jsonl": "7221b5752f0f0d85410c13b181fa5ec637c3c21214c4cb4350f2a168c26d696d",
+    "runs/arena-microbatch-20261018-001/mb1/baseline/parameters.json": "b5d911ec487312a40730ddabb450d615b1920dca12f3a3252ac82cbfec2f5b77",
+    "runs/arena-microbatch-20261018-001/mb1/baseline/runtime.json": "c12ca477f358c8f810eb03c6e9d88f7ed544792f6e3473e364ac1a2892a88016"
+  },
+  "script_sha256": {
+    "scripts/calibrate_mb2.py": "060ed930f9a07086175d89015e3deb40e0fdad141e42c0c9cab18e0b06bd9ebd",
+    "slurm/microbatch2_retry.sbatch": "337588ce8132ab39c396ebd09737058b371ce3f65a74d98894c54f5c76aaa518"
+  },
+  "wall_time_hours": 4,
+  "gpus": 2,
+  "gpu_constraint": "A100-40GB",
+  "global_batch": 32,
+  "micro_batch": 2,
+  "accumulation": 8,
+  "evaluation_checkpoint": "actual final complete checkpoint after each initial 24-hour allocation",
+  "new_training_or_evaluation_submissions": 0
+}

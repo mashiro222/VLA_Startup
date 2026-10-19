@@ -44,22 +44,25 @@ def completed_allocation(source, arm, step):
     (source / arm / f'step-{step:08d}.pt').write_bytes(b'complete atomic checkpoint')
 
 
-def test_one_arm_can_prepare_without_the_other_and_uses_final_not_5k(campaign):
+@pytest.mark.parametrize('final_step', [4875, 6200])
+def test_one_arm_can_prepare_without_the_other_and_uses_final_not_5k(campaign, final_step):
     path, c = campaign
     source = Path(c['source_plan']).parent
-    completed_allocation(source, 'baseline', 4875)
+    completed_allocation(source, 'baseline', final_step)
     (source / 'baseline/step-00004000.pt').write_bytes(b'older periodic checkpoint')
+    if final_step > 5000:
+        (source / 'baseline/step-00005000.pt').write_bytes(b'older 5k checkpoint')
     selection = after24h.materialize(path, 'baseline')
-    assert selection['source_step'] == 4875 and selection['target_step'] == 19875
+    assert selection['source_step'] == final_step and selection['target_step'] == final_step + 15000
     assert not (source / 'sf/status.json').exists()
     ep = json.loads((Path(c['evaluations']['baseline']) / 'plan.json').read_text())
     cp = json.loads((Path(c['continuations']['baseline']) / 'plan.json').read_text())
-    assert ep['expected_episodes'] == 900 and ep['trained_policy']['step'] == 4875
+    assert ep['expected_episodes'] == 900 and ep['trained_policy']['step'] == final_step
     assert ep['trained_policy']['checkpoint'] == selection['checkpoint']
-    assert cp['migration']['source_step'] == 4875 and cp['recipe']['steps'] == 19875
+    assert cp['migration']['source_step'] == final_step and cp['recipe']['steps'] == final_step + 15000
     assert cp['gpus'] * cp['recipe']['micro_batch'] * 4 == cp['recipe']['global_batch'] == 32
     assert after24h.materialize(path, 'baseline') == selection
-    (source / 'baseline/step-00004875.pt').unlink()
+    (source / 'baseline' / f'step-{final_step:08d}.pt').unlink()
     assert Path(selection['checkpoint']).read_bytes() == b'complete atomic checkpoint'
     assert after24h.materialize(path, 'baseline') == selection
 

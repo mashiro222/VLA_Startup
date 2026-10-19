@@ -1,0 +1,28 @@
+{
+  "command": [
+    "sbatch",
+    "--parsable",
+    "--account=gts-jli741-paid",
+    "--qos=inferno",
+    "--partition=gpu-a100",
+    "--nodes=1",
+    "--ntasks=1",
+    "--ntasks-per-node=1",
+    "--cpus-per-task=16",
+    "--mem=96G",
+    "--time=04:00:00",
+    "--job-name=sf-mb2-only",
+    "--chdir=/storage/scratch1/1/gliu386/VLA_Startup",
+    "--output=/storage/scratch1/1/gliu386/VLA_Startup/logs/sf-mb2-only-%j.out",
+    "--gres=gpu:a100:2",
+    "--constraint=A100-40GB",
+    "/storage/scratch1/1/gliu386/VLA_Startup/slurm/microbatch2_retry.sbatch",
+    "/storage/scratch1/1/gliu386/VLA_Startup/runs/arena-microbatch-20261018-001"
+  ],
+  "attempted_unix": 1792419198.2311904,
+  "status": "submitted",
+  "stdout": "14179857\n",
+  "stderr": "",
+  "returncode": 0,
+  "job_id": "14179857"
+}
