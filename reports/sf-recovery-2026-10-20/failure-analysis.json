@@ -1,0 +1,22 @@
+{
+  "job_id": "14143602",
+  "state": "FAILED",
+  "end_edt": "2026-10-20 13:32:36",
+  "elapsed": "17:32:07",
+  "last_logged_step": 3460,
+  "latest_checkpoint_step": 3000,
+  "rank0_last_enqueued": 238777,
+  "rank1_last_enqueued": 238842,
+  "last_completed_both": 238777,
+  "failed_collective": 238778,
+  "error": "NCCL ALLREDUCE watchdog timeout",
+  "timeout_ms": 600000,
+  "observed_elapsed_ms": 1386708,
+  "nonfinite_steps": [],
+  "last100_flow_median": 0.013087682891637087,
+  "last100_alignment_median": 0.03787609934806824,
+  "root_cause_confirmed": false,
+  "assessment": "Rank 0 did not enqueue the next gradient collective. Its Python stack and NCCL flight recorder were not captured. Subsequent login-node reads stalled under a 4 GiB per-user memory cap; this is not evidence that the original 96 GB training allocation had a storage failure.",
+  "inspection_memory_limit_bytes": 4294967296,
+  "inspection_restore_exit_code": 137
+}

@@ -1,0 +1,115 @@
+JobId=14230443 JobName=sf-recover-3000-continue
+   UserId=gliu386(3571051) GroupId=pace-jli741(454010) MCS_label=N/A
+   Priority=250004 Nice=0 Account=gts-jli741-paid QOS=inferno
+   JobState=PENDING Reason=Priority Dependency=(null)
+   Requeue=1 Restarts=0 BatchFlag=1 Reboot=0 ExitCode=0:0
+   RunTime=00:00:00 TimeLimit=1-00:00:00 TimeMin=N/A
+   SubmitTime=2026-10-20T17:05:40 EligibleTime=2026-10-20T17:05:40
+   AccrueTime=2026-10-20T17:05:40
+   StartTime=Unknown EndTime=Unknown Deadline=N/A
+   SuspendTime=None SecsPreSuspend=0 LastSchedEval=2026-10-20T17:07:10 Scheduler=Main
+   Partition=gpu-a100 AllocNode:Sid=login-phoenix-gnr-3.pace.gatech.edu:1787902
+   ReqNodeList=(null) ExcNodeList=atl1-1-01-002-28-0
+   NodeList=
+   NumNodes=2-2 NumCPUs=32 NumTasks=2 CPUs/Task=16 ReqB:S:C:T=0:0:*:*
+   ReqTRES=cpu=32,mem=192G,node=2,billing=74348,gres/gpu=4,gres/gpu:a100=4
+   AllocTRES=(null)
+   Socks/Node=* NtasksPerN:B:S:C=1:0:*:* CoreSpec=*
+   MinCPUsNode=16 MinMemoryNode=96G MinTmpDiskNode=0
+   Features=(null) DelayBoot=00:00:00
+   OverSubscribe=OK Exclusive=NO Contiguous=0 Licenses=(null) LicensesAlloc=(null) Network=(null)
+   Command=/storage/scratch1/1/gliu386/VLA_Startup/slurm/recovery_continue.sbatch
+   SubmitLine=sbatch --parsable --account=gts-jli741-paid --qos=inferno --partition=gpu-a100 --nodes=2 --ntasks=2 --ntasks-per-node=1 --cpus-per-task=16 --mem=96G --time=24:00:00 --job-name=sf-recover-3000-continue --chdir=/storage/scratch1/1/gliu386/VLA_Startup --output=/storage/scratch1/1/gliu386/VLA_Startup/logs/sf-recover-3000-continue-%j.out --gres=gpu:a100:2 /storage/scratch1/1/gliu386/VLA_Startup/slurm/recovery_continue.sbatch /storage/scratch1/1/gliu386/VLA_Startup/runs/arena-sf-recovery-20261020-001/recovery.json
+   WorkDir=/storage/scratch1/1/gliu386/VLA_Startup
+   StdErr=
+   StdIn=/dev/null
+   StdOut=/storage/scratch1/1/gliu386/VLA_Startup/logs/sf-recover-3000-continue-14230443.out
+   TresPerNode=gres/gpu:a100:2
+   TresPerTask=cpu=16
+
+JobId=14230444 JobName=sf-recover-3000-eval
+   UserId=gliu386(3571051) GroupId=pace-jli741(454010) MCS_label=N/A
+   Priority=250004 Nice=0 Account=gts-jli741-paid QOS=inferno
+   JobState=PENDING Reason=Priority Dependency=(null)
+   Requeue=1 Restarts=0 BatchFlag=1 Reboot=0 ExitCode=0:0
+   RunTime=00:00:00 TimeLimit=1-00:00:00 TimeMin=N/A
+   SubmitTime=2026-10-20T17:05:48 EligibleTime=2026-10-20T17:05:48
+   AccrueTime=2026-10-20T17:05:48
+   StartTime=Unknown EndTime=Unknown Deadline=N/A
+   SuspendTime=None SecsPreSuspend=0 LastSchedEval=2026-10-20T17:07:10 Scheduler=Main
+   Partition=gpu-a100 AllocNode:Sid=login-phoenix-gnr-3.pace.gatech.edu:1789121
+   ReqNodeList=(null) ExcNodeList=atl1-1-01-002-28-0
+   NodeList=
+   NumNodes=1-1 NumCPUs=8 NumTasks=1 CPUs/Task=8 ReqB:S:C:T=0:0:*:*
+   ReqTRES=cpu=8,mem=96G,node=1,billing=18587,gres/gpu=1,gres/gpu:a100=1
+   AllocTRES=(null)
+   Socks/Node=* NtasksPerN:B:S:C=1:0:*:* CoreSpec=*
+   MinCPUsNode=8 MinMemoryNode=96G MinTmpDiskNode=0
+   Features=(null) DelayBoot=00:00:00
+   OverSubscribe=OK Exclusive=NO Contiguous=0 Licenses=(null) LicensesAlloc=(null) Network=(null)
+   Command=/storage/scratch1/1/gliu386/VLA_Startup/slurm/recovery_eval.sbatch
+   SubmitLine=sbatch --parsable --account=gts-jli741-paid --qos=inferno --partition=gpu-a100 --nodes=1 --ntasks=1 --ntasks-per-node=1 --cpus-per-task=8 --mem=96G --time=24:00:00 --job-name=sf-recover-3000-eval --chdir=/storage/scratch1/1/gliu386/VLA_Startup --output=/storage/scratch1/1/gliu386/VLA_Startup/logs/sf-recover-3000-eval-%j.out --gres=gpu:a100:1 /storage/scratch1/1/gliu386/VLA_Startup/slurm/recovery_eval.sbatch /storage/scratch1/1/gliu386/VLA_Startup/runs/arena-sf-recovery-20261020-001/recovery.json
+   WorkDir=/storage/scratch1/1/gliu386/VLA_Startup
+   StdErr=
+   StdIn=/dev/null
+   StdOut=/storage/scratch1/1/gliu386/VLA_Startup/logs/sf-recover-3000-eval-14230444.out
+   TresPerNode=gres/gpu:a100:1
+   TresPerTask=cpu=8
+
+JobId=14217601 JobName=sf-24h-continue-baseline
+   UserId=gliu386(3571051) GroupId=pace-jli741(454010) MCS_label=N/A
+   Priority=250014 Nice=0 Account=gts-jli741-paid QOS=inferno
+   JobState=PENDING Reason=Priority Dependency=(null)
+   Requeue=1 Restarts=0 BatchFlag=1 Reboot=0 ExitCode=0:0
+   RunTime=00:00:00 TimeLimit=1-00:00:00 TimeMin=N/A
+   SubmitTime=2026-10-20T10:13:32 EligibleTime=2026-10-20T10:13:32
+   AccrueTime=2026-10-20T10:13:32
+   StartTime=2026-10-25T00:00:00 EndTime=2026-10-26T00:00:00 Deadline=N/A
+   SuspendTime=None SecsPreSuspend=0 LastSchedEval=2026-10-20T17:07:09 Scheduler=Main
+   Partition=gpu-a100 AllocNode:Sid=login-phoenix-gnr-3.pace.gatech.edu:1895135
+   ReqNodeList=(null) ExcNodeList=atl1-1-01-002-28-0
+   NodeList= SchedNodeList=atl1-1-01-002-16-0,atl1-1-01-002-20-0
+   NumNodes=2-2 NumCPUs=32 NumTasks=2 CPUs/Task=16 ReqB:S:C:T=0:0:*:*
+   ReqTRES=cpu=32,mem=192G,node=2,billing=74348,gres/gpu=4,gres/gpu:a100=4
+   AllocTRES=(null)
+   Socks/Node=* NtasksPerN:B:S:C=1:0:*:* CoreSpec=*
+   MinCPUsNode=16 MinMemoryNode=96G MinTmpDiskNode=0
+   Features=(null) DelayBoot=00:00:00
+   OverSubscribe=OK Exclusive=NO Contiguous=0 Licenses=(null) LicensesAlloc=(null) Network=(null)
+   Command=/storage/scratch1/1/gliu386/VLA_Startup/slurm/sf_after24h_continue.sbatch
+   SubmitLine=sbatch --parsable --account=gts-jli741-paid --qos=inferno --partition=gpu-a100 --nodes=2 --ntasks=2 --ntasks-per-node=1 --cpus-per-task=16 --mem=96G --time=24:00:00 --job-name=sf-24h-continue-baseline --chdir=/storage/scratch1/1/gliu386/VLA_Startup --output=/storage/scratch1/1/gliu386/VLA_Startup/logs/sf-24h-continue-baseline-%j.out --gres=gpu:a100:2 /storage/scratch1/1/gliu386/VLA_Startup/slurm/sf_after24h_continue.sbatch /storage/scratch1/1/gliu386/VLA_Startup/runs/arena-after24h-20261019-001/campaign.json baseline
+   WorkDir=/storage/scratch1/1/gliu386/VLA_Startup
+   StdErr=
+   StdIn=/dev/null
+   StdOut=/storage/scratch1/1/gliu386/VLA_Startup/logs/sf-24h-continue-baseline-14217601.out
+   TresPerNode=gres/gpu:a100:2
+   TresPerTask=cpu=16
+
+JobId=14199187 JobName=sf-24h-eval-baseline
+   UserId=gliu386(3571051) GroupId=pace-jli741(454010) MCS_label=N/A
+   Priority=250033 Nice=0 Account=gts-jli741-paid QOS=inferno
+   JobState=PENDING Reason=Priority Dependency=(null)
+   Requeue=1 Restarts=0 BatchFlag=1 Reboot=0 ExitCode=0:0
+   RunTime=00:00:00 TimeLimit=1-00:00:00 TimeMin=N/A
+   SubmitTime=2026-10-19T21:28:42 EligibleTime=2026-10-19T21:28:42
+   AccrueTime=2026-10-19T21:28:42
+   StartTime=2026-10-22T09:20:00 EndTime=2026-10-23T09:20:00 Deadline=N/A
+   SuspendTime=None SecsPreSuspend=0 LastSchedEval=2026-10-20T17:07:08 Scheduler=Main
+   Partition=gpu-a100 AllocNode:Sid=login-phoenix-gnr-4:666372
+   ReqNodeList=(null) ExcNodeList=atl1-1-01-002-28-0
+   NodeList= SchedNodeList=atl1-1-01-002-18-0
+   NumNodes=1 NumCPUs=8 NumTasks=1 CPUs/Task=8 ReqB:S:C:T=0:0:*:*
+   ReqTRES=cpu=8,mem=96G,node=1,billing=18587,gres/gpu=1,gres/gpu:a100=1
+   AllocTRES=(null)
+   Socks/Node=* NtasksPerN:B:S:C=1:0:*:* CoreSpec=*
+   MinCPUsNode=8 MinMemoryNode=96G MinTmpDiskNode=0
+   Features=(null) DelayBoot=00:00:00
+   OverSubscribe=OK Exclusive=NO Contiguous=0 Licenses=(null) LicensesAlloc=(null) Network=(null)
+   Command=/storage/scratch1/1/gliu386/VLA_Startup/slurm/sf_after24h_eval.sbatch
+   SubmitLine=sbatch --parsable --account=gts-jli741-paid --qos=inferno --partition=gpu-a100 --nodes=1 --ntasks=1 --ntasks-per-node=1 --cpus-per-task=8 --mem=96G --time=24:00:00 --job-name=sf-24h-eval-baseline --chdir=/storage/scratch1/1/gliu386/VLA_Startup --output=/storage/scratch1/1/gliu386/VLA_Startup/logs/sf-24h-eval-baseline-%j.out --gres=gpu:a100:1 /storage/scratch1/1/gliu386/VLA_Startup/slurm/sf_after24h_eval.sbatch /storage/scratch1/1/gliu386/VLA_Startup/runs/arena-after24h-20261019-001/campaign.json baseline
+   WorkDir=/storage/scratch1/1/gliu386/VLA_Startup
+   StdErr=
+   StdIn=/dev/null
+   StdOut=/storage/scratch1/1/gliu386/VLA_Startup/logs/sf-24h-eval-baseline-14199187.out
+   TresPerNode=gres/gpu:a100:1
+   TresPerTask=cpu=8

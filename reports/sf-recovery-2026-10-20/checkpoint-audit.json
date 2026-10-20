@@ -1,0 +1,26 @@
+{
+  "passed": true,
+  "source": "/storage/scratch1/1/gliu386/VLA_Startup/runs/arena-sf-train-full-002/sf/step-00003000.pt",
+  "checkpoint_sha256": "2565dd2a2aef61e340d313dbbd290dd36336371449a75ae136a91badc28e461a",
+  "source_plan_sha256": "6d12764a3ceb5cb2b51329dab6f67ec827912417088b663eab3ff8665f43291c",
+  "step": 3000,
+  "arm": "sf",
+  "world": 2,
+  "trainable_tensors": 955,
+  "finite_tensors_checked": 2849,
+  "optimizer_states_restored": 947,
+  "rank_rng_states_restored": 2,
+  "recorded_unused_parameters": [
+    "policy.paligemma_with_expert.paligemma.model.language_model.layers.17.mlp.down_proj.lora_a",
+    "policy.paligemma_with_expert.paligemma.model.language_model.layers.17.mlp.down_proj.lora_b",
+    "policy.paligemma_with_expert.paligemma.model.language_model.layers.17.mlp.gate_proj.lora_a",
+    "policy.paligemma_with_expert.paligemma.model.language_model.layers.17.mlp.gate_proj.lora_b",
+    "policy.paligemma_with_expert.paligemma.model.language_model.layers.17.mlp.up_proj.lora_a",
+    "policy.paligemma_with_expert.paligemma.model.language_model.layers.17.mlp.up_proj.lora_b",
+    "policy.paligemma_with_expert.paligemma.model.language_model.layers.17.self_attn.o_proj.lora_a",
+    "policy.paligemma_with_expert.paligemma.model.language_model.layers.17.self_attn.o_proj.lora_b"
+  ],
+  "production_restore_passed": true,
+  "gpu_forward_tested": false,
+  "cpu_validation_seconds": 32.786381483078
+}

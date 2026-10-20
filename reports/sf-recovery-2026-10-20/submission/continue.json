@@ -1,0 +1,27 @@
+{
+  "command": [
+    "sbatch",
+    "--parsable",
+    "--account=gts-jli741-paid",
+    "--qos=inferno",
+    "--partition=gpu-a100",
+    "--nodes=2",
+    "--ntasks=2",
+    "--ntasks-per-node=1",
+    "--cpus-per-task=16",
+    "--mem=96G",
+    "--time=24:00:00",
+    "--job-name=sf-recover-3000-continue",
+    "--chdir=/storage/scratch1/1/gliu386/VLA_Startup",
+    "--output=/storage/scratch1/1/gliu386/VLA_Startup/logs/sf-recover-3000-continue-%j.out",
+    "--gres=gpu:a100:2",
+    "/storage/scratch1/1/gliu386/VLA_Startup/slurm/recovery_continue.sbatch",
+    "/storage/scratch1/1/gliu386/VLA_Startup/runs/arena-sf-recovery-20261020-001/recovery.json"
+  ],
+  "attempted_unix": 1792530340.5573816,
+  "status": "submitted",
+  "stdout": "14230443\n",
+  "stderr": "",
+  "returncode": 0,
+  "job_id": "14230443"
+}

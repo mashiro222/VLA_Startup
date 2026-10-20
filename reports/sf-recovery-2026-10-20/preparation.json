@@ -1,0 +1,97 @@
+{
+  "source_step": 3000,
+  "target_step": 18000,
+  "additional_updates": 15000,
+  "gpus": 4,
+  "nodes": 2,
+  "micro_batch": 2,
+  "accumulation": 4,
+  "global_batch": 32,
+  "recipe": {
+    "action_dim": 32,
+    "action_horizon": 10,
+    "augmentation": "shared-no-geometric-color-jitter-v1",
+    "checkpoint_every": 1000,
+    "dataset_revision": "8c6cdcac185c7c97582a78f8ad8c2ef3757ce2c7",
+    "discrete_state_input": false,
+    "ema": null,
+    "extra_delta_transform": false,
+    "global_batch": 32,
+    "gradient_checkpointing": true,
+    "initialization": "pi05_base",
+    "keep_checkpoints": 15002,
+    "learning_rate": {
+      "decay_steps": 30000,
+      "end": 2.5e-06,
+      "peak": 2.5e-05,
+      "warmup_steps": 1000
+    },
+    "log_every": 10,
+    "lora": {
+      "expert_alpha": 32,
+      "expert_rank": 32,
+      "headwise_attention": true,
+      "init_std": 0.01,
+      "vlm_alpha": 16,
+      "vlm_rank": 16
+    },
+    "max_token_len": 200,
+    "micro_batch": 2,
+    "optimizer": {
+      "betas": [
+        0.9,
+        0.95
+      ],
+      "clip_grad_norm": 1.0,
+      "eps": 1e-08,
+      "weight_decay": 1e-10
+    },
+    "schema": 1,
+    "seed": 42,
+    "sf": {
+      "pooling": "bilinear",
+      "position_embedding": true,
+      "student_layer_index": 12,
+      "teacher_layer_index": -1,
+      "teacher_resolution": 518,
+      "weight": 0.5
+    },
+    "source_recipe": "pi05_vla_arena_low_mem_finetune",
+    "steps": 18000
+  },
+  "checkpoint_sha256": "2565dd2a2aef61e340d313dbbd290dd36336371449a75ae136a91badc28e461a",
+  "episodes": 900,
+  "trials_per_task": 30,
+  "baseline_evaluation_step": 5952,
+  "equal_steps_for_initial_comparison": false,
+  "baseline_job_ids_unchanged": [
+    "14217601",
+    "14199187"
+  ],
+  "future_comparison_steps": [
+    18000,
+    18000
+  ],
+  "frozen_files": {
+    "scripts/recovery_worker.sh": "1e3c02b82790cd1987fce119bbb2e8289ddb8a5b863bbfb913ebc94db18f7b91",
+    "slurm/recovery_audit.sbatch": "7f6649f036e929021bed7e5e3b3ee2763bf16630ab62931997bd0e695fc3cef6",
+    "slurm/recovery_continue.sbatch": "d65c70885c70ea9a8d670ff7e788d71e9bc67f78642bf7571a3c78ab0cf3b0b6",
+    "slurm/recovery_eval.sbatch": "1b8f4f62d04f45094938f5628a239a5e2adfb22eb0e2a6e2357fa1d4607f02c8",
+    "src/sf_recovery/__init__.py": "77bc8733cb8c54b7b025069e118d7f7598b3558a4e83c024762a83118e627336",
+    "src/sf_recovery/audit.py": "c4d5410cbb878f93d9ee58dfe167b3abd78afb86266daa0b2d67f398261e7a39",
+    "src/sf_recovery/evaluate.py": "98efaedef6f17b8958367a93614339caced33904ae04be99c10ed20b81b3b0e0",
+    "src/sf_recovery/stage.py": "93bb9d9da480d179b401f23192c84c12901477be3540d6f26b95cda083d67d9a",
+    "src/sf_recovery/train.py": "8e0083de627f51eaaf0ebc60f4a1d97ac3f3cf5d132b7b67789a480f817eb2b8",
+    "src/sf_recovery/workflow.py": "8cae3961d17ea483e251e95dc06c97761172b4d184b43090647e527944c78b2b"
+  },
+  "frozen_inputs": {
+    "/storage/scratch1/1/gliu386/VLA_Startup/runs/arena-sf-train-full-002/plan.json": "6d12764a3ceb5cb2b51329dab6f67ec827912417088b663eab3ff8665f43291c",
+    "/storage/scratch1/1/gliu386/VLA_Startup/reports/sf-recovery-2026-10-20/checkpoint-audit.json": "234fe3d8f89e40c5d9ec3058433994787b6d41d1bc2afa072345eee6a33c660a",
+    "/storage/scratch1/1/gliu386/VLA_Startup/runs/arena-sf-recovery-20261020-001-sf-plus15k/plan.json": "107ed2942c6110f7b9f86bd3b2c4a4f1c3c00249bef802d008ac1b32198fe4d1",
+    "/storage/scratch1/1/gliu386/VLA_Startup/runs/arena-sf-recovery-20261020-001-sf-eval900/plan.json": "aedbb5aec274dbe2f6f30b9c69ba4b91300a8bef3ca8767a12dacb02799106a9",
+    "/storage/scratch1/1/gliu386/VLA_Startup/runs/arena-after24h-20261019-001-baseline-eval/plan.json": "9614f7c839622c783145e7969f9150cce6f4514c0681841ddfde6528feb03318",
+    "/storage/scratch1/1/gliu386/VLA_Startup/runs/arena-microbatch-20261018-001/calibration.json": "d743de4faf783fb84e6c163759fff34b7bb3bddfb9fc340d772b4e0113452d98"
+  },
+  "automatic_resubmission": false,
+  "max_concurrent_gpus": null
+}

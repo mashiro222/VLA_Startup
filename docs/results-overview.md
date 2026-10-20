@@ -7,7 +7,7 @@
 | LIBERO-Plus | 10,030 / 10,030 episodes | SR **84.52%** |
 | LIBERO clean | 1,500 / 2,000 episodes | 已完成部分 SR **96.40%**；停止补跑缺失分片 |
 | Arena Safety balanced1500 | 1,500 / 1,500 episodes | SR **11.47%**，平均 CC **60.24** |
-| Arena LoRA / LoRA+SF | 各组 24 小时最终 checkpoint 评测；四卡各追加 15k | baseline 5,952 步评测与四卡续训已提交；batch 2 校准通过；SF 初始训练中 |
+| Arena LoRA / LoRA+SF | 两组各 900 episodes；四卡续训；保留两组 18k 权重 | baseline 5,952 步评测与续训排队；SF 同步超时后从 3,000 步恢复，续训与评测已提交 |
 
 ## 2026-10-11：LIBERO 环境与 smoke
 
@@ -150,6 +150,20 @@ Batch 2 补测 **14179857** 于 **03:15 EDT** 正常完成，退出码 `0:0`。�
 **SF 进度与预期：** 10:11 EDT 为 **2,824 步**，最近 500 步 flow MSE 中位数约 **0.0141**、对齐损失约 **0.0436**，未发现非有限或异常大 loss。最近 500/1,000 步平均耗时约 **19.3/17.7 秒**，包含较慢更新，按剩余时间粗估本次结束时约 **4,300–5,000 步**；这是速度外推，最终以保存记录为准。预计 19:50–20:00 EDT 保存退出。训练损失下降不能替代 SR/CC 评测，也不能证明 SF 优于普通 LoRA；本轮两组初始分配时长相同，但最终更新步数不同。
 
 [续训提交回执](../reports/arena-after24h-20261019-001-baseline-plus15k/submission.json) · [资源、checkpoint 与预算核对](../reports/arena-after24h-20261019-001-baseline-plus15k/preparation.json) · [运行与输出说明](run/after-24h-followup.md#baseline-四卡追加训练)。
+
+## 2026-10-20：SF 同步超时，恢复检查与 18k 对照保留
+
+SF **14143602** 于 **13:32:36 EDT** 因 NCCL 梯度 `ALLREDUCE` 超时失败，运行 17:32:07；最后记录 **3,460 步**，最后保存 **3,000 步**。两 rank 的最后完成序号相同，但 rank 0 未进入下一次规约；缺少该 rank 的 Python 堆栈和 flight recorder，具体根因尚未确定。故障前 loss 均有限，最后 100 步 flow MSE 中位数 **0.01309**、alignment **0.03788**；下一批全部 32 个样本的读取与解码回放通过。
+
+**调整原因与方案：** 从实际保存的 3,000 步恢复，追加 15,000 步至 **18,000**；使用 **4 张 A100 × 每卡 batch 2 × 累积 4 = global batch 32**，并增加节点本地输入缓存与逐 rank 超时诊断。此次新增 SF 3,000 步的 **900 episodes** 评测，与已有 baseline 5,952 步评测使用同一任务/初态集合；不新增 baseline 评测。初步结果属于不同训练步数的比较，不能作为等步数 SF 消融。
+
+**18k 权重保留：** Baseline 续训 **14217601** 保持原作业号、排队位置和最终 20,952 步目标，仅增加保留数量，确保 18,000 步 checkpoint 不被清理；SF 续训同样保留本段 checkpoint。未来可采用 **18,000 vs 18,000** 的等更新次数比较，两组切换四卡的时点分别为 5,952 / 3,000 步，仍需报告这一运行设置差异。
+
+**验证：** 53 项 CPU 回归检查通过。登录节点恢复受 4 GiB 内存上限影响；首次 CPU 验证又遇到运行库读取等待，所在节点随后被标为 DRAIN。改用健康节点与本地环境后，**14229891** 于 **16:59:22 EDT** 完成真实恢复：955 个可训练张量、947 份 Adam 状态、两个 rank 的 CPU 随机状态恢复通过，2,849 个权重/动量张量均有限。GPU forward 和四卡通信仍以实际运行验证为准。[恢复报告](../reports/sf-recovery-2026-10-20/checkpoint-audit.json)。
+
+**提交：** 17:05 EDT，SF 四卡续训 **14230443** 与单卡 900-episode 评测 **14230444** 已提交至 `gts-jli741-paid`；17:06 均为 `PENDING (Priority)`。Baseline 续训 **14217601** 与评测 **14199187** 保持原队列。当前没有新 SR/CC 结果，也未将 CPU 恢复通过记为四卡训练验证通过。
+
+[故障、恢复和操作说明](run/sf-recovery-2026-10-20.md) · [故障证据](../reports/sf-recovery-2026-10-20/failure-analysis.json) · [18k 保留范围核对](../reports/sf-recovery-2026-10-20/baseline-retention.json) · [测试记录](../reports/sf-recovery-2026-10-20/tests.xml)
 
 ## 阅读与证据索引
 

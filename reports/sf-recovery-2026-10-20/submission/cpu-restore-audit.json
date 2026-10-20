@@ -1,0 +1,24 @@
+{
+  "command": [
+    "sbatch",
+    "--parsable",
+    "--account=gts-jli741-paid",
+    "--qos=inferno",
+    "--partition=cpu-small",
+    "--nodes=1",
+    "--ntasks=1",
+    "--cpus-per-task=2",
+    "--mem=24G",
+    "--time=00:30:00",
+    "--job-name=sf-3000-restore-audit",
+    "--chdir=/storage/scratch1/1/gliu386/VLA_Startup",
+    "--output=/storage/scratch1/1/gliu386/VLA_Startup/logs/sf-3000-restore-audit-%j.out",
+    "/storage/scratch1/1/gliu386/VLA_Startup/slurm/recovery_audit.sbatch"
+  ],
+  "attempted_unix": 1792527532.7568936,
+  "status": "submitted",
+  "stdout": "14229255\n",
+  "stderr": "",
+  "returncode": 0,
+  "job_id": "14229255"
+}

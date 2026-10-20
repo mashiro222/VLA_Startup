@@ -1,0 +1,24 @@
+{
+  "cpu_only": true,
+  "account": "gts-jli741-paid",
+  "attempts": [
+    {
+      "job_id": "14229255",
+      "state": "TIMEOUT",
+      "note": "Shared-runtime read wait; node later DRAIN after failed health check."
+    },
+    {
+      "job_id": "14229813",
+      "state": "CANCELLED",
+      "note": "Pending retry bound to the drained node; no validation ran."
+    },
+    {
+      "job_id": "14229891",
+      "state": "COMPLETED",
+      "runtime": "Node-local Python 3.11.17 / torch 2.7.1+cpu",
+      "passed": true,
+      "report": "checkpoint-audit.json"
+    }
+  ],
+  "gpu_jobs_modified": false
+}

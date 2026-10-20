@@ -9,12 +9,17 @@ from arena_startup.core import ROOT, file_hash, save
 
 
 def compatible(source, target):
-    allowed = {'steps', 'micro_batch', 'log_every', 'checkpoint_every'}
+    allowed = {'steps', 'micro_batch', 'log_every', 'checkpoint_every', 'keep_checkpoints'}
     if {k: v for k, v in source['recipe'].items() if k not in allowed} != {
             k: v for k, v in target['recipe'].items() if k not in allowed}:
         raise ValueError('Migration changes model, data protocol, optimizer or learning-rate schedule')
     for key in ('assets', 'environment', 'files'):
         if source[key] != target[key]: raise ValueError(f'Migration {key} differs')
+    # Increasing retention changes storage only, never the optimizer trajectory.
+    before = source['recipe'].get('keep_checkpoints', 2)
+    after = target['recipe'].get('keep_checkpoints', before)
+    if type(after) is not int or after < before:
+        raise ValueError('Continuation must not reduce checkpoint retention')
     if target['recipe']['global_batch'] != 32 or target['recipe']['micro_batch'] != 2 or target['gpus'] != 4:
         raise ValueError('Expected 4 GPUs x micro-batch 2 x accumulation 4')
 

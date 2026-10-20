@@ -1,0 +1,91 @@
+{
+  "schema": 1,
+  "protocol": "final-checkpoint-after-initial-24h-manual",
+  "submission_mode": "manual",
+  "automatic_resubmission": false,
+  "source_plan": "/storage/scratch1/1/gliu386/VLA_Startup/runs/arena-sf-train-full-002/plan.json",
+  "source_plan_sha256": "6d12764a3ceb5cb2b51329dab6f67ec827912417088b663eab3ff8665f43291c",
+  "original_jobs": {
+    "baseline": "14143587",
+    "sf": "14143602"
+  },
+  "calibration": "/storage/scratch1/1/gliu386/VLA_Startup/runs/arena-microbatch-20261018-001",
+  "calibration_job": "14179857",
+  "additional_updates": 15000,
+  "global_batch": 32,
+  "gpus_per_training": 4,
+  "micro_batch": 2,
+  "accumulation": 4,
+  "trials_per_task": 30,
+  "episodes_per_arm": 900,
+  "max_concurrent_gpus": null,
+  "pinned": "/storage/scratch1/1/gliu386/VLA_Startup/runs/arena-after24h-20261019-001/pinned-final",
+  "comparison": "/storage/scratch1/1/gliu386/VLA_Startup/reports/arena-after24h-20261019-001-comparison",
+  "evaluations": {
+    "baseline": "/storage/scratch1/1/gliu386/VLA_Startup/runs/arena-after24h-20261019-001-baseline-eval",
+    "sf": "/storage/scratch1/1/gliu386/VLA_Startup/runs/arena-after24h-20261019-001-sf-eval"
+  },
+  "continuations": {
+    "baseline": "/storage/scratch1/1/gliu386/VLA_Startup/runs/arena-after24h-20261019-001-baseline-plus15k",
+    "sf": "/storage/scratch1/1/gliu386/VLA_Startup/runs/arena-after24h-20261019-001-sf-plus15k"
+  },
+  "files": {
+    "config/sf_followup_dependencies.json": "891f49c387a254eeddeb78db91f8d3214c7e6434333923e31360b7bb1fa44276",
+    "requirements/sf_followup.lock": "2a774b764484a1036ca4dcea9c5cc1815619880d4578c79472a10027396f71d5",
+    "scripts/sf_after24h.sh": "4eeeb6b6d80c563c1b4ab7aa7bc3a201f6ab3b8ded6023c4567c61251c14d9c2",
+    "scripts/sf_multinode_worker.sh": "2ef23d7f589591dae0c410772cca5b8e93794af78904cceea50230ab741c661b",
+    "slurm/sf_after24h_continue.sbatch": "930493583d0e274451733c502733e2234dbbdd4b952cd4300e5de123421e1f61",
+    "slurm/sf_after24h_eval.sbatch": "152a19b32f6004274176f846cb5c54959a392301f857ed81444d1e8ea39c3a4f",
+    "slurm/sf_calibration.sbatch": "3d92ca2f8e83d799242cb515066acde367df62735a330d61821a11b6bc881908",
+    "slurm/sf_catchup.sbatch": "cec21e7b3c30b6cc17a3ce07ba7c074bfaa3de728ed2a5ff9262432a352e3741",
+    "slurm/sf_continue.sbatch": "3d5e75f530864b52dc4b505b6a9100aebdf510523514d83f8765bca6edba7288",
+    "slurm/sf_evaluation.sbatch": "d70d61c317b0e061200a320d454cf5e1caa4eeae2377eb2772c7b763af54aee8",
+    "slurm/sf_train.sbatch": "fd6cc965b9a02c6ffe82063afb265cac99e73d9d69ac48bdcfb1e7f907aa07bc",
+    "slurm/sf_watch.sbatch": "d27793b412c5a350ea5e31aa5e1ba318a55fe029ec6ee6885198e98dd4704008",
+    "src/sf_followup/__init__.py": "6ecf80776ad41ac26cbf4a4e9002f5211cc0a85a08d224428624bf6b56d917e3",
+    "src/sf_followup/after24h.py": "010627f2ed6851fc07d27a300900db5f6d6abdff0cee6f485b305d9589ce0043",
+    "src/sf_followup/calibration.py": "07bca966e45b41ab2c904c7594cbf97973cae2f24c797b2a7639d5749c656160",
+    "src/sf_followup/checkpoints.py": "661f25bb93a6a55001c5e197cf39e2b1e29855ed06efb5572c51934a115994c6",
+    "src/sf_followup/continuation.py": "b5cd58b5d99d21b5274e889d89bc70bd59ad1a337f674118c7da1aaf2e7c1ce0",
+    "src/sf_followup/control.py": "3e8fb0ca0a888c0cdb26981b13d404deff3d702925bf8575f610ad71583843e0",
+    "src/sf_followup/evaluation.py": "03a1e62181c8efe3ed9be067d814728616786cbf073128b9aea05d5dcf3ce8bf"
+  },
+  "arena_files": {
+    ".runtime/repos/openpi/uv.lock": "793488b5a55bb87200db90a61fd0af51922b686d94e1da4f4c587ab119b37d74",
+    "config/arena.json": "e527d96dd163a630bb1cd06b4261d589585037a9f8e3bcc53b7c678e566f17c8",
+    "config/checkpoint_files.json": "49e389064fb191d2f4ba5dc76af92a89ca770e5595c73f5d3606010332d34144",
+    "config/sources.json": "9033c266c3baf6105e0ce5672b457ccfb9a01461e6dd16437b16d4c4ae31848b",
+    "requirements/arena.lock": "6a10a244bc7fb57edd94220d26a86481e2acb03f7d6d8f960d02565a148a5963",
+    "scripts/arena.py": "7f8dad41d13fef3bcd43e357e4b5c6c94a409529a4079b135ca6e39a51a03a15",
+    "scripts/arena.sh": "754fc636f88f121ea88501a7d5ed4f0e7537bce050c9392c02734df8896af77e",
+    "scripts/patch_arena.py": "cbe282f46678643053a13495ab325e7a5f4f11fedb16f158724cebf4aed453b8",
+    "slurm/arena.sbatch": "d9fa8ae3d9eb15b843a5e7745db7a1d13dedf3817ecebf11491488ff1ac8c255",
+    "src/arena_startup/__init__.py": "917e69d2622cfeb1aa2ae08c361e7eb286d10a7dbfc8b4bd7c53c371b19080a3",
+    "src/arena_startup/adapter.py": "bb83ced8ceddae77ade12f96d1046bf9120ca2d62357152a5dd8916e61b8a2ab",
+    "src/arena_startup/catalog.py": "cfe8bb50021ee5aecc74b0bec0f7b76d383836fca0746864e18b8c881a775005",
+    "src/arena_startup/core.py": "a8bcd0d740e2e5ceed305a538aacac71ce955f3cd2507f73351bedb91d26ee45",
+    "src/arena_startup/diagnostic_report.py": "22dc206e2b0b1f289e6d32ec3e3b001f8bd9eafdc898af4ac4ea49eb89c9217a",
+    "src/arena_startup/diagnostics.py": "38084bb948d2d217a34c4615a4d4060a14b1c401cf59a311f3ff11967018150f",
+    "src/arena_startup/evaluate.py": "498d8f8916d570229bc6c8aef91b4a8888ae6b084926135c76b5ff971014a383",
+    "src/arena_startup/report.py": "e038099bd27d6a8b298680e4c35332f49a1a31f0552f87817b1874f1bf25c62c",
+    "src/arena_startup/runtime.py": "379927fccde8a18800a061d764d9b6e7a27696932b285351f22cfd962e44d4a9",
+    "src/arena_startup/server.py": "c2ad10c9a306d93efa4b6f403f3dbdd719b05c240dabee4db6695625683b2871",
+    "src/arena_startup/transport.py": "79c38b8ae8d19ac6768cdd286313a11ff4323724e3c76c4a25c140fb2c16e467",
+    "src/vla_startup/__init__.py": "28a9d13a05a834794f89520c799476686187156a992d6e7d72399f0b072baad3",
+    "src/vla_startup/evaluate.py": "0cb87bf6e02a03bcaea34437f1a292572e6d0a0025bea1c7d619ca1c17245028",
+    "src/vla_startup/journal.py": "ba426a18be34f40b1ce16521873365a50527c5a27292762f493cb5979dba106e",
+    "src/vla_startup/manifest.py": "e85ec7f2c65abd03e77332643dc6bf6e76c783a358966c3b22d1ee249f34511e",
+    "src/vla_startup/server.py": "3b7f261cf3d3392e4ad7cce15b994a841c5797bafe3f23fcba5997660148bc4f",
+    "src/vla_startup/summarize.py": "45a4994932f5b11ccd123654a1bf44ac18d8b4828c329a3c3beb7b9178c2129f"
+  },
+  "inputs": {
+    "/storage/scratch1/1/gliu386/VLA_Startup/runs/arena-sf-train-full-002/plan.json": "6d12764a3ceb5cb2b51329dab6f67ec827912417088b663eab3ff8665f43291c",
+    "/storage/scratch1/1/gliu386/VLA_Startup/runs/arena-balanced1500-001/plan.json": "31029bedf8239a38a0910fdd806e441b51dde3c876fad720f21458b0bfb4f79f",
+    "/storage/scratch1/1/gliu386/VLA_Startup/runs/arena-microbatch-20261018-001/mb1/plan.json": "18a084ea615f72d598a42c25b4a6c7289b2fa8bc60ad73c482b1eb01f1d90ab5",
+    "/storage/scratch1/1/gliu386/VLA_Startup/runs/arena-microbatch-20261018-001/mb2/plan.json": "1feb187312193e7b06361d947960b929e2d04f48c907ac4e4b654e32999dafda"
+  },
+  "calibration_job_history": [
+    "14171051",
+    "14179857"
+  ]
+}

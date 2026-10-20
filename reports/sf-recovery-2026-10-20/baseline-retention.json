@@ -1,0 +1,17 @@
+{
+  "job_id": "14217601",
+  "evaluation_job_id": "14199187",
+  "resubmitted": false,
+  "source_step": 5952,
+  "target_step": 20952,
+  "protected_comparison_step": 18000,
+  "keep_checkpoints": 15002,
+  "changed_recipe_keys": [
+    "keep_checkpoints"
+  ],
+  "evaluation_changed_metadata_keys": [
+    "sha256",
+    "followup_files"
+  ],
+  "training_semantics_changed": false
+}

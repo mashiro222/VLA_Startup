@@ -1,0 +1,12 @@
+{
+  "arm": "baseline",
+  "original_job": "14143587",
+  "source_step": 5952,
+  "target_step": 20952,
+  "checkpoint": "/storage/scratch1/1/gliu386/VLA_Startup/runs/arena-after24h-20261019-001/pinned-final/baseline/step-00005952.pt",
+  "source_plan_sha256": "6d12764a3ceb5cb2b51329dab6f67ec827912417088b663eab3ff8665f43291c",
+  "plans": {
+    "/storage/scratch1/1/gliu386/VLA_Startup/runs/arena-after24h-20261019-001-baseline-eval/plan.json": "0b3b2d80fc96b81748c4e1f7fa00bbe1fc91dc8f0d96a496a9c25463cd802423",
+    "/storage/scratch1/1/gliu386/VLA_Startup/runs/arena-after24h-20261019-001-baseline-plus15k/plan.json": "dcd6e401b49de63997718fd1b1be9274e19731590c87c94e0e0242286166e38d"
+  }
+}
