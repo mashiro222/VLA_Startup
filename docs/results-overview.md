@@ -7,7 +7,7 @@
 | LIBERO-Plus | 10,030 / 10,030 episodes | SR **84.52%** |
 | LIBERO clean | 1,500 / 2,000 episodes | 已完成部分 SR **96.40%**；停止补跑缺失分片 |
 | Arena Safety balanced1500 | 1,500 / 1,500 episodes | SR **11.47%**，平均 CC **60.24** |
-| Arena LoRA / LoRA+SF | 各组 24 小时最终 checkpoint 评测；四卡各追加 15k | 原训练与校准保留；后续仅准备手动提交入口，尚无训练后 SR/CC |
+| Arena LoRA / LoRA+SF | 各组 24 小时最终 checkpoint 评测；四卡各追加 15k | baseline 完成 5,952 步，900 条评测已提交；SF 训练中，尚无训练后 SR/CC |
 
 ## 2026-10-11：LIBERO 环境与 smoke
 
@@ -128,6 +128,16 @@ Clean：[分片 00](../reports/fullclean-4gpu-001-full-clean-shard-00/summary.md
 **最终 checkpoint 核对：** 后续 900-episode 评测使用各组 24 小时结束时保存的实际最终步数，包括超过 5,000 步的情况；续训目标为该步数 +15,000。补充存在旧 5,000 步权重、最终为 6,200 步时的选择测试，以及仅运行未完成 batch 2、复用 batch 1、拒绝覆盖不完整输出的检查。共 **45 项 CPU/通信检查通过**；未将这些检查记为 GPU batch 2 通过。
 
 [补测配置、回执与测试证据](../reports/microbatch2-retry-2026-10-19/README.md) · [手动后续流程](run/after-24h-followup.md)。本次仅提交校准，没有提交评测或四卡续训。
+
+## 2026-10-19：baseline 完成 5,952 步，提交 900-episode 评测
+
+Baseline **14143587** 于 **20:00:26 EDT** 正常结束，运行 **23:52:47**，退出码 `0:0`。按本次 24 小时预算退出，最终保存 **`step-00005952.pt`**；最后 flow MSE **0.00948**，最近 100 步中位数 **0.00924**，未发现非有限或异常大 loss。`status.json` 的 `completed=false` 表示尚未达到原始 60,000 步目标，不代表本次分配失败。
+
+**下一阶段：** 评测使用实际最终 5,952 步权重。作业 **14199187** 于 **21:28 EDT** 提交，申请 **1 张 A100、24 小时时限**，Static / Dynamic obstacles 各 **450 episodes**，共 900 条，输出 SR、CC、失败原因和 cost 归因。提交时为 `PENDING (Priority)`，尚无本轮评测成绩。
+
+SF **14143602** 于 **20:00:29 EDT** 启动；21:20 检查到 176 步，数值检查正常。Batch 2 补测 **14179857** 仍在排队。四卡续训等待 batch 2 验证后另行决定，未提交；两份现有作业保持不变。
+
+[评测作业与结果路径](run/after-24h-followup.md#baseline-5952-步评测) · [提交回执](../reports/arena-after24h-20261019-001-baseline-eval/submission.json) · [checkpoint 与任务覆盖检查](../reports/arena-after24h-20261019-001-baseline-eval/preparation.json)。
 
 ## 阅读与证据索引
 

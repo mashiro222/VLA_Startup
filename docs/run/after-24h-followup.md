@@ -21,12 +21,12 @@ Baseline 和 SF 分别完成当前的 **24 小时训练分配**后，使用各�
 
 ## 手动提交命令
 
-原始训练作业为 baseline **14143587**、SF **14143602**。首次校准 **14171051** 已因一小时时限退出，batch 1 两组完成，batch 2 尚未验证；补测记录见[batch 2 补测](#batch-2-补测)。后续评测与四卡续训尚未提交。
+原始训练作业为 baseline **14143587**、SF **14143602**。首次校准 **14171051** 已因一小时时限退出，batch 1 两组完成，batch 2 尚未验证；补测记录见[batch 2 补测](#batch-2-补测)。Baseline 评测 **14199187** 已于 10/19 21:28 EDT 提交，使用最终 **5,952 步 checkpoint**；SF 评测与两组四卡续训尚未提交。四卡续训待 batch 2 校准通过后另行决定。
 
 ```bash
 cd /storage/scratch1/1/gliu386/VLA_Startup
 squeue -u gliu386 -o '%.18i %.36j %.10T %.10M %.24b %R'
-sacct -j 14143587,14143602,14179857 --format=JobID,State,ExitCode,Elapsed
+sacct -j 14143587,14143602,14179857,14199187 --format=JobID,State,ExitCode,Elapsed
 ```
 
 哪组原始训练正常结束，就可以手动提交那组的任务，无需等待另一组：
@@ -46,6 +46,23 @@ bash scripts/sf_after24h.sh sf continue --submit
 手动提交时检查该组初始 Slurm 作业已正常完成，并从最终 `status.json` 读取准确步数，检查对应的是最新完整 checkpoint。续训还检查已运行的 batch 2 校准结果；没有新增训练 smoke。校准未通过时不能把 micro-batch 2 当作可用配置，但不阻止单卡评测。
 
 同一组的评测与续训绑定同一份保留的 checkpoint。提交记录用于防止重复提交；若同一任务已经排队或运行，重复执行命令会返回现有作业号。提交超时或状态不明时先检查队列，不盲目重复申请。
+
+## Baseline 5,952 步评测
+
+训练 **14143587** 于 10/19 20:00:26 EDT 正常结束（`COMPLETED`，退出码 `0:0`），最终保存 `step-00005952.pt`。权重在 `runs/arena-after24h-20261019-001/pinned-final/baseline/` 通过硬链接保留，评测绑定该文件。
+
+评测作业 **14199187**：1 张 A100、8 CPUs、96 GB 主机内存、24 小时时限，账户 `gts-jli741-paid`。Static / Dynamic obstacles 各 450 episodes；初始状态为 `PENDING (Priority)`。900 episodes 是计划数量，提交时尚无评测结果。
+
+```bash
+squeue -j 14199187 -o '%.18i %.10T %.12M %R'
+sacct -j 14199187 --format=JobID,State,ExitCode,Elapsed
+# 作业启动并创建日志后：
+tail -f logs/sf-24h-eval-baseline-14199187.out
+```
+
+逐 episode 输出位于 `runs/arena-after24h-20261019-001-baseline-eval/`；表图完成后保存到同名 `reports/` 目录。[提交回执](../../reports/arena-after24h-20261019-001-baseline-eval/submission.json)和[checkpoint / 任务覆盖检查](../../reports/arena-after24h-20261019-001-baseline-eval/preparation.json)已归档。
+
+本次仅提交 baseline 评测。SF 训练 **14143602** 和 batch 2 补测 **14179857** 保持原样；没有提交四卡续训，也没有自动续训入口。Baseline 续训计划中的 **20,952** 是未来目标步数，并不表示已经申请了训练资源。
 
 ## 运行时限与手动续跑
 

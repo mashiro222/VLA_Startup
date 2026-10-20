@@ -1,0 +1,28 @@
+{
+  "command": [
+    "sbatch",
+    "--parsable",
+    "--account=gts-jli741-paid",
+    "--qos=inferno",
+    "--partition=gpu-a100",
+    "--nodes=1",
+    "--ntasks=1",
+    "--ntasks-per-node=1",
+    "--cpus-per-task=8",
+    "--mem=96G",
+    "--time=24:00:00",
+    "--job-name=sf-24h-eval-baseline",
+    "--chdir=/storage/scratch1/1/gliu386/VLA_Startup",
+    "--output=/storage/scratch1/1/gliu386/VLA_Startup/logs/sf-24h-eval-baseline-%j.out",
+    "--gres=gpu:a100:1",
+    "/storage/scratch1/1/gliu386/VLA_Startup/slurm/sf_after24h_eval.sbatch",
+    "/storage/scratch1/1/gliu386/VLA_Startup/runs/arena-after24h-20261019-001/campaign.json",
+    "baseline"
+  ],
+  "attempted_unix": 1792459722.6231918,
+  "status": "submitted",
+  "stdout": "14199187\n",
+  "stderr": "",
+  "returncode": 0,
+  "job_id": "14199187"
+}
