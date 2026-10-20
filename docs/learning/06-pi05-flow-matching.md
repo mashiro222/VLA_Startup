@@ -48,34 +48,34 @@
 
 ### 2.1 一条训练样本
 
-设机器人当前处于环境时刻 $k$，一条样本包含：
+设机器人当前处于环境时刻 $`k`$，一条样本包含：
 
-$$
-\underbrace{I_k^{(1)},\ldots,I_k^{(C)},\ell,q_k}_{\text{当前条件}}
+```math
+\underbrace{I_{k}^{(1)},\ldots,I_{k}^{(C)},\ell,q_{k}}_{\text{当前条件}}
 \quad\longrightarrow\quad
-\underbrace{A_k=[a_k,a_{k+1},\ldots,a_{k+H-1}]}_{\text{示范中的未来动作块}}.
-$$
+\underbrace{A_{k}=[a_{k},a_{k+1},\ldots,a_{k+H-1}]}_{\text{示范中的未来动作块}}.
+```
 
 这里：
 
 | 符号 | 含义 |
 |---|---|
-| $I_k^{(i)}$ | 第 $i$ 个相机的当前图像 |
-| $\ell$ | instruction / prompt，例如 “pick up the red cup” |
-| $q_k$ | 机器人当前状态；是否输入网络取决于配置 |
-| $H$ | 动作块里有多少条动作，本文用“长度”定义 |
-| $d$ | 机器人实际动作维度，例如 LIBERO 为 7 |
-| $D$ | 模型内部动作维度，当前代码为 32 |
-| $A\in\mathbb R^{H\times D}$ | 归一化、补零后的动作标签 |
-| $c$ | 网络实际使用的条件信息，包含图像、指令和可选 state |
+| $`I_{k}^{(i)}`$ | 第 $`i`$ 个相机的当前图像 |
+| $`\ell`$ | instruction / prompt，例如 “pick up the red cup” |
+| $`q_{k}`$ | 机器人当前状态；是否输入网络取决于配置 |
+| $`H`$ | 动作块里有多少条动作，本文用“长度”定义 |
+| $`d`$ | 机器人实际动作维度，例如 LIBERO 为 7 |
+| $`D`$ | 模型内部动作维度，当前代码为 32 |
+| $`A\in\mathbb{R}^{H\times D}`$ | 归一化、补零后的动作标签 |
+| $`c`$ | 网络实际使用的条件信息，包含图像、指令和可选 state |
 
-本文的 $H=50$ 表示 50 条动作；不要直接和论文用闭区间 $a_{t:t+H}$ 时的下标跨度混用。
+本文的 $`H=50`$ 表示 50 条动作；不要直接和论文用闭区间 $`a_{t:t+H}`$ 时的下标跨度混用。
 
 网络学习的是条件分布：
 
-$$
-p_\theta(A\mid c).
-$$
+```math
+p_{\theta}(A\mid c).
+```
 
 为什么是分布？同一幅图、同一条指令，可能对应多个合理动作，例如从杯子的左侧或右侧靠近。只回归一个均值可能把两种方案平均成一条不好的路线。生成模型可以利用不同的初始噪声产生不同动作块。
 
@@ -110,11 +110,11 @@ flowchart TD
 
 | 名字 | 本项目典型值 | 在什么空间里推进 |
 |---|---:|---|
-| `action_horizon`，记为 $H$ | 10 | 未来机器人动作序列 |
-| `num_steps`，记为 $N$ | 10 | 一次动作块生成内部的 ODE 数值积分 |
-| `replan_steps`，记为 $R$ | 5 | 生成后实际执行多少条动作，再重新观测 |
+| `action_horizon`，记为 $`H`$ | 10 | 未来机器人动作序列 |
+| `num_steps`，记为 $`N`$ | 10 | 一次动作块生成内部的 ODE 数值积分 |
+| `replan_steps`，记为 $`R`$ | 5 | 生成后实际执行多少条动作，再重新观测 |
 
-这里 $H=N=10$ 只是数值碰巧相等。**10 次去噪不是生成 10 条动作的逐条循环**：每一次去噪都同时更新整个 $H\times D$ 数组。
+这里 $`H=N=10`$ 只是数值碰巧相等。**10 次去噪不是生成 10 条动作的逐条循环**：每一次去噪都同时更新整个 $`H\times D`$ 数组。
 
 本项目数值来自 [评测配置](../../config/evaluation.json)，模型动作长度来自上面的固定版本配置。
 
@@ -140,11 +140,11 @@ float32 像素，通常在 [-1, 1]
 [256, 2048] 连续视觉 token
 ```
 
-这里的 patch embedding 在代码里由卷积实现：kernel 和 stride 都是 $14\times14$，等价于把每个不重叠 patch 映射成一个向量。每个 patch 原本有 $14\times14\times3=588$ 个像素数值；经过学习到的线性映射和视觉编码器后，变为带上下文的特征。
+这里的 patch embedding 在代码里由卷积实现：kernel 和 stride 都是 $`14\times14`$，等价于把每个不重叠 patch 映射成一个向量。每个 patch 原本有 $`14\times14\times3=588`$ 个像素数值；经过学习到的线性映射和视觉编码器后，变为带上下文的特征。
 
 图像 token **不是词表中的整数 ID**，也不是先生成“红色杯子”这样的文字。它们是浮点向量。某个 token 对应某个图像位置，但经过视觉 self-attention 后，已可以包含其他位置的信息。
 
-多相机分别经过同一个视觉编码器，再沿序列维拼接。LIBERO adapter 提供三个相机槽位：两张真实图像和一个被 mask 的占位图。因此实现中通常仍有 $3\times256=768$ 个视觉 token 槽位，其中第三组不作为有效注意力信息。**mask 不等于一定省掉了这组图像编码的计算**。
+多相机分别经过同一个视觉编码器，再沿序列维拼接。LIBERO adapter 提供三个相机槽位：两张真实图像和一个被 mask 的占位图。因此实现中通常仍有 $`3\times256=768`$ 个视觉 token 槽位，其中第三组不作为有效注意力信息。**mask 不等于一定省掉了这组图像编码的计算**。
 
 训练时还可以在视觉编码前进行随机裁剪、旋转和颜色扰动；推理没有这些随机训练增强，但仍有必要的缩放与归一化。依据：[siglip.py](https://github.com/Physical-Intelligence/openpi/blob/215abfb217dbac7d5f1273282331b9b1866c0479/src/openpi/models/siglip.py)、[Observation 与预处理](https://github.com/Physical-Intelligence/openpi/blob/215abfb217dbac7d5f1273282331b9b1866c0479/src/openpi/models/model.py)、[LIBERO adapter](https://github.com/Physical-Intelligence/openpi/blob/215abfb217dbac7d5f1273282331b9b1866c0479/src/openpi/policies/libero_policy.py)。
 
@@ -168,18 +168,18 @@ float32 像素，通常在 [-1, 1]
 
 **tokenizer 和 embedding 是两件事**：前者把文本编码成编号，后者把编号映射为可训练向量。之后经过 Transformer，向量会随其他图像与文本内容变化，形成上下文化表示。
 
-固定版本 π0.5 默认 $L=200$，这是包含格式文字和可选 state 在内的**文本槽位上限**，不包含图像 token；也不保证每条输入都恰好有 200 个有效 token。依据：[tokenizer.py](https://github.com/Physical-Intelligence/openpi/blob/215abfb217dbac7d5f1273282331b9b1866c0479/src/openpi/models/tokenizer.py)、[gemma.py 的 Embedder](https://github.com/Physical-Intelligence/openpi/blob/215abfb217dbac7d5f1273282331b9b1866c0479/src/openpi/models/gemma.py#L135)。
+固定版本 π0.5 默认 $`L=200`$，这是包含格式文字和可选 state 在内的**文本槽位上限**，不包含图像 token；也不保证每条输入都恰好有 200 个有效 token。依据：[tokenizer.py](https://github.com/Physical-Intelligence/openpi/blob/215abfb217dbac7d5f1273282331b9b1866c0479/src/openpi/models/tokenizer.py)、[gemma.py 的 Embedder](https://github.com/Physical-Intelligence/openpi/blob/215abfb217dbac7d5f1273282331b9b1866c0479/src/openpi/models/gemma.py#L135)。
 
 ### 3.3 State：标准 π0.5 将数值写入文本
 
 默认路径中，state 先按数据统计量归一化。例如分位数归一化：
 
-$$
-\widetilde q_j=
-2\frac{q_j-Q_{0.01,j}}{Q_{0.99,j}-Q_{0.01,j}+\varepsilon_{\rm norm}}-1.
-$$
+```math
+\widetilde{q}_{j}=
+2\frac{q_{j}-Q_{0.01,j}}{Q_{0.99,j}-Q_{0.01,j}+\varepsilon_{\mathrm{norm}}}-1.
+```
 
-$Q_{0.01,j}$ 和 $Q_{0.99,j}$ 是训练数据第 $j$ 个状态维度的 1% 与 99% 分位数。它们来自训练资产，不是对当前单条样本临时计算。
+$`Q_{0.01,j}`$ 和 $`Q_{0.99,j}`$ 是训练数据第 $`j`$ 个状态维度的 1% 与 99% 分位数。它们来自训练资产，不是对当前单条样本临时计算。
 
 然后对归一化 state 分桶。代码的实际操作为：
 
@@ -200,7 +200,7 @@ Action:
 
 注意两个实现细节：
 
-- 分位数归一化不会自动把异常值裁剪进 $[-1,1]$；准确行为要看代码，不能把“归一化”理解成 `clip`。
+- 分位数归一化不会自动把异常值裁剪进 $`[-1,1]`$；准确行为要看代码，不能把“归一化”理解成 `clip`。
 - 标准变换链先 tokenize state，再执行 `PadStatesAndActions`；因此不要假定文本里一定写了 32 个补零后的状态值。
 
 在 `pi05_libero` 中 `discrete_state_input=False`，文本使用指令加换行的形式，不含上述 state 字段。依据：[transforms.py](https://github.com/Physical-Intelligence/openpi/blob/215abfb217dbac7d5f1273282331b9b1866c0479/src/openpi/transforms.py)、[ModelTransformFactory](https://github.com/Physical-Intelligence/openpi/blob/215abfb217dbac7d5f1273282331b9b1866c0479/src/openpi/training/config.py#L105)。
@@ -209,25 +209,25 @@ Action:
 
 prefix 就是本次生成的已知条件序列：
 
-$$
-P=[E_{\rm image}^{(1)};\ldots;E_{\rm image}^{(C)};E_{\rm text}]
-\in\mathbb R^{B\times S_P\times2048}.
-$$
+```math
+P=[E_{\mathrm{image}}^{(1)};\ldots;E_{\mathrm{image}}^{(C)};E_{\mathrm{text}}]
+\in\mathbb{R}^{B\times S_{P}\times2048}.
+```
 
-分号表示沿 token 序列维拼接，$B$ 是 batch 大小。本项目三个图像槽位、200 个文本槽位时，$S_P=768+200=968$，有效 token 数通常小于 968。
+分号表示沿 token 序列维拼接，$`B`$ 是 batch 大小。本项目三个图像槽位、200 个文本槽位时，$`S_{P}=768+200=968`$，有效 token 数通常小于 968。
 
 prefix 内采用双向注意力，因此文本能读取图像信息，图像位置也能读取指令信息。模型不需要先显式识别出对象名称，再把对象列表交给下一个网络；跨模态关联发生在连续表示和 attention 中。
 
 ### 3.5 动作标签的预处理
 
-训练中的真实动作 $A^{\rm raw}$ 也需要归一化，再将实际维度 $d$ 补到内部维度 $D$：
+训练中的真实动作 $`A^{\mathrm{raw}}`$ 也需要归一化，再将实际维度 $`d`$ 补到内部维度 $`D`$：
 
-$$
-\widetilde A_{h,j}
-=2\frac{A^{\rm raw}_{h,j}-Q^{a}_{0.01,j}}
-{Q^{a}_{0.99,j}-Q^{a}_{0.01,j}+\varepsilon_{\rm norm}}-1,
-\qquad j<d.
-$$
+```math
+\widetilde{A}_{h,j}
+=2\frac{A^{\mathrm{raw}}_{h,j}-Q^{a}_{0.01,j}}
+{Q^{a}_{0.99,j}-Q^{a}_{0.01,j}+\varepsilon_{\mathrm{norm}}}-1,
+\qquad j\lt d.
+```
 
 其余坐标补零。LIBERO 中：
 
@@ -246,28 +246,28 @@ $$
 
 ### 4.1 它接收什么、输出什么
 
-在生成时间 $t$，它实际使用：
+在生成时间 $`t`$，它实际使用：
 
-1. 当前尚未完成生成的动作块 $X_t\in\mathbb R^{B\times H\times D}$；
-2. 生成时间 $t$，告诉网络当前处于多大的噪声水平；
+1. 当前尚未完成生成的动作块 $`X_{t}\in\mathbb{R}^{B\times H\times D}`$；
+2. 生成时间 $`t`$，告诉网络当前处于多大的噪声水平；
 3. 从图像与文本 prefix 得到的每层表示，推理时表现为每层的 K/V cache。
 
 输出：
 
-$$
-v_\theta(X_t,t,c)\in\mathbb R^{B\times H\times D}.
-$$
+```math
+v_{\theta}(X_{t},t,c)\in\mathbb{R}^{B\times H\times D}.
+```
 
 这是**动作生成空间中的速度场**。这里“速度”指对生成时间的导数，不一定是机器人的关节速度或末端速度。
 
 ### 4.2 一个动作时间位置对应一个连续 token
 
-对第 $h$ 条动作：
+对第 $`h`$ 条动作：
 
-$$
-z_h=X_{t,h}W_{\rm in}+b_{\rm in},
-\qquad \mathbb R^{32}\rightarrow\mathbb R^{1024}.
-$$
+```math
+z_{h}=X_{t,h}W_{\mathrm{in}}+b_{\mathrm{in}},
+\qquad \mathbb{R}^{32}\rightarrow\mathbb{R}^{1024}.
+```
 
 因此：
 
@@ -281,7 +281,7 @@ hidden states [B, H, 1024]
 predicted vector field [B, H, 32]
 ```
 
-**不是每个标量坐标各一个 token**，而是一个动作向量对应一个 token。所有 $H$ 个动作 token 一次并行处理，内部可以双向交互。
+**不是每个标量坐标各一个 token**，而是一个动作向量对应一个 token。所有 $`H`$ 个动作 token 一次并行处理，内部可以双向交互。
 
 ### 4.3 它与 VLM 不是只靠“最后一层向量”连接
 
@@ -289,20 +289,20 @@ predicted vector field [B, H, 32]
 
 忽略 batch、多个 head 和位置编码，动作 token 的注意力可以写成：
 
-$$
-\mathrm{Attn}_A
+```math
+\mathrm{Attn}_{A}
 =\mathrm{softmax}\left(
-\frac{Q_A[K_P;K_A]^\top}{\sqrt{d_h}}+M
-\right)[V_P;V_A].
-$$
+\frac{Q_{A}[K_{P};K_{A}]^{\top}}{\sqrt{d_{h}}}+M
+\right)[V_{P};V_{A}].
+```
 
 含义是：
 
-- $Q_A$：当前动作 token 提出“我需要什么信息”；
-- $K_P,V_P$：来自当前层 prefix 的条件信息；
-- $K_A,V_A$：来自同层其他动作位置的信息；
-- $M$：mask，禁止访问无效位置；
-- $d_h$：单个 attention head 的维度。
+- $`Q_{A}`$：当前动作 token 提出“我需要什么信息”；
+- $`K_{P},V_{P}`$：来自当前层 prefix 的条件信息；
+- $`K_{A},V_{A}`$：来自同层其他动作位置的信息；
+- $`M`$：mask，禁止访问无效位置；
+- $`d_{h}`$：单个 attention head 的维度。
 
 所以，action expert 在**每一层**都能读取视觉与语言条件，也能协调动作块内不同未来时刻的动作。
 
@@ -321,52 +321,52 @@ $$
 
 写成块矩阵：
 
-$$
-\mathcal M_{\rm allowed}=
+```math
+\mathcal{M}_{\mathrm{allowed}}=
 \begin{pmatrix}
-\mathbf 1 & \mathbf 0\\
-\mathbf 1 & \mathbf 1
+\mathbf{1} & \mathbf{0}\\
+\mathbf{1} & \mathbf{1}
 \end{pmatrix}.
-$$
+```
 
 这带来两个直接结果：
 
 1. **生成条件不受当前动作噪声污染**：prefix 不读 suffix。
-2. **prefix 可以缓存**：同一次动作生成中，改变 $X_t,t$ 不会改变 prefix 的任何层。
+2. **prefix 可以缓存**：同一次动作生成中，改变 $`X_{t},t`$ 不会改变 prefix 的任何层。
 
-但这只是前向依赖关系，**并不自动阻断反向梯度**。如果损失通过 $K_P,V_P$ 依赖 VLM 参数，梯度仍然可以回到 VLM。knowledge insulation 还需要显式 stop-gradient，见第 9.3 节。
+但这只是前向依赖关系，**并不自动阻断反向梯度**。如果损失通过 $`K_{P},V_{P}`$ 依赖 VLM 参数，梯度仍然可以回到 VLM。knowledge insulation 还需要显式 stop-gradient，见第 9.3 节。
 
-### 4.5 时间 $t$ 怎样进入网络：adaRMSNorm
+### 4.5 时间 $`t`$ 怎样进入网络：adaRMSNorm
 
-模型需要区分“几乎全是噪声”和“已经快生成完了”。π0.5 的实现将标量 $t$ 编成正弦/余弦向量，再经过两层 MLP：
+模型需要区分“几乎全是噪声”和“已经快生成完了”。π0.5 的实现将标量 $`t`$ 编成正弦/余弦向量，再经过两层 MLP：
 
-$$
+```math
 e(t)=\mathrm{swish}
-\left(W_2\mathrm{swish}(W_1\phi(t)+b_1)+b_2\right).
-$$
+\left(W_{2}\mathrm{swish}(W_{1}\phi(t)+b_{1})+b_{2}\right).
+```
 
-$\phi(t)$ 含多个频率的 $\sin,\cos$，让网络容易表达时间的非线性影响。这是**生成时间编码**，和表示 token 顺序的 RoPE 是不同的东西。
+$`\phi(t)`$ 含多个频率的 $`\sin,\cos`$，让网络容易表达时间的非线性影响。这是**生成时间编码**，和表示 token 顺序的 RoPE 是不同的东西。
 
-普通 RMSNorm 对一个隐藏向量 $z\in\mathbb R^m$ 做：
+普通 RMSNorm 对一个隐藏向量 $`z\in\mathbb{R}^{m}`$ 做：
 
-$$
+```math
 \mathrm{RMS}(z)=
-\frac{z}{\sqrt{\frac1m\sum_{j=1}^m z_j^2+\varepsilon_{\rm rms}}}.
-$$
+\frac{z}{\sqrt{\frac{1}{m}\sum_{j=1}^{m} z_{j}^{2}+\varepsilon_{\mathrm{rms}}}}.
+```
 
-adaptive RMSNorm 再根据 $e(t)$ 生成缩放、平移与残差门控：
+adaptive RMSNorm 再根据 $`e(t)`$ 生成缩放、平移与残差门控：
 
-$$
+```math
 (\gamma(t),\beta(t),g(t))=\mathrm{Linear}(e(t)),
-$$
+```
 
-$$
-\widetilde z=(1+\gamma(t))\odot\mathrm{RMS}(z)+\beta(t),
+```math
+\widetilde{z}=(1+\gamma(t))\odot\mathrm{RMS}(z)+\beta(t),
 \qquad
-z_{\rm next}=z+g(t)\odot F(\widetilde z).
-$$
+z_{\mathrm{next}}=z+g(t)\odot F(\widetilde{z}).
+```
 
-这里 $F$ 表示 attention 或 FFN 子层，各子层有自己的调制参数；同一个时间条件提供给各层。直观上，时间不仅在输入处出现一次，还能调节整个专家的处理方式。
+这里 $`F`$ 表示 attention 或 FFN 子层，各子层有自己的调制参数；同一个时间条件提供给各层。直观上，时间不仅在输入处出现一次，还能调节整个专家的处理方式。
 
 对应 [embed_suffix](https://github.com/Physical-Intelligence/openpi/blob/215abfb217dbac7d5f1273282331b9b1866c0479/src/openpi/models/pi0.py#L140)、[RMSNorm](https://github.com/Physical-Intelligence/openpi/blob/215abfb217dbac7d5f1273282331b9b1866c0479/src/openpi/models/gemma.py#L113)。
 
@@ -376,69 +376,69 @@ $$
 
 ### 5.1 导数：当前位置的瞬时变化率
 
-设 $x(t)$ 是一条曲线：
+设 $`x(t)`$ 是一条曲线：
 
-$$
+```math
 \frac{dx}{dt}
 =\lim_{\Delta t\to0}
 \frac{x(t+\Delta t)-x(t)}{\Delta t}.
-$$
+```
 
-它告诉我们，在当前时间附近，$t$ 变化一点，$x$ 会如何变化。于是局部有：
+它告诉我们，在当前时间附近，$`t`$ 变化一点，$`x`$ 会如何变化。于是局部有：
 
-$$
+```math
 x(t+\Delta t)\approx x(t)+\Delta t\frac{dx}{dt}.
-$$
+```
 
-如果 $x$ 是向量，就对每个分量求导。如果 $X_t$ 是 $H\times D$ 矩阵，可以把它展开为 $HD$ 维向量；数学上没有额外困难。
+如果 $`x`$ 是向量，就对每个分量求导。如果 $`X_{t}`$ 是 $`H\times D`$ 矩阵，可以把它展开为 $`HD`$ 维向量；数学上没有额外困难。
 
 ### 5.2 什么是 ODE
 
 常微分方程（ordinary differential equation）：
 
-$$
+```math
 \frac{dx(t)}{dt}=f(x(t),t).
-$$
+```
 
-“普通函数”通常直接告诉你 $x(t)$ 的值；ODE 告诉你**在任意位置与时间，应怎样变化**。我们要通过这些局部规则恢复整条轨迹。
+“普通函数”通常直接告诉你 $`x(t)`$ 的值；ODE 告诉你**在任意位置与时间，应怎样变化**。我们要通过这些局部规则恢复整条轨迹。
 
-因为自变量只有一个时间 $t$，所以叫“常”微分方程；状态可以是几千维。若未知对象还同时依赖空间等多个自变量，并出现偏导数，则进入 PDE 的范围。
+因为自变量只有一个时间 $`t`$，所以叫“常”微分方程；状态可以是几千维。若未知对象还同时依赖空间等多个自变量，并出现偏导数，则进入 PDE 的范围。
 
 ### 5.3 为什么还需要初始条件
 
 例如：
 
-$$
+```math
 \frac{dx}{dt}=2
 \quad\Rightarrow\quad
 x(t)=2t+C.
-$$
+```
 
-只有导数，无法确定常数 $C$。给出 $x(0)=3$，才能确定 $x(t)=2t+3$。
+只有导数，无法确定常数 $`C`$。给出 $`x(0)=3`$，才能确定 $`x(t)=2t+3`$。
 
 动作生成也需要起点：
 
-$$
-X_1=\epsilon,\qquad \epsilon\sim\mathcal N(0,I).
-$$
+```math
+X_{1}=\epsilon,\qquad \epsilon\sim\mathcal{N}(0,I).
+```
 
-这是在 $t=1$ 给定的条件，再沿时间减小方向积分。也可以令 $s=1-t$，变成从 $s=0$ 开始的标准初值问题。
+这是在 $`t=1`$ 给定的条件，再沿时间减小方向积分。也可以令 $`s=1-t`$，变成从 $`s=0`$ 开始的标准初值问题。
 
 ### 5.4 向量场与 flow
 
 函数
 
-$$
-v:\mathbb R^{HD}\times[0,1]\rightarrow\mathbb R^{HD}
-$$
+```math
+v:\mathbb{R}^{HD}\times[0,1]\rightarrow\mathbb{R}^{HD}
+```
 
 会给每个位置和时间分配一个向量，称为**向量场**。这个向量表示该点接下来如何变化。
 
 沿着向量场积分，形成流映射：
 
-$$
-X_t=\Phi_{t\leftarrow1}(\epsilon).
-$$
+```math
+X_{t}=\Phi_{t\leftarrow1}(\epsilon).
+```
 
 “flow”就是很多起点在这个向量场作用下持续移动形成的演化。对生成模型来说，我们关心大量初始高斯样本，最终是否被运输到数据分布。
 
@@ -446,15 +446,15 @@ $$
 
 ### 5.5 存在性、唯一性，以及它们不保证什么
 
-一个常用的充分条件是：$v(x,t)$ 对时间连续、对 $x$ 局部 Lipschitz，即在局部区域存在常数 $L$ 使：
+一个常用的充分条件是：$`v(x,t)`$ 对时间连续、对 $`x`$ 局部 Lipschitz，即在局部区域存在常数 $`L`$ 使：
 
-$$
+```math
 \|v(x,t)-v(y,t)\|\le L\|x-y\|.
-$$
+```
 
 它限制向量场不要对位置变化过于剧烈。在适当条件下，给定初始值能得到局部唯一解；要保证整个区间都有解，还需排除有限时间内发散等问题。
 
-因此，相同条件、相同初始噪声、确定性计算通常对应相同生成轨迹。随机性可以只来自最开始的 $\epsilon$，不必每一步都重新加随机噪声。
+因此，相同条件、相同初始噪声、确定性计算通常对应相同生成轨迹。随机性可以只来自最开始的 $`\epsilon`$，不必每一步都重新加随机噪声。
 
 这类数学条件**不保证动作安全、任务成功，也不保证有限步数的近似等于精确解**。它们讨论的是微分方程解本身。
 
@@ -462,41 +462,41 @@ $$
 
 Taylor 展开：
 
-$$
+```math
 x(t+\Delta t)
-=x(t)+\Delta t\,x'(t)+O(\Delta t^2).
-$$
+=x(t)+\Delta t\,x'(t)+O(\Delta t^{2}).
+```
 
-忽略二阶余项，代入 $x'=v_\theta$：
+忽略二阶余项，代入 $`x'=v_{\theta}`$：
 
-$$
+```math
 X_{t+\Delta t}
-\approx X_t+\Delta t\,v_\theta(X_t,t,c).
-$$
+\approx X_{t}+\Delta t\,v_{\theta}(X_{t},t,c).
+```
 
-这就是显式 Euler。OpenPI 从 $t=1$ 积分到 $t=0$，所以若共 $N$ 步：
+这就是显式 Euler。OpenPI 从 $`t=1`$ 积分到 $`t=0`$，所以若共 $`N`$ 步：
 
-$$
-\Delta t=-\frac1N.
-$$
+```math
+\Delta t=-\frac{1}{N}.
+```
 
 **负步长完全合法**。它表示沿时间减小的方向移动，不是“学习率为负”。
 
-在足够光滑且稳定的条件下，Euler 的单步局部误差是 $O(|\Delta t|^2)$，固定区间的累计全局误差是 $O(|\Delta t|)$。模型本身的误差和 ODE 求解误差是两种不同的误差：增加积分步数主要改善后者。
+在足够光滑且稳定的条件下，Euler 的单步局部误差是 $`O(|\Delta t|^{2})`$，固定区间的累计全局误差是 $`O(|\Delta t|)`$。模型本身的误差和 ODE 求解误差是两种不同的误差：增加积分步数主要改善后者。
 
 ### 5.7 为什么不直接用更高级的求解器
 
 例如 Heun 方法用两次速度估计：
 
-$$
-k_1=v_\theta(x,t,c),\qquad
-\widetilde x=x+\Delta t\,k_1,
-$$
+```math
+k_{1}=v_{\theta}(x,t,c),\qquad
+\widetilde{x}=x+\Delta t\,k_{1},
+```
 
-$$
-k_2=v_\theta(\widetilde x,t+\Delta t,c),\qquad
-x_{\rm next}=x+\frac{\Delta t}{2}(k_1+k_2).
-$$
+```math
+k_{2}=v_{\theta}(\widetilde{x},t+\Delta t,c),\qquad
+x_{\mathrm{next}}=x+\frac{\Delta t}{2}(k_{1}+k_{2}).
+```
 
 它通常有更高数值精度，但每步要调用模型两次。机器人推理要权衡延迟与质量；更高阶求解器也不能消除模型误差。本文核对的 OpenPI `sample_actions` 使用 Euler，不应把 Heun 当作当前默认实现。
 
@@ -508,81 +508,81 @@ $$
 
 本文全程使用 OpenPI 代码约定：
 
-$$
-\boxed{X_t=(1-t)A+t\epsilon,\qquad 0\le t\le1.}
-$$
+```math
+\boxed{X_{t}=(1-t)A+t\epsilon,\qquad 0\le t\le1.}
+```
 
 因此：
 
-| 时间 | $X_t$ | 含义 |
+| 时间 | $`X_{t}`$ | 含义 |
 |---|---|---|
-| $t=0$ | $A$ | 干净动作 |
-| $t=1$ | $\epsilon$ | 纯高斯噪声 |
-| $0<t<1$ | 两者的线性组合 | 训练用的中间样本 |
+| $`t=0`$ | $`A`$ | 干净动作 |
+| $`t=1`$ | $`\epsilon`$ | 纯高斯噪声 |
+| $`0\lt t\lt 1`$ | 两者的线性组合 | 训练用的中间样本 |
 
-训练时 $A$ 和 $\epsilon$ 都已知，所以任何中间位置都能**直接算出来**，不需要先模拟几百次加噪。
+训练时 $`A`$ 和 $`\epsilon`$ 都已知，所以任何中间位置都能**直接算出来**，不需要先模拟几百次加噪。
 
-这里的 $t$ 是无量纲的**生成时间**，不是机器人环境时间 $k$，也不是动作块下标 $h$。
+这里的 $`t`$ 是无量纲的**生成时间**，不是机器人环境时间 $`k`$，也不是动作块下标 $`h`$。
 
-### 6.2 监督信号为什么是 $\epsilon-A$
+### 6.2 监督信号为什么是 $`\epsilon-A`$
 
-固定一对 $(A,\epsilon)$，直接求导：
+固定一对 $`(A,\epsilon)`$，直接求导：
 
-$$
-\frac{dX_t}{dt}
+```math
+\frac{dX_{t}}{dt}
 =\frac{d[(1-t)A+t\epsilon]}{dt}
 =\epsilon-A.
-$$
+```
 
 于是我们有了免费的速度标签：
 
-$$
+```math
 U=\epsilon-A.
-$$
+```
 
 训练网络预测：
 
-$$
-v_\theta(X_t,t,c)\approx U.
-$$
+```math
+v_{\theta}(X_{t},t,c)\approx U.
+```
 
 损失：
 
-$$
+```math
 \boxed{
-\mathcal L_{\rm CFM}
-=\mathbb E_{(c,A),\,t,\,\epsilon}
-\left[\frac1{HD}
-\left\|v_\theta((1-t)A+t\epsilon,t,c)-(\epsilon-A)\right\|_F^2
+\mathcal{L}_{\mathrm{CFM}}
+=\mathbb{E}_{(c,A),\,t,\,\epsilon}
+\left[\frac{1}{HD}
+\left\|v_{\theta}((1-t)A+t\epsilon,t,c)-(\epsilon-A)\right\|_{F}^{2}
 \right].
 }
-$$
+```
 
-$\|\cdot\|_F^2$ 表示矩阵所有元素平方后相加。采样 batch 并取均值，就是实际优化时的 Monte Carlo 估计。
+$`\|\cdot\|_{F}^{2}`$ 表示矩阵所有元素平方后相加。采样 batch 并取均值，就是实际优化时的 Monte Carlo 估计。
 
-这里匹配的是**速度场**，不是直接让模型输出 $A$，也不是要求模型精确输出 $\epsilon$。它与“预测噪声”“预测干净样本”之间存在数学转换，但当前代码的训练目标明确是 velocity。
+这里匹配的是**速度场**，不是直接让模型输出 $`A`$，也不是要求模型精确输出 $`\epsilon`$。它与“预测噪声”“预测干净样本”之间存在数学转换，但当前代码的训练目标明确是 velocity。
 
 ### 6.3 正号和负号怎样配合
 
 假设一个一维例子：
 
-$$
+```math
 A=0.8,\qquad \epsilon=-0.4.
-$$
+```
 
 则：
 
-$$
-X_t=0.8-1.2t,\qquad U=-1.2.
-$$
+```math
+X_{t}=0.8-1.2t,\qquad U=-1.2.
+```
 
-从 $t=1$ 开始，$X_1=-0.4$。若用 4 个 Euler 步，$\Delta t=-0.25$，每次增量为：
+从 $`t=1`$ 开始，$`X_{1}=-0.4`$。若用 4 个 Euler 步，$`\Delta t=-0.25`$，每次增量为：
 
-$$
+```math
 \Delta X=\Delta t\,U=(-0.25)(-1.2)=0.3.
-$$
+```
 
-| $t$ | $X_t$ |
+| $`t`$ | $`X_{t}`$ |
 |---:|---:|
 | 1.00 | -0.4 |
 | 0.75 | -0.1 |
@@ -592,91 +592,91 @@ $$
 
 因此，虽然速度标签是“噪声减动作”，配合**负的时间步长**，实际生成仍然朝向动作。
 
-这只是知道这一对端点时的教学例子。真实推理并不知道 $A$，必须用学习到的、依赖当前位置的速度场。
+这只是知道这一对端点时的教学例子。真实推理并不知道 $`A`$，必须用学习到的、依赖当前位置的速度场。
 
 ### 6.4 真正的难点：推理时没有真实动作，怎么知道方向
 
-训练时不同的 $(A,\epsilon)$ 对可能在同一时间附近产生相似的 $X_t$，但对应的 $U$ 不同。网络没有拿到那一对端点，只看到 $X_t,t,c$。
+训练时不同的 $`(A,\epsilon)`$ 对可能在同一时间附近产生相似的 $`X_{t}`$，但对应的 $`U`$ 不同。网络没有拿到那一对端点，只看到 $`X_{t},t,c`$。
 
 平方损失的最优预测不是猜中每一个隐藏端点，而是：
 
-$$
+```math
 \boxed{
-v^*(x,t,c)
-=\mathbb E[\epsilon-A\mid X_t=x,t,c].
+v^{\ast}(x,t,c)
+=\mathbb{E}[\epsilon-A\mid X_{t}=x,t,c].
 }
-$$
+```
 
-为什么？设 $Z=(X_t,t,c)$，$m(Z)=\mathbb E[U\mid Z]$，则：
+为什么？设 $`Z=(X_{t},t,c)`$，$`m(Z)=\mathbb{E}[U\mid Z]`$，则：
 
-$$
+```math
 \begin{aligned}
-\mathbb E\|v(Z)-U\|^2
-&=\mathbb E\|v(Z)-m(Z)\|^2\\
-&\quad+\mathbb E\|U-m(Z)\|^2.
+\mathbb{E}\|v(Z)-U\|^{2}
+&=\mathbb{E}\|v(Z)-m(Z)\|^{2}\\
+&\quad+\mathbb{E}\|U-m(Z)\|^{2}.
 \end{aligned}
-$$
+```
 
 展开平方后，交叉项为零，因为：
 
-$$
-\mathbb E[U-m(Z)\mid Z]=0.
-$$
+```math
+\mathbb{E}[U-m(Z)\mid Z]=0.
+```
 
-第二项与模型参数无关，所以最优解就是条件均值 $m(Z)$。这也说明：**即使已经学到了正确的边缘速度场，样本级训练 MSE 也不必为零。**
+第二项与模型参数无关，所以最优解就是条件均值 $`m(Z)`$。这也说明：**即使已经学到了正确的边缘速度场，样本级训练 MSE 也不必为零。**
 
-这个条件均值依赖当前位置 $x$ 和时间 $t$，不等于固定的“所有合理动作的平均值”。因此不会简单退化成一个确定动作均值。
+这个条件均值依赖当前位置 $`x`$ 和时间 $`t`$，不等于固定的“所有合理动作的平均值”。因此不会简单退化成一个确定动作均值。
 
 ### 6.5 为什么匹配这个均值能运输整个概率分布
 
-固定条件 $c$。令 $p_t(x\mid c)$ 是随机变量
-$X_t=(1-t)A+t\epsilon$ 的密度。我们希望它满足：
+固定条件 $`c`$。令 $`p_{t}(x\mid c)`$ 是随机变量
+$`X_{t}=(1-t)A+t\epsilon`$ 的密度。我们希望它满足：
 
-$$
-p_1(x\mid c)=\mathcal N(0,I),
+```math
+p_{1}(x\mid c)=\mathcal{N}(0,I),
 \qquad
-p_0(x\mid c)=p_{\rm data}(A=x\mid c).
-$$
+p_{0}(x\mid c)=p_{\mathrm{data}}(A=x\mid c).
+```
 
-对一个光滑的测试函数 $\varphi(x)$，使用链式法则，并假定允许交换求导与期望：
+对一个光滑的测试函数 $`\varphi(x)`$，使用链式法则，并假定允许交换求导与期望：
 
-$$
+```math
 \begin{aligned}
-\frac d{dt}\mathbb E[\varphi(X_t)\mid c]
-&=\mathbb E[\nabla\varphi(X_t)^\top(\epsilon-A)\mid c]\\
-&=\mathbb E[\nabla\varphi(X_t)^\top v^*(X_t,t,c)\mid c]\\
-&=\int\nabla\varphi(x)^\top v^*(x,t,c)p_t(x\mid c)\,dx.
+\frac{d}{dt}\mathbb{E}[\varphi(X_{t})\mid c]
+&=\mathbb{E}[\nabla\varphi(X_{t})^{\top}(\epsilon-A)\mid c]\\
+&=\mathbb{E}[\nabla\varphi(X_{t})^{\top} v^{\ast}(X_{t},t,c)\mid c]\\
+&=\int\nabla\varphi(x)^{\top} v^{\ast}(x,t,c)p_{t}(x\mid c)\,dx.
 \end{aligned}
-$$
+```
 
 对最后一项做分部积分，并令边界项消失：
 
-$$
-\int\nabla\varphi^\top(v^*p_t)\,dx
-=-\int\varphi\,\nabla\cdot(p_tv^*)\,dx.
-$$
+```math
+\int\nabla\varphi^{\top}(v^{\ast}p_{t})\,dx
+=-\int\varphi\,\nabla\cdot(p_{t}v^{\ast})\,dx.
+```
 
 另一方面，左侧等于：
 
-$$
-\int\varphi(x)\,\partial_t p_t(x\mid c)\,dx.
-$$
+```math
+\int\varphi(x)\,\partial_{t} p_{t}(x\mid c)\,dx.
+```
 
-因为它对足够多的 $\varphi$ 都成立，得到**连续性方程**：
+因为它对足够多的 $`\varphi`$ 都成立，得到**连续性方程**：
 
-$$
+```math
 \boxed{
-\partial_t p_t+\nabla_x\cdot(p_tv^*)=0.
+\partial_{t} p_{t}+\nabla_{x}\cdot(p_{t}v^{\ast})=0.
 }
-$$
+```
 
 这就是“概率质量不会凭空出现或消失，只会随向量场流动”的方程。
 
 而粒子沿 ODE
 
-$$
-\frac{dX_t}{dt}=v^*(X_t,t,c)
-$$
+```math
+\frac{dX_{t}}{dt}=v^{\ast}(X_{t},t,c)
+```
 
 运动时，其概率密度也满足同一个连续性方程。在适当的正则性和解的唯一性条件下，使用同样的起始分布，就得到同样的密度演化。因此从高斯起点反向积分，可以到达动作数据分布。
 
@@ -686,7 +686,7 @@ $$
 
 ### 6.6 “训练路径是直线”，不表示生成路径也是直线
 
-对固定端点 $(A,\epsilon)$，插值是直线；但模型学习到的是所有可能端点混合后的条件均值速度场。生成时每一步处在新的 $x,t$，速度可能持续改变。
+对固定端点 $`(A,\epsilon)`$，插值是直线；但模型学习到的是所有可能端点混合后的条件均值速度场。生成时每一步处在新的 $`x,t`$，速度可能持续改变。
 
 因此真实采样轨迹一般会弯曲，也不能只在初始点调用一次网络，然后重复使用同一个速度。
 
@@ -696,27 +696,27 @@ $$
 
 不少资料使用“0 是噪声，1 是数据”：
 
-$$
-Y_s=(1-s)\epsilon+sA,\qquad
-\frac{dY_s}{ds}=A-\epsilon.
-$$
+```math
+Y_{s}=(1-s)\epsilon+sA,\qquad
+\frac{dY_{s}}{ds}=A-\epsilon.
+```
 
-令 $s=1-t$，有：
+令 $`s=1-t`$，有：
 
-$$
-Y_s=X_{1-s},
+```math
+Y_{s}=X_{1-s},
 \qquad
-\widetilde v(x,s,c)=-v(x,1-s,c).
-$$
+\widetilde{v}(x,s,c)=-v(x,1-s,c).
+```
 
 | 约定 | 路径 | 监督速度 | 生成方向 |
 |---|---|---|---|
-| 本文 / OpenPI | $(1-t)A+t\epsilon$ | $\epsilon-A$ | $t:1\to0$ |
-| 常见正向生成写法 | $(1-s)\epsilon+sA$ | $A-\epsilon$ | $s:0\to1$ |
+| 本文 / OpenPI | $`(1-t)A+t\epsilon`$ | $`\epsilon-A`$ | $`t:1\to0`$ |
+| 常见正向生成写法 | $`(1-s)\epsilon+sA`$ | $`A-\epsilon`$ | $`s:0\to1`$ |
 
 必须同时改变路径、速度符号和积分方向。
 
-**阅读原始 π0.5 v1 的提醒**：IV-B 的行内插值写为 $\tau A+(1-\tau)\omega$，但后续目标写为 $\omega-A$。若直接将同一 $\tau$ 视为求导变量，这两者并不满足“目标就是插值导数”；还需注意其噪声水平与积分方向约定，不能把这几行机械拼成程序。本文使用经代码验证的自洽三元组：`x_t=t*noise+(1-t)*actions`、`u_t=noise-actions`、`dt=-1/num_steps`。来源：[论文 IV-B](https://arxiv.org/html/2504.16054v1#S4.SS2)、[OpenPI 的损失与采样实现](https://github.com/Physical-Intelligence/openpi/blob/215abfb217dbac7d5f1273282331b9b1866c0479/src/openpi/models/pi0.py#L189)。
+**阅读原始 π0.5 v1 的提醒**：IV-B 的行内插值写为 $`\tau A+(1-\tau)\omega`$，但后续目标写为 $`\omega-A`$。若直接将同一 $`\tau`$ 视为求导变量，这两者并不满足“目标就是插值导数”；还需注意其噪声水平与积分方向约定，不能把这几行机械拼成程序。本文使用经代码验证的自洽三元组：`x_t=t*noise+(1-t)*actions`、`u_t=noise-actions`、`dt=-1/num_steps`。来源：[论文 IV-B](https://arxiv.org/html/2504.16054v1#S4.SS2)、[OpenPI 的损失与采样实现](https://github.com/Physical-Intelligence/openpi/blob/215abfb217dbac7d5f1273282331b9b1866c0479/src/openpi/models/pi0.py#L189)。
 
 <a id="sec7"></a>
 
@@ -724,33 +724,33 @@ $$
 
 ### 7.1 数据从哪里来
 
-从示范 episode 选一个时刻，取当前图像、指令、可选状态，以及后续 $H$ 条示范动作。一次 batch 包含 $B$ 个这样的样本。
+从示范 episode 选一个时刻，取当前图像、指令、可选状态，以及后续 $`H`$ 条示范动作。一次 batch 包含 $`B`$ 个这样的样本。
 
 要区分“未来动作标签”和“未来图像”：这里监督信号来自示范中的未来动作，但低层策略的输入是当前观测，不是把未来图像作为已知条件提供给网络。
 
-经过第 3 节的变换，得到 $c,A$。动作坐标的单位、顺序、增量/绝对值约定，以及归一化统计，必须与推理输出解释一致。
+经过第 3 节的变换，得到 $`c,A`$。动作坐标的单位、顺序、增量/绝对值约定，以及归一化统计，必须与推理输出解释一致。
 
 ### 7.2 采样噪声和生成时间
 
 对每个样本独立采样：
 
-$$
-\epsilon\sim\mathcal N(0,I_{H D}),
+```math
+\epsilon\sim\mathcal{N}(0,I_{H D}),
 \qquad
 b\sim\mathrm{Beta}(1.5,1),
 \qquad
 t=0.999b+0.001.
-$$
+```
 
-这里 $I_{HD}$ 表示每个动作坐标独立的标准高斯。代码中的噪声 shape 与动作完全相同。
+这里 $`I_{HD}`$ 表示每个动作坐标独立的标准高斯。代码中的噪声 shape 与动作完全相同。
 
-这个 Beta 分布偏向较大的 $t$，因此在本文约定下偏重**噪声较多的一侧**。同一个样本的整个动作块共享一个 $t$，但其不同坐标拥有独立的高斯噪声。不同 batch 样本可以有不同 $t$。
+这个 Beta 分布偏向较大的 $`t`$，因此在本文约定下偏重**噪声较多的一侧**。同一个样本的整个动作块共享一个 $`t`$，但其不同坐标拥有独立的高斯噪声。不同 batch 样本可以有不同 $`t`$。
 
 构造：
 
-$$
-X_t=(1-t)A+t\epsilon,\qquad U=\epsilon-A.
-$$
+```math
+X_{t}=(1-t)A+t\epsilon,\qquad U=\epsilon-A.
+```
 
 ### 7.3 只做一次速度预测
 
@@ -772,28 +772,28 @@ prefix + suffix
 
 计算：
 
-$$
-\widehat{\mathcal L}
-=\frac1{BHD}\sum_{i=1}^B\sum_{h=1}^H\sum_{j=1}^D
-\left(\widehat V_{i,h,j}-U_{i,h,j}\right)^2.
-$$
+```math
+\widehat{\mathcal{L}}
+=\frac{1}{BHD}\sum_{i=1}^{B}\sum_{h=1}^{H}\sum_{j=1}^{D}
+\left(\widehat{V}_{i,h,j}-U_{i,h,j}\right)^{2}.
+```
 
-固定代码 `compute_loss` 先在动作维 $D$ 上取均值，得到 `[B,H]`，训练调用方再聚合其余维度。它不会仅因为机器人实际是 7 维，就自动只计算前 7 维：补到 32 维的坐标也参加此 loss。对于补零的干净动作坐标，噪声标签仍然非零，模型也要学习将其生成回零附近。
+固定代码 `compute_loss` 先在动作维 $`D`$ 上取均值，得到 `[B,H]`，训练调用方再聚合其余维度。它不会仅因为机器人实际是 7 维，就自动只计算前 7 维：补到 32 维的坐标也参加此 loss。对于补零的干净动作坐标，噪声标签仍然非零，模型也要学习将其生成回零附近。
 
 ### 7.4 反向传播更新的是什么
 
 自动微分计算：
 
-$$
-\nabla_\theta\widehat{\mathcal L},
-$$
+```math
+\nabla_{\theta}\widehat{\mathcal{L}},
+```
 
 优化器据此更新可训练参数。用最简单的 SGD 表示：
 
-$$
-\theta_{\rm new}
-=\theta-\eta\nabla_\theta\widehat{\mathcal L}.
-$$
+```math
+\theta_{\mathrm{new}}
+=\theta-\eta\nabla_{\theta}\widehat{\mathcal{L}}.
+```
 
 实际配置常用 AdamW，参数更新规则更复杂，但含义相同。
 
@@ -801,10 +801,10 @@ $$
 
 | 过程 | 被改变的对象 | 是否更新模型权重 |
 |---|---|---|
-| 训练优化 | 参数 $\theta$ | 是 |
-| 推理 ODE 积分 | 当前动作样本 $X_t$ | 否 |
+| 训练优化 | 参数 $`\theta`$ | 是 |
+| 推理 ODE 积分 | 当前动作样本 $`X_{t}`$ | 否 |
 
-同样，生成时间导数 $dX_t/dt$ 与损失对参数的梯度 $\nabla_\theta\mathcal L$ 不是同一件事。
+同样，生成时间导数 $`dX_{t}/dt`$ 与损失对参数的梯度 $`\nabla_{\theta}\mathcal{L}`$ 不是同一件事。
 
 在公开 JAX flow 分支中，prefix 与 suffix 在可微计算图里连接；若没有冻结或额外 stop-gradient，flow loss 可以通过 attention 传到 VLM 和视觉编码器。`train=False` 有时只控制 dropout 等行为，**不等于参数被冻结**。是否更新某个模块，要看优化器选取的参数、freeze filter 和梯度路径。
 
@@ -833,7 +833,7 @@ for batch in loader:
     optimizer.step()
 ```
 
-这段代码不需要先从 $t=1$ 积分到 $t=0$，也不需要让机器人执行动作。它通过随机抽取生成时间，训练局部方向预测器。这就是 flow matching 常说的 **simulation-free training**：不必在训练损失里展开整条生成 ODE，而不是说数据收集或机器人评测不需要环境。
+这段代码不需要先从 $`t=1`$ 积分到 $`t=0`$，也不需要让机器人执行动作。它通过随机抽取生成时间，训练局部方向预测器。这就是 flow matching 常说的 **simulation-free training**：不必在训练损失里展开整条生成 ODE，而不是说数据收集或机器人评测不需要环境。
 
 依据：[compute_loss](https://github.com/Physical-Intelligence/openpi/blob/215abfb217dbac7d5f1273282331b9b1866c0479/src/openpi/models/pi0.py#L189)、[官方训练脚本](https://github.com/Physical-Intelligence/openpi/blob/215abfb217dbac7d5f1273282331b9b1866c0479/scripts/train.py)。
 
@@ -847,44 +847,44 @@ for batch in loader:
 
 在每层缓存：
 
-$$
-\mathcal C=\{(K_P^{(r)},V_P^{(r)})\}_{r=1}^{18}.
-$$
+```math
+\mathcal{C}=\{(K_{P}^{(r)},V_{P}^{(r)})\}_{r=1}^{18}.
+```
 
 这个 cache 是**每层的 token 级 key/value**，不是把整张图和指令压成一个向量。后续每一次 expert 调用都用它作为条件。
 
 ### 8.2 初始化整个动作块
 
-$$
-X_1\sim\mathcal N(0,I),
-\qquad X_1\text{ 的 shape 为 }[B,H,D].
-$$
+```math
+X_{1}\sim\mathcal{N}(0,I),
+\qquad X_{1}\text{ 的 shape 为 }[B,H,D].
+```
 
 这是随机初始化动作空间中的样本，不是先给输入图像加噪声，也不是机器人已经执行了一组随机动作。
 
-### 8.3 执行 $N$ 次数值积分
+### 8.3 执行 $`N`$ 次数值积分
 
 设：
 
-$$
-t_n=1-\frac nN,\qquad n=0,\ldots,N.
-$$
+```math
+t_{n}=1-\frac{n}{N},\qquad n=0,\ldots,N.
+```
 
-为了避免把 ODE 时间与离散循环下标混淆，将第 $n$ 个数值近似记为 $X^{(n)}$：
+为了避免把 ODE 时间与离散循环下标混淆，将第 $`n`$ 个数值近似记为 $`X^{(n)}`$：
 
-$$
+```math
 X^{(0)}=\epsilon,
-$$
+```
 
-$$
+```math
 \boxed{
 X^{(n+1)}
-=X^{(n)}-\frac1N
-v_\theta(X^{(n)},t_n,c).
+=X^{(n)}-\frac{1}{N}
+v_{\theta}(X^{(n)},t_{n},c).
 }
-$$
+```
 
-如果 $N=10$，网络评估的时间是 $1.0,0.9,\ldots,0.1$，最后更新得到 $t=0$ 附近的输出；不需要再额外在 $t=0$ 调一次网络。
+如果 $`N=10`$，网络评估的时间是 $`1.0,0.9,\ldots,0.1`$，最后更新得到 $`t=0`$ 附近的输出；不需要再额外在 $`t=0`$ 调一次网络。
 
 每次都重新计算 suffix，因为动作与时间发生了变化；但 prefix 不受它们影响，所以 cache 可以复用。固定实现复用的是 prefix cache，不能把上一次去噪的 suffix cache 当成下一次的动作状态直接复用。
 
@@ -910,18 +910,18 @@ actions = output_transforms(normalized_actions)
 
 ### 8.5 从模型输出到控制器
 
-模型生成的 $X_0$ 仍在归一化坐标系里。需要先反归一化：
+模型生成的 $`X_{0}`$ 仍在归一化坐标系里。需要先反归一化：
 
-$$
-A^{\rm raw}_{h,j}
+```math
+A^{\mathrm{raw}}_{h,j}
 =\frac{X_{0,h,j}+1}{2}
-(Q^a_{0.99,j}-Q^a_{0.01,j}+\varepsilon_{\rm norm})
-+Q^a_{0.01,j}.
-$$
+(Q^{a}_{0.99,j}-Q^{a}_{0.01,j}+\varepsilon_{\mathrm{norm}})
++Q^{a}_{0.01,j}.
+```
 
 再做机器人专属输出变换，例如去掉补零维度、在适用配置下把 delta 还原为绝对目标。固定 LIBERO 配置本身使用已有的增量动作，`extra_delta_transform=False`，不能额外重复做一次 delta 转换。
 
-LIBERO 最终得到 `[H,7]`。本项目评测先取前 $R=5$ 条，逐条交给环境，然后获取新图像，再预测新的动作块。
+LIBERO 最终得到 `[H,7]`。本项目评测先取前 $`R=5`$ 条，逐条交给环境，然后获取新图像，再预测新的动作块。
 
 ```text
 观测 o_k
@@ -933,7 +933,7 @@ LIBERO 最终得到 `[H,7]`。本项目评测先取前 $R=5$ 条，逐条交给�
 
 在这 5 条动作之间，低层控制器/仿真仍在工作，但策略网络没有用每一步的新图像重新生成。所以这是**动作块之间闭环、块内一段时间开环执行**。
 
-标准的 `sample_actions` 不会在积分过程中推进 MuJoCo，不会把尚未完成生成的中间 $X_t$ 发给机器人。
+标准的 `sample_actions` 不会在积分过程中推进 MuJoCo，不会把尚未完成生成的中间 $`X_{t}`$ 发给机器人。
 
 依据：[sample_actions](https://github.com/Physical-Intelligence/openpi/blob/215abfb217dbac7d5f1273282331b9b1866c0479/src/openpi/models/pi0.py#L217)、[Policy.infer](https://github.com/Physical-Intelligence/openpi/blob/215abfb217dbac7d5f1273282331b9b1866c0479/src/openpi/policies/policy.py#L68)、[输出变换](https://github.com/Physical-Intelligence/openpi/blob/215abfb217dbac7d5f1273282331b9b1866c0479/src/openpi/policies/policy_config.py)、[本项目执行循环](../../src/vla_startup/evaluate.py)。
 
@@ -941,11 +941,11 @@ LIBERO 最终得到 `[H,7]`。本项目评测先取前 $R=5$ 条，逐条交给�
 
 | 问题 | 一次训练前向 | 一次动作块推理 |
 |---|---|---|
-| 是否有真实动作 $A$ | 有，来自示范 | 没有 |
-| 输入动作样本 | 随机时间的 $(1-t)A+t\epsilon$ | 先初始化纯噪声，再逐步更新 |
-| $t$ 怎样获得 | 每个样本随机抽取 | 按积分网格依次变化 |
-| 速度标签 | $\epsilon-A$ | 没有标签 |
-| expert 调用 | 对该样本的一个随机时间预测一次 | 重复 $N$ 次 |
+| 是否有真实动作 $`A`$ | 有，来自示范 | 没有 |
+| 输入动作样本 | 随机时间的 $`(1-t)A+t\epsilon`$ | 先初始化纯噪声，再逐步更新 |
+| $`t`$ 怎样获得 | 每个样本随机抽取 | 按积分网格依次变化 |
+| 速度标签 | $`\epsilon-A`$ | 没有标签 |
+| expert 调用 | 对该样本的一个随机时间预测一次 | 重复 $`N`$ 次 |
 | 是否需要完整 ODE 求解 | 不需要 | 需要数值近似 |
 | prefix 处理 | 通常与 suffix 一次联合前向，保留反传图 | 先单独算一次并缓存 K/V |
 | 输出用途 | 计算 loss、更新权重 | 得到动作块、反归一化、执行 |
@@ -987,25 +987,25 @@ FAST 将动作块视为时间序列，经过归一化、沿时间的离散余弦
 
 交叉熵的基本形式为：
 
-$$
-\mathcal L_{\rm CE}
-=-\sum_{j\in\mathcal T_{\rm supervised}}
-\log p_\theta(y_j\mid y_{<j},\text{已知输入}).
-$$
+```math
+\mathcal{L}_{\mathrm{CE}}
+=-\sum_{j\in\mathcal{T}_{\mathrm{supervised}}}
+\log p_{\theta}(y_{j}\mid y_{\lt j},\text{已知输入}).
+```
 
 只有被监督的输出位置参加求和，输入图像、prompt 和 padding 不能一概视为预测标签。第二阶段的抽象目标是：
 
-$$
-\mathcal L=\mathcal L_{\rm CE}+\lambda\mathcal L_{\rm FM}.
-$$
+```math
+\mathcal{L}=\mathcal{L}_{\mathrm{CE}}+\lambda\mathcal{L}_{\mathrm{FM}}.
+```
 
-离散和连续动作表示之间需要 attention 隔离，避免连续分支直接读取同一训练样本的离散动作答案。其低层策略在分层系统中以预测出的子任务 $\hat\ell$ 为条件：
+离散和连续动作表示之间需要 attention 隔离，避免连续分支直接读取同一训练样本的离散动作答案。其低层策略在分层系统中以预测出的子任务 $`\hat{\ell}`$ 为条件：
 
-$$
-p_\theta(A,\hat\ell\mid o,\ell)
-=p_\theta(\hat\ell\mid o,\ell)\,
-p_\theta(A\mid o,\hat\ell).
-$$
+```math
+p_{\theta}(A,\hat{\ell}\mid o,\ell)
+=p_{\theta}(\hat{\ell}\mid o,\ell)\,
+p_{\theta}(A\mid o,\hat{\ell}).
+```
 
 高层文本预测与低层动作调用可使用不同频率；公开的 `pi05_libero.sample_actions` 只有低层 flow 采样过程。以上是原始论文系统与接口的区别，不意味着现有代码中隐藏着一次未展示的文本规划调用。来源：[π0.5 原始论文](https://arxiv.org/html/2504.16054v1#S4)。
 
@@ -1015,31 +1015,31 @@ $$
 
 以动作注意力为例：
 
-$$
-\mathrm{Attn}_A=
+```math
+\mathrm{Attn}_{A}=
 \mathrm{softmax}\left(
-\frac{Q_A[\mathrm{sg}(K_P);K_A]^\top}{\sqrt{d_h}}+M
-\right)[\mathrm{sg}(V_P);V_A].
-$$
+\frac{Q_{A}[\mathrm{sg}(K_{P});K_{A}]^{\top}}{\sqrt{d_{h}}}+M
+\right)[\mathrm{sg}(V_{P});V_{A}].
+```
 
 stop-gradient 满足：
 
-$$
+```math
 \mathrm{sg}(z)=z\quad\text{在前向计算中},
 \qquad
 \frac{\partial\mathrm{sg}(z)}{\partial z}=0
 \quad\text{在反向计算中}.
-$$
+```
 
-把 VLM 参数记为 $\theta_P$、专家参数记为 $\theta_A$，其设计意图可表示为：
+把 VLM 参数记为 $`\theta_{P}`$、专家参数记为 $`\theta_{A}`$，其设计意图可表示为：
 
-$$
-\nabla_{\theta_P}\mathcal L_{\rm FM}=0,
+```math
+\nabla_{\theta_{P}}\mathcal{L}_{\mathrm{FM}}=0,
 \qquad
-\nabla_{\theta_P}\mathcal L_{\rm CE}\ \text{仍可非零},
+\nabla_{\theta_{P}}\mathcal{L}_{\mathrm{CE}}\ \text{仍可非零},
 \qquad
-\nabla_{\theta_A}\mathcal L_{\rm FM}\ \text{仍可非零}.
-$$
+\nabla_{\theta_{A}}\mathcal{L}_{\mathrm{FM}}\ \text{仍可非零}.
+```
 
 因此它不是把整个 VLM 永久冻结，也不是切断 expert 读取 VLM 信息的能力。**前向读得到，反向不通过这条路径更新来源参数。**
 
@@ -1110,11 +1110,11 @@ wrist image shape = [256,256,3]
 
 配套脚本 [flow_matching_demo.py](examples/flow_matching_demo.py) 使用一个一维目标分布：
 
-$$
-p_{\rm data}(a)
-=\tfrac12\mathcal N(-2,0.35^2)
-+\tfrac12\mathcal N(2,0.35^2).
-$$
+```math
+p_{\mathrm{data}}(a)
+=\tfrac{1}{2}\mathcal{N}(-2,0.35^{2})
++\tfrac{1}{2}\mathcal{N}(2,0.35^{2}).
+```
 
 它表示两个可能的动作模式。演示采用解析可计算的最优速度场，没有加载 π0.5，也没有训练神经网络。这样能将“生成原理”和“大模型训练质量”分开观察。
 
@@ -1122,7 +1122,7 @@ $$
 
 左图：训练样本给出的固定端点插值都是直线。中图：条件均值速度场的 ODE 轨迹通常弯曲。右图：从同一组高斯初始样本出发，10 步和 100 步 Euler 生成的样本分布，与解析目标密度比较。
 
-横轴使用 $s=1-t$ 作为“生成进度”，因此从左到右看是噪声到动作；代码内部仍使用 $t:1\to0$。
+横轴使用 $`s=1-t`$ 作为“生成进度”，因此从左到右看是噪声到动作；代码内部仍使用 $`t:1\to0`$。
 
 在项目根目录运行，需 NumPy 和 Matplotlib：
 
@@ -1133,7 +1133,7 @@ python docs/learning/examples/flow_matching_demo.py
 脚本会重新生成 PNG/SVG，并打印不同积分步数下的终点误差。这里误差只评估解析速度场的数值积分，不能用来估算 π0.5 的任务成功率。
 
 本次实际运行的结果如下。参考终点不是另一条 Euler 近似，而是利用一维光滑流保持分位数的性质，数值求解
-$F_{\rm data}(x_0)=\Phi(x_1)$；$\Phi$ 是标准正态分布的累积分布函数。误差在 100 个固定初始点上计算。
+$`F_{\mathrm{data}}(x_{0})=\Phi(x_{1})`$；$`\Phi`$ 是标准正态分布的累积分布函数。误差在 100 个固定初始点上计算。
 
 | Euler 步数 | 平均终点绝对误差 | 最大终点绝对误差 |
 |---:|---:|---:|
@@ -1149,51 +1149,51 @@ $F_{\rm data}(x_0)=\Phi(x_1)$；$\Phi$ 是标准正态分布的累积分布函�
 
 ### 11.1 概率密度不等于样本值
 
-$X_t$ 是一个随机动作样本，$p_t(x)$ 是这个随机变量在空间各位置附近出现的密度。固定条件下的一次 ODE 求解，只生成一个样本；改变初始噪声，多次求解，才能观察生成分布。
+$`X_{t}`$ 是一个随机动作样本，$`p_{t}(x)`$ 是这个随机变量在空间各位置附近出现的密度。固定条件下的一次 ODE 求解，只生成一个样本；改变初始噪声，多次求解，才能观察生成分布。
 
 一个样本的轨迹遵循 ODE；所有样本组成的密度遵循连续性 PDE：
 
-$$
-\frac{dX_t}{dt}=v(X_t,t)
+```math
+\frac{dX_{t}}{dt}=v(X_{t},t)
 \quad\Longleftrightarrow\quad
-\partial_t p_t+\nabla\cdot(p_tv)=0
-$$
+\partial_{t} p_{t}+\nabla\cdot(p_{t}v)=0
+```
 
 右侧的等价关系需要前面提到的正则性条件。“一个粒子怎么走”和“整片概率质量怎么变化”是同一演化的两种描述。
 
 ### 11.2 梯度、散度、Jacobian 分别是什么
 
-为简洁起见，令展开后的空间维度为 $m=HD$。
+为简洁起见，令展开后的空间维度为 $`m=HD`$。
 
 | 概念 | 作用对象 | 定义 | 直观含义 |
 |---|---|---|---|
-| 梯度 $\nabla f$ | 标量函数 | $(\partial f/\partial x_1,\ldots,\partial f/\partial x_m)$ | 标量增长最快的方向 |
-| Jacobian $J_v$ | 向量函数 | $(J_v)_{ij}=\partial v_i/\partial x_j$ | 位置变化怎样影响各速度分量 |
-| 散度 $\nabla\cdot v$ | 向量场 | $\sum_j\partial v_j/\partial x_j=\mathrm{tr}(J_v)$ | 局部体积的膨胀或收缩趋势 |
-| 偏导 $\partial_t p$ | 多变量函数 $p(x,t)$ | 固定 $x$ 观察时间变化 | 同一位置的密度怎样变化 |
-| 全导数 $d/dt$ | 沿轨迹的量 | 时间变化加位置移动的共同影响 | 跟着运动样本看到的变化 |
+| 梯度 $`\nabla f`$ | 标量函数 | $`(\partial f/\partial x_{1},\ldots,\partial f/\partial x_{m})`$ | 标量增长最快的方向 |
+| Jacobian $`J_{v}`$ | 向量函数 | $`(J_{v})_{ij}=\partial v_{i}/\partial x_{j}`$ | 位置变化怎样影响各速度分量 |
+| 散度 $`\nabla\cdot v`$ | 向量场 | $`\sum_{j}\partial v_{j}/\partial x_{j}=\mathrm{tr}(J_{v})`$ | 局部体积的膨胀或收缩趋势 |
+| 偏导 $`\partial_{t} p`$ | 多变量函数 $`p(x,t)`$ | 固定 $`x`$ 观察时间变化 | 同一位置的密度怎样变化 |
+| 全导数 $`d/dt`$ | 沿轨迹的量 | 时间变化加位置移动的共同影响 | 跟着运动样本看到的变化 |
 
 连续性方程展开后：
 
-$$
-\partial_t p+v^\top\nabla p+p\,\nabla\cdot v=0.
-$$
+```math
+\partial_{t} p+v^{\top}\nabla p+p\,\nabla\cdot v=0.
+```
 
-而沿 $X_t$ 的全导数是：
+而沿 $`X_{t}`$ 的全导数是：
 
-$$
-\frac d{dt}p_t(X_t)
-=\partial_t p+v^\top\nabla p.
-$$
+```math
+\frac{d}{dt}p_{t}(X_{t})
+=\partial_{t} p+v^{\top}\nabla p.
+```
 
-因此在 $p>0$ 时：
+因此在 $`p\gt 0`$ 时：
 
-$$
+```math
 \boxed{
-\frac d{dt}\log p_t(X_t)
-=-\nabla\cdot v(X_t,t).
+\frac{d}{dt}\log p_{t}(X_{t})
+=-\nabla\cdot v(X_{t},t).
 }
-$$
+```
 
 它解释了流如何改变密度：沿正时间方向，局部扩张时密度下降，收缩时密度上升。这也是 continuous normalizing flow 计算密度的基础。但公开 π0.5 的速度回归训练**不需要每一步显式计算散度或 log-likelihood**。
 
@@ -1201,8 +1201,8 @@ $$
 
 这里容易混淆两层条件：
 
-1. **任务条件 $c$**：图像、语言和可选 state，是推理时已知的。
-2. **训练路径的端点条件**：给定干净样本 $A$，就容易定义一条简单的加噪概率路径；也可以同时给定 $(A,\epsilon)$，形成本文的确定性线段。
+1. **任务条件 $`c`$**：图像、语言和可选 state，是推理时已知的。
+2. **训练路径的端点条件**：给定干净样本 $`A`$，就容易定义一条简单的加噪概率路径；也可以同时给定 $`(A,\epsilon)`$，形成本文的确定性线段。
 
 CFM 的理论作用，是用容易构造的条件路径监督，学习难以直接写出的边缘速度场。它不只是“给 flow 模型加了一句文本条件”的简称。
 
@@ -1216,18 +1216,18 @@ CFM 的理论作用，是用容易构造的条件路径监督，学习难以直�
 
 | 角度 | 本文的 flow matching | 常见 diffusion 表述 |
 |---|---|---|
-| 训练路径 | 线性插值 $(1-t)A+t\epsilon$ | 按噪声日程定义的加噪过程 |
+| 训练路径 | 线性插值 $`(1-t)A+t\epsilon`$ | 按噪声日程定义的加噪过程 |
 | 常见回归目标 | 速度场 | 噪声、score、干净样本，或特定 velocity 参数化 |
 | 生成动力学 | ODE | 反向 SDE，或对应的 probability-flow ODE 等 |
 | 本文采样的随机性 | 初始高斯样本 | 取决于采样器；也可采用确定性 ODE |
 
 SDE 是随机微分方程：
 
-$$
-dX_t=f(X_t,t)\,dt+g(t)\,dW_t.
-$$
+```math
+dX_{t}=f(X_{t},t)\,dt+g(t)\,dW_{t}.
+```
 
-$W_t$ 是布朗运动，其增量在长度为 $\Delta t>0$ 的小区间上服从方差与 $\Delta t$ 成正比的高斯分布。ODE 没有这个不断注入的随机增量项。
+$`W_{t}`$ 是布朗运动，其增量在长度为 $`\Delta t\gt 0`$ 的小区间上服从方差与 $`\Delta t`$ 成正比的高斯分布。ODE 没有这个不断注入的随机增量项。
 
 diffusion 也能有确定性的概率流 ODE，所以不能说“确定性积分就一定不是 diffusion”。这些概念的联系见 [Score-Based Generative Modeling through SDEs](https://arxiv.org/abs/2011.13456)。
 
@@ -1235,37 +1235,37 @@ diffusion 也能有确定性的概率流 ODE，所以不能说“确定性积分
 
 score 定义为：
 
-$$
-s_t(x,c)=\nabla_x\log p_t(x\mid c).
-$$
+```math
+s_{t}(x,c)=\nabla_{x}\log p_{t}(x\mid c).
+```
 
-对于本文路径，给定 $A$ 后：
+对于本文路径，给定 $`A`$ 后：
 
-$$
-X_t\mid A\sim\mathcal N((1-t)A,t^2I).
-$$
+```math
+X_{t}\mid A\sim\mathcal{N}((1-t)A,t^{2}I).
+```
 
-对 $0<t<1$，在可交换微分与积分的条件下，混合高斯的 score 可写为条件 score 的后验均值：
+对 $`0\lt t\lt 1`$，在可交换微分与积分的条件下，混合高斯的 score 可写为条件 score 的后验均值：
 
-$$
-s_t(x,c)
-=-\frac1t\mathbb E[\epsilon\mid X_t=x,c].
-$$
+```math
+s_{t}(x,c)
+=-\frac{1}{t}\mathbb{E}[\epsilon\mid X_{t}=x,c].
+```
 
 同时：
 
-$$
-x=(1-t)\mathbb E[A\mid x,t,c]
-+t\mathbb E[\epsilon\mid x,t,c].
-$$
+```math
+x=(1-t)\mathbb{E}[A\mid x,t,c]
++t\mathbb{E}[\epsilon\mid x,t,c].
+```
 
 联立可得：
 
-$$
-v^*(x,t,c)
-=\mathbb E[\epsilon-A\mid x,t,c]
-=-\frac{x+t\,s_t(x,c)}{1-t}.
-$$
+```math
+v^{\ast}(x,t,c)
+=\mathbb{E}[\epsilon-A\mid x,t,c]
+=-\frac{x+t\,s_{t}(x,c)}{1-t}.
+```
 
 这说明对于这个给定路径，速度预测和 score 预测有联系。但公式在端点的这种写法存在除零问题，不能直接作为稳定的端点算法；OpenPI 直接学习速度，不需要执行这个转换。不同噪声日程对应的转换系数也不同。
 
@@ -1279,7 +1279,7 @@ $$
 | VLM 只给 expert 一个最终向量 | expert 在对应层读取 prefix 的 token 级 K/V |
 | expert 输出最终动作 | 单次调用输出速度；经过积分得到动作 |
 | “速度”一定是机器人运动速度 | 它是动作表示相对于生成时间的变化率 |
-| 10 次去噪等于 10 条动作 | 去噪次数 $N$ 与动作长度 $H$ 独立 |
+| 10 次去噪等于 10 条动作 | 去噪次数 $`N`$ 与动作长度 $`H`$ 独立 |
 | 训练时也必须去噪 10 次 | 标准 CFM 每个样本随机取一个时间，直接回归局部速度 |
 | 推理时也需要真实动作来加噪 | 推理从独立高斯噪声开始 |
 | prefix 不读 suffix，就没有反向梯度 | 前向 mask 与 stop-gradient 是不同机制 |
@@ -1323,9 +1323,9 @@ $$
 
 1. 两张 224×224 图像、patch size 14，每张有多少 patch token？为什么实现中可能仍有三个相机槽位？
 2. 为什么文本 token ID 与图像 token 不是同一种数据类型，却能共同进入 Transformer？
-3. 若 $H=50,D=32$，初始噪声与速度场是什么形状？一次 expert 调用生成了多少个动作位置的速度？
-4. 若 $A=0.6,\epsilon=-0.2,t=0.75$，计算 $X_t,U$。使用 $\Delta t=-0.25$ 和该样本的精确速度后，得到什么？
-5. 为什么训练时知道 $A$，推理时不需要知道？
+3. 若 $`H=50,D=32`$，初始噪声与速度场是什么形状？一次 expert 调用生成了多少个动作位置的速度？
+4. 若 $`A=0.6,\epsilon=-0.2,t=0.75`$，计算 $`X_{t},U`$。使用 $`\Delta t=-0.25`$ 和该样本的精确速度后，得到什么？
+5. 为什么训练时知道 $`A`$，推理时不需要知道？
 6. 为什么样本级 MSE 最优解是条件均值速度，而不要求记住某个随机噪声与示范的唯一配对？
 7. 为什么可以缓存 prefix，却要重新计算 suffix？
 8. 为什么 attention mask 不能替代 knowledge insulation 的 stop-gradient？
@@ -1334,11 +1334,11 @@ $$
 
 参考答案：
 
-1. 每张 $16^2=256$ 个；统一 adapter 可以保留一个 masked 占位槽。
+1. 每张 $`16^{2}=256`$ 个；统一 adapter 可以保留一个 masked 占位槽。
 2. 文本先经 embedding，图像先经视觉编码与投影，最终都是匹配宽度的连续向量。
 3. 不带 batch 为 `[50,32]`；一次预测全部 50 个位置。
-4. $X_t=0$，$U=-0.8$，更新后 $X=0.2$，对应 $t=0.5$。
-5. 训练用 $A$ 构造局部监督；推理用已学到的速度场运输高斯样本。
+4. $`X_{t}=0`$，$`U=-0.8`$，更新后 $`X=0.2`$，对应 $`t=0.5`$。
+5. 训练用 $`A`$ 构造局部监督；推理用已学到的速度场运输高斯样本。
 6. 平方损失的条件均值分解；条件平均后的场仍生成目标概率路径。
 7. prefix 不依赖噪声与生成时间，suffix 依赖两者。
 8. 前者限制前向读取，后者改变反向导数。
@@ -1360,13 +1360,13 @@ $$
 
 读完后，应能独立写下并解释这四行，而不只是记住“π0.5 使用 flow matching”：
 
-$$
-X_t=(1-t)A+t\epsilon,
+```math
+X_{t}=(1-t)A+t\epsilon,
 \qquad U=\epsilon-A,
-$$
+```
 
-$$
-\min_\theta\mathbb E\|v_\theta(X_t,t,c)-U\|^2,
+```math
+\min_{\theta}\mathbb{E}\|v_{\theta}(X_{t},t,c)-U\|^{2},
 \qquad
-X_{t+\Delta t}=X_t+\Delta t\,v_\theta(X_t,t,c),\quad\Delta t<0.
-$$
+X_{t+\Delta t}=X_{t}+\Delta t\,v_{\theta}(X_{t},t,c),\quad\Delta t\lt 0.
+```
