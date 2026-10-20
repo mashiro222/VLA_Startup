@@ -290,8 +290,8 @@ predicted vector field [B, H, 32]
 忽略 batch、多个 head 和位置编码，动作 token 的注意力可以写成：
 
 $$
-\operatorname{Attn}_A
-=\operatorname{softmax}\left(
+\mathrm{Attn}_A
+=\mathrm{softmax}\left(
 \frac{Q_A[K_P;K_A]^\top}{\sqrt{d_h}}+M
 \right)[V_P;V_A].
 $$
@@ -341,8 +341,8 @@ $$
 模型需要区分“几乎全是噪声”和“已经快生成完了”。π0.5 的实现将标量 $t$ 编成正弦/余弦向量，再经过两层 MLP：
 
 $$
-e(t)=\operatorname{swish}
-\left(W_2\operatorname{swish}(W_1\phi(t)+b_1)+b_2\right).
+e(t)=\mathrm{swish}
+\left(W_2\mathrm{swish}(W_1\phi(t)+b_1)+b_2\right).
 $$
 
 $\phi(t)$ 含多个频率的 $\sin,\cos$，让网络容易表达时间的非线性影响。这是**生成时间编码**，和表示 token 顺序的 RoPE 是不同的东西。
@@ -350,18 +350,18 @@ $\phi(t)$ 含多个频率的 $\sin,\cos$，让网络容易表达时间的非线�
 普通 RMSNorm 对一个隐藏向量 $z\in\mathbb R^m$ 做：
 
 $$
-\operatorname{RMS}(z)=
+\mathrm{RMS}(z)=
 \frac{z}{\sqrt{\frac1m\sum_{j=1}^m z_j^2+\varepsilon_{\rm rms}}}.
 $$
 
 adaptive RMSNorm 再根据 $e(t)$ 生成缩放、平移与残差门控：
 
 $$
-(\gamma(t),\beta(t),g(t))=\operatorname{Linear}(e(t)),
+(\gamma(t),\beta(t),g(t))=\mathrm{Linear}(e(t)),
 $$
 
 $$
-\widetilde z=(1+\gamma(t))\odot\operatorname{RMS}(z)+\beta(t),
+\widetilde z=(1+\gamma(t))\odot\mathrm{RMS}(z)+\beta(t),
 \qquad
 z_{\rm next}=z+g(t)\odot F(\widetilde z).
 $$
@@ -737,7 +737,7 @@ $$
 $$
 \epsilon\sim\mathcal N(0,I_{H D}),
 \qquad
-b\sim\operatorname{Beta}(1.5,1),
+b\sim\mathrm{Beta}(1.5,1),
 \qquad
 t=0.999b+0.001.
 $$
@@ -1016,18 +1016,18 @@ $$
 以动作注意力为例：
 
 $$
-\operatorname{Attn}_A=
-\operatorname{softmax}\left(
-\frac{Q_A[\operatorname{sg}(K_P);K_A]^\top}{\sqrt{d_h}}+M
-\right)[\operatorname{sg}(V_P);V_A].
+\mathrm{Attn}_A=
+\mathrm{softmax}\left(
+\frac{Q_A[\mathrm{sg}(K_P);K_A]^\top}{\sqrt{d_h}}+M
+\right)[\mathrm{sg}(V_P);V_A].
 $$
 
 stop-gradient 满足：
 
 $$
-\operatorname{sg}(z)=z\quad\text{在前向计算中},
+\mathrm{sg}(z)=z\quad\text{在前向计算中},
 \qquad
-\frac{\partial\operatorname{sg}(z)}{\partial z}=0
+\frac{\partial\mathrm{sg}(z)}{\partial z}=0
 \quad\text{在反向计算中}.
 $$
 
@@ -1169,7 +1169,7 @@ $$
 |---|---|---|---|
 | 梯度 $\nabla f$ | 标量函数 | $(\partial f/\partial x_1,\ldots,\partial f/\partial x_m)$ | 标量增长最快的方向 |
 | Jacobian $J_v$ | 向量函数 | $(J_v)_{ij}=\partial v_i/\partial x_j$ | 位置变化怎样影响各速度分量 |
-| 散度 $\nabla\cdot v$ | 向量场 | $\sum_j\partial v_j/\partial x_j=\operatorname{tr}(J_v)$ | 局部体积的膨胀或收缩趋势 |
+| 散度 $\nabla\cdot v$ | 向量场 | $\sum_j\partial v_j/\partial x_j=\mathrm{tr}(J_v)$ | 局部体积的膨胀或收缩趋势 |
 | 偏导 $\partial_t p$ | 多变量函数 $p(x,t)$ | 固定 $x$ 观察时间变化 | 同一位置的密度怎样变化 |
 | 全导数 $d/dt$ | 沿轨迹的量 | 时间变化加位置移动的共同影响 | 跟着运动样本看到的变化 |
 
