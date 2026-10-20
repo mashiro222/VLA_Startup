@@ -324,7 +324,7 @@ predicted vector field [B, H, 32]
 ```math
 \mathcal{M}_{\mathrm{allowed}}=
 \begin{pmatrix}
-\mathbf{1} & \mathbf{0}\\
+\mathbf{1} & \mathbf{0}\\[0pt]
 \mathbf{1} & \mathbf{1}
 \end{pmatrix}.
 ```
@@ -612,7 +612,7 @@ v^{\ast}(x,t,c)
 ```math
 \begin{aligned}
 \mathbb{E}\|v(Z)-U\|^{2}
-&=\mathbb{E}\|v(Z)-m(Z)\|^{2}\\
+&=\mathbb{E}\|v(Z)-m(Z)\|^{2}\\[0pt]
 &\quad+\mathbb{E}\|U-m(Z)\|^{2}.
 \end{aligned}
 ```
@@ -643,8 +643,8 @@ p_{0}(x\mid c)=p_{\mathrm{data}}(A=x\mid c).
 ```math
 \begin{aligned}
 \frac{d}{dt}\mathbb{E}[\varphi(X_{t})\mid c]
-&=\mathbb{E}[\nabla\varphi(X_{t})^{\top}(\epsilon-A)\mid c]\\
-&=\mathbb{E}[\nabla\varphi(X_{t})^{\top} v^{\ast}(X_{t},t,c)\mid c]\\
+&=\mathbb{E}[\nabla\varphi(X_{t})^{\top}(\epsilon-A)\mid c]\\[0pt]
+&=\mathbb{E}[\nabla\varphi(X_{t})^{\top} v^{\ast}(X_{t},t,c)\mid c]\\[0pt]
 &=\int\nabla\varphi(x)^{\top} v^{\ast}(x,t,c)p_{t}(x\mid c)\,dx.
 \end{aligned}
 ```
