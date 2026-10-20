@@ -7,7 +7,7 @@
 | LIBERO-Plus | 10,030 / 10,030 episodes | SR **84.52%** |
 | LIBERO clean | 1,500 / 2,000 episodes | 已完成部分 SR **96.40%**；停止补跑缺失分片 |
 | Arena Safety balanced1500 | 1,500 / 1,500 episodes | SR **11.47%**，平均 CC **60.24** |
-| Arena LoRA / LoRA+SF | 各组 24 小时最终 checkpoint 评测；四卡各追加 15k | baseline 完成 5,952 步，900 条评测已提交；SF 训练中，尚无训练后 SR/CC |
+| Arena LoRA / LoRA+SF | 各组 24 小时最终 checkpoint 评测；四卡各追加 15k | baseline 5,952 步评测与四卡续训已提交；batch 2 校准通过；SF 初始训练中 |
 
 ## 2026-10-11：LIBERO 环境与 smoke
 
@@ -138,6 +138,18 @@ Baseline **14143587** 于 **20:00:26 EDT** 正常结束，运行 **23:52:47**，
 SF **14143602** 于 **20:00:29 EDT** 启动；21:20 检查到 176 步，数值检查正常。Batch 2 补测 **14179857** 仍在排队。四卡续训等待 batch 2 验证后另行决定，未提交；两份现有作业保持不变。
 
 [评测作业与结果路径](run/after-24h-followup.md#baseline-5952-步评测) · [提交回执](../reports/arena-after24h-20261019-001-baseline-eval/submission.json) · [checkpoint 与任务覆盖检查](../reports/arena-after24h-20261019-001-baseline-eval/preparation.json)。
+
+## 2026-10-20：batch 2 校准通过，baseline 四卡续训提交
+
+Batch 2 补测 **14179857** 于 **03:15 EDT** 正常完成，退出码 `0:0`。在两张 A100 40GB 上，baseline 与 SF 均完成 12 次更新及有限动作推理；全局 batch=32，每卡 batch=2，累积 8。剔除前 3 步后，baseline 中位耗时从 **12.63 降至 7.52 秒/步（1.68 倍吞吐）**，SF 从 **15.72 降至 8.50 秒/步（1.85 倍）**。Batch 2 峰值已分配显存分别为 **17.13 / 20.70 GiB**。一次 rendezvous 心跳警告后正常完成，无 OOM 或数值异常。[完整校准表](../reports/arena-microbatch-20261018-001/README.md)。
+
+**调整原因与提交：** 两卡 micro-batch 2 的显存与短程吞吐检查通过，因此提交 baseline 四卡续训 **14217601**（**10:13 EDT**）。从 **5,952** 步追加 **15,000** 步，目标累计 **20,952**；两个节点各两张 A100、每卡 batch 2、累积 4，全局 batch=32。模型参数、优化器状态和学习率曲线按迁移实现保留，四个 rank 的随机流按固定规则重建。初始状态 `PENDING (Priority)`，四卡跨节点运行尚未实测。
+
+单次分配最长 24 小时，接近时限会保存并退出；未到目标时需另行手动续提，不自动申请下一段。Baseline 的 900-episode 评测 **14199187** 保持原队列，SF **14143602** 保持初始两卡训练，不提交 SF 的后续任务。
+
+**SF 进度与预期：** 10:11 EDT 为 **2,824 步**，最近 500 步 flow MSE 中位数约 **0.0141**、对齐损失约 **0.0436**，未发现非有限或异常大 loss。最近 500/1,000 步平均耗时约 **19.3/17.7 秒**，包含较慢更新，按剩余时间粗估本次结束时约 **4,300–5,000 步**；这是速度外推，最终以保存记录为准。预计 19:50–20:00 EDT 保存退出。训练损失下降不能替代 SR/CC 评测，也不能证明 SF 优于普通 LoRA；本轮两组初始分配时长相同，但最终更新步数不同。
+
+[续训提交回执](../reports/arena-after24h-20261019-001-baseline-plus15k/submission.json) · [资源、checkpoint 与预算核对](../reports/arena-after24h-20261019-001-baseline-plus15k/preparation.json) · [运行与输出说明](run/after-24h-followup.md#baseline-四卡追加训练)。
 
 ## 阅读与证据索引
 

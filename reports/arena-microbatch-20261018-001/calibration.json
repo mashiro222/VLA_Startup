@@ -1,0 +1,57 @@
+{
+  "passed": true,
+  "global_batch": 32,
+  "rows": [
+    {
+      "arm": "baseline",
+      "micro_batch": 1,
+      "accumulation": 16,
+      "gpu": "NVIDIA A100-PCIE-40GB",
+      "total_memory": 42436526080,
+      "measured_updates": 9,
+      "median_seconds": 12.6267410319997,
+      "mean_seconds": 12.706073360556426,
+      "peak_allocated_gib": 16.809216022491455,
+      "peak_reserved_gib": 17.271484375
+    },
+    {
+      "arm": "sf",
+      "micro_batch": 1,
+      "accumulation": 16,
+      "gpu": "NVIDIA A100-PCIE-40GB",
+      "total_memory": 42436526080,
+      "measured_updates": 9,
+      "median_seconds": 15.721281351987273,
+      "mean_seconds": 16.60303285923631,
+      "peak_allocated_gib": 20.371143341064453,
+      "peak_reserved_gib": 20.71875
+    },
+    {
+      "arm": "baseline",
+      "micro_batch": 2,
+      "accumulation": 8,
+      "gpu": "NVIDIA A100-PCIE-40GB",
+      "total_memory": 42436526080,
+      "measured_updates": 9,
+      "median_seconds": 7.519587160088122,
+      "mean_seconds": 7.394105907477853,
+      "peak_allocated_gib": 17.12828826904297,
+      "peak_reserved_gib": 17.5,
+      "speedup_vs_mb1": 1.679180088372262
+    },
+    {
+      "arm": "sf",
+      "micro_batch": 2,
+      "accumulation": 8,
+      "gpu": "NVIDIA A100-PCIE-40GB",
+      "total_memory": 42436526080,
+      "measured_updates": 9,
+      "median_seconds": 8.497402342967689,
+      "mean_seconds": 8.767020211580935,
+      "peak_allocated_gib": 20.704124927520752,
+      "peak_reserved_gib": 21.275390625,
+      "speedup_vs_mb1": 1.850127923505699
+    }
+  ],
+  "scope": "Two-GPU memory/throughput and finite inference; not a convergence test"
+}

@@ -21,12 +21,12 @@ Baseline 和 SF 分别完成当前的 **24 小时训练分配**后，使用各�
 
 ## 手动提交命令
 
-原始训练作业为 baseline **14143587**、SF **14143602**。首次校准 **14171051** 已因一小时时限退出，batch 1 两组完成，batch 2 尚未验证；补测记录见[batch 2 补测](#batch-2-补测)。Baseline 评测 **14199187** 已于 10/19 21:28 EDT 提交，使用最终 **5,952 步 checkpoint**；SF 评测与两组四卡续训尚未提交。四卡续训待 batch 2 校准通过后另行决定。
+原始训练作业为 baseline **14143587**、SF **14143602**。Batch 2 补测 **14179857** 已于 10/20 03:15 EDT 通过，见[batch 2 补测](#batch-2-补测)。Baseline 评测 **14199187** 和四卡续训 **14217601** 已分别于 10/19、10/20 提交，均使用初始训练最终 **5,952 步 checkpoint**。SF 保持当前两卡训练，其评测与续训尚未提交。
 
 ```bash
 cd /storage/scratch1/1/gliu386/VLA_Startup
 squeue -u gliu386 -o '%.18i %.36j %.10T %.10M %.24b %R'
-sacct -j 14143587,14143602,14179857,14199187 --format=JobID,State,ExitCode,Elapsed
+sacct -j 14143587,14143602,14179857,14199187,14217601 --format=JobID,State,ExitCode,Elapsed
 ```
 
 哪组原始训练正常结束，就可以手动提交那组的任务，无需等待另一组：
@@ -62,7 +62,22 @@ tail -f logs/sf-24h-eval-baseline-14199187.out
 
 逐 episode 输出位于 `runs/arena-after24h-20261019-001-baseline-eval/`；表图完成后保存到同名 `reports/` 目录。[提交回执](../../reports/arena-after24h-20261019-001-baseline-eval/submission.json)和[checkpoint / 任务覆盖检查](../../reports/arena-after24h-20261019-001-baseline-eval/preparation.json)已归档。
 
-本次仅提交 baseline 评测。SF 训练 **14143602** 和 batch 2 补测 **14179857** 保持原样；没有提交四卡续训，也没有自动续训入口。Baseline 续训计划中的 **20,952** 是未来目标步数，并不表示已经申请了训练资源。
+10/19 本次提交仅包含 baseline 评测。10/20 batch 2 验证通过后，baseline 四卡续训另行提交，见下一节；该评测的 checkpoint、任务集合与队列保持不变。
+
+## Baseline 四卡追加训练
+
+作业 **14217601** 于 **10/20 10:13 EDT** 提交，从保留的 **5,952** 步 checkpoint 追加 **15,000** 次 optimizer updates，累计目标 **20,952**。配置为 **2 个节点 × 每节点 2 张 A100 × 每卡 batch 2 × 梯度累积 4 = global batch 32**；每节点 16 CPUs、96 GB 主机内存，账户 `gts-jli741-paid`，单次时限 24 小时。
+
+迁移保存权重、AdamW 状态和累计步数，沿用原学习率曲线，不重新 warmup。四 rank 的随机流重新确定，因此不保证与两卡逐位一致。批处理只启动本次分配；若 24 小时内未到 20,952 步，保存后退出，后续需手动提交，目标不改变。已完成两卡 batch 2 检查，跨节点通信与实际四卡速度仍需本作业验证。
+
+```bash
+squeue -j 14217601 -o '%.18i %.10T %.12M %R'
+sacct -j 14217601 --format=JobID,State,ExitCode,Elapsed
+# 作业启动并创建日志后：
+tail -f logs/sf-24h-continue-baseline-14217601.out
+```
+
+运行输出和 checkpoint：`runs/arena-after24h-20261019-001-baseline-plus15k/baseline/`。[提交回执](../../reports/arena-after24h-20261019-001-baseline-plus15k/submission.json) · [配置检查](../../reports/arena-after24h-20261019-001-baseline-plus15k/preparation.json)。SF 初始训练和 baseline 评测保持原作业，未设置二者与本次续训之间的依赖。
 
 ## 运行时限与手动续跑
 
@@ -119,3 +134,7 @@ cat runs/arena-after24h-20261019-001/submission/*.json
 入口是 `slurm/microbatch2_retry.sbatch` 和 `scripts/calibrate_mb2.py`。已完成的 batch 1 记录只读复用；若 batch 2 某组已有完整结果，也跳过该组。遇到不完整输出时停止并要求检查，不覆盖或重复追加日志。成功后将原 batch 1 和新 batch 2 合并为四行校准表，写入 `runs/arena-microbatch-20261018-001/calibration.json`，报告同步到同名 `reports/` 目录。补测不会提交评测或正式续训。
 
 提交回执和 CPU 检查见 [batch 2 补测记录](../../reports/microbatch2-retry-2026-10-19/README.md)。
+
+### 补测结果（10/20）
+
+**14179857** 于 03:15 EDT 以 `COMPLETED / 0:0` 结束，两组 batch 2 各 12 步及推理检查通过。两卡 batch 2 的中位耗时为 baseline **7.52 秒/步**、SF **8.50 秒/步**，相对 batch 1 分别为 **1.68 倍 / 1.85 倍吞吐**；对应峰值已分配显存 **17.13 / 20.70 GiB**。这是短程两卡测试，未验证四卡跨节点吞吐。[校准表与 JSON](../../reports/arena-microbatch-20261018-001/README.md)。
