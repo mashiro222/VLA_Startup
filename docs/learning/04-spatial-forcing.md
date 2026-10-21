@@ -304,4 +304,3 @@ SF 对齐点位于 prefix 内，prefix 不读取动作，所以 **SF 损失不�
 | 配对初始化与优化器参数范围 | [train.py](../../src/sf_training/train.py) |
 | 推理时如何移除训练辅助网络 | [export.py](../../src/sf_training/export.py) |
 | 当前实验定义与实际执行预算 | [训练说明](../arena-sf-training.md)、[后续协议](../run/after-24h-followup.md) |
-
