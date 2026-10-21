@@ -1,0 +1,11 @@
+{
+  "host": "login-phoenix-gnr-1",
+  "observed_wait": "cl_sync_io_wait",
+  "affected_checks": [
+    "original policy environment import",
+    "additional unchanged native-simulator regression imports",
+    "local diagnostic CPU-runtime copy"
+  ],
+  "conclusion": "Shared runtime reads also stalled during local diagnosis. This does not establish the cause of the original GPU policy timeout. Targeted socket/resume tests pass independently. GPU execution will stage both distinct PyTorch runtimes and verify original model environment before inference.",
+  "slurm_jobs_modified": []
+}

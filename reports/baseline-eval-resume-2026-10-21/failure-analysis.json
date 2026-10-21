@@ -1,0 +1,23 @@
+{
+  "old_job": "14199187",
+  "checkpoint_step": 5952,
+  "completed": 341,
+  "successes": 275,
+  "sr_percent": 80.64516129032258,
+  "mean_cc": 24.73607038123167,
+  "remaining": 559,
+  "remaining_static": 109,
+  "remaining_dynamic": 450,
+  "failed_episode": "safety_static_obstacles-L2-t1-s7:11",
+  "completed_steps_before_timeout": 95,
+  "timeout_seconds": 600,
+  "root_cause_confirmed": false,
+  "plan_file_sha256": "9614f7c839622c783145e7969f9150cce6f4514c0681841ddfde6528feb03318",
+  "plan_sha256": "573feeeb1bbee8834aa4568621a3cb853f87886eb983b37e3a310a21157db86e",
+  "queued_manifests_unchanged": true,
+  "queued_jobs": [
+    "14217601",
+    "14230443",
+    "14230444"
+  ]
+}

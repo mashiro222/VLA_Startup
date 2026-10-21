@@ -165,6 +165,20 @@ SF **14143602** 于 **13:32:36 EDT** 因 NCCL 梯度 `ALLREDUCE` 超时失败，
 
 [故障、恢复和操作说明](run/sf-recovery-2026-10-20.md) · [故障证据](../reports/sf-recovery-2026-10-20/failure-analysis.json) · [18k 保留范围核对](../reports/sf-recovery-2026-10-20/baseline-retention.json) · [测试记录](../reports/sf-recovery-2026-10-20/tests.xml)
 
+## 2026-10-21：Baseline 评测通信超时，保留结果并补跑
+
+Baseline 5,952 步评测 **14199187** 于 **05:47:36 EDT** 失败，已保存 **341/900 episodes**：成功 275 条，SR **80.65%**，平均 CC **24.74**。已完成部分全部属于 Static obstacles，不能代表完整评测。下一条在第 95 个仿真步之后等待策略响应超过 **600 秒**；未完成条目不计入 SR/CC。旧日志缺少服务端推理堆栈，底层停顿原因尚未确认。
+
+**调整原因与恢复：** 单次通信故障使剩余任务中断，因此增加节点本地策略缓存、超时堆栈和同一分配内的有限恢复。原 checkpoint、协议与结果保持不变，冻结已完成日志前缀，仅补 **559 条（Static 109、Dynamic 450）**。通信异常时重启策略和仿真，从未完成条目的相同初态/种子重新开始；任务失败不重试，最多 3 次 worker 尝试，不自动提交下一份作业。
+
+Baseline 四卡续训 **14217601**、SF 四卡续训 **14230443**、SF 900 条评测 **14230444** 的冻结配置校验均通过，本次未修改这些作业。真实 GPU 恢复效果仍需新分配验证。
+
+**验证：** 34 项恢复、通信、日志、适配和报告检查通过，其中 22 项覆盖本次恢复及通信路径。8 项既有原生仿真集成检查受共享库读取等待影响未完成，不计为通过；新作业仍需验证真实 GPU/EGL。
+
+**提交：** 补跑作业 **14252522** 已提交至 `gts-jli741-paid`，申请 **1 张 A100、24 小时时限**，初始状态 `PENDING (Priority)`。完成后在原 baseline 报告目录汇总全部 900 条。
+
+[故障、测试与提交证据](../reports/baseline-eval-resume-2026-10-21/README.md) · [恢复机制与操作说明](run/baseline-eval-resume-2026-10-21.md)
+
 ## 阅读与证据索引
 
 [模型与 benchmark 开发指南](research-guide.md) · [LIBERO/Plus 协议](experiment.md) · [Arena 协议](arena-safety.md) · [LoRA/SF 配方与代码](arena-sf-training.md) · [操作与详细技术归档](run/README.md)

@@ -49,6 +49,8 @@ bash scripts/sf_after24h.sh sf continue --submit
 
 ## Baseline 5,952 步评测
 
+**10/21 更新：** 原作业在完成 341/900 条后遇到 600 秒策略响应超时。新增恢复入口保留已完成记录，只补剩余 559 条，详见[通信超时与断点恢复](baseline-eval-resume-2026-10-21.md)。下文的原提交状态是历史记录。
+
 训练 **14143587** 于 10/19 20:00:26 EDT 正常结束（`COMPLETED`，退出码 `0:0`），最终保存 `step-00005952.pt`。权重在 `runs/arena-after24h-20261019-001/pinned-final/baseline/` 通过硬链接保留，评测绑定该文件。
 
 评测作业 **14199187**：1 张 A100、8 CPUs、96 GB 主机内存、24 小时时限，账户 `gts-jli741-paid`。Static / Dynamic obstacles 各 450 episodes；初始状态为 `PENDING (Priority)`。900 episodes 是计划数量，提交时尚无评测结果。
