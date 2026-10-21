@@ -283,32 +283,147 @@ predicted vector field [B, H, 32]
 
 **不是每个标量坐标各一个 token**，而是一个动作向量对应一个 token。所有 $`H`$ 个动作 token 一次并行处理，内部可以双向交互。
 
-### 4.3 它与 VLM 不是只靠“最后一层向量”连接
+### 4.3 Action expert 长什么样，它怎样与 Gemma 逐层交互
 
-固定代码里，语言/视觉 prefix 使用宽度 2048 的 Gemma 分支，动作 suffix 使用宽度 1024 的专家分支。两者各有自己的投影、FFN 和归一化参数，在对应的 Transformer 层通过 attention 交互。
+#### 4.3.1 它是一套有独立参数的、较小的 Gemma 式 Transformer
 
-忽略 batch、多个 head 和位置编码，动作 token 的注意力可以写成：
+可以把 action expert 理解成一个**结构与 Gemma 很相似、专门处理连续动作的 Transformer**。它有自己的 18 层、自己的 Q/K/V 投影、attention 输出投影、FFN 和归一化参数。代码把两条分支放在同一个 `gemma.Module` 中，让它们在对应层通过 attention 联系起来。
 
-```math
-\mathrm{Attn}_{A}
-=\mathrm{softmax}\left(
-\frac{Q_{A}[K_{P};K_{A}]^{\top}}{\sqrt{d_{h}}}+M
-\right)[V_{P};V_{A}].
+本节的 Gemma 指 PaliGemma 中处理图像与文字 token 的语言 Transformer；图像已经先经过视觉编码器，进入这里的是连续向量。固定版本的配置如下：
+
+| 项目 | Gemma 的 prefix 分支 | Action expert 的 suffix 分支 |
+|---|---|---|
+| 配置名 | `gemma_2b` | `gemma_300m` |
+| 处理的 token | 图像、指令，以及配置启用时的离散 state 文本 | 当前带噪动作块中的动作 token |
+| Transformer 层数 | 18 | 18 |
+| 每个 token 的隐藏维度 | 2048 | 1024 |
+| FFN 的中间维度 | 16384 | 4096 |
+| Attention 配置 | 8 个 query heads、1 个 KV head、每个 head 256 维 | 相同，方便读取 prefix 的 K/V |
+| 生成时间条件 | 不依赖生成时间 | 通过 adaRMSNorm 和残差门控注入，见 4.5 |
+
+两边的每层都有“归一化 → attention → 残差连接 → 归一化 → FFN → 残差连接”这个骨架。Action expert 使用自己的权重，并根据生成时间调节归一化和残差分支。这里的 expert 表示**为动作 token 使用一套专用参数**，没有按技能挑选专家的 router。结构与参数可对照 [get_config](https://github.com/Physical-Intelligence/openpi/blob/215abfb217dbac7d5f1273282331b9b1866c0479/src/openpi/models/gemma.py#L58) 和 [Block](https://github.com/Physical-Intelligence/openpi/blob/215abfb217dbac7d5f1273282331b9b1866c0479/src/openpi/models/gemma.py#L284)。
+
+#### 4.3.2 结构图：每一层读取对应层的 K/V
+
+```mermaid
+flowchart LR
+    subgraph P["Gemma：处理当前图像和指令"]
+        P0["图像、文字 token：宽度 2048"] --> P1["第 1 层"]
+        P1 --> P2["第 2 层"]
+        P2 -->|中间各层| P18["第 18 层"]
+    end
+
+    subgraph A["Action expert：处理当前动作样本"]
+        A0["带噪动作 → 动作 token：宽度 1024"] --> A1["第 1 层"]
+        A1 --> A2["第 2 层"]
+        A2 -->|中间各层| A18["第 18 层"]
+        A18 --> O["最终归一化 + 线性投影 → 速度场"]
+    end
+
+    P1 -. "该层缓存 K、V" .-> A1
+    P2 -. "该层缓存 K、V" .-> A2
+    P18 -. "该层缓存 K、V" .-> A18
 ```
 
-含义是：
+图中的虚线表示**对应层的数据依赖**：expert 第 1 层读取 Gemma 第 1 层的 K/V，第 2 层读取第 2 层的 K/V，依此类推。每份 K/V 都由该层输入经过归一化、投影得到；虚线从层节点出发，是表示“在该层 attention 内产生”，不是把该层 FFN 的最终输出直接当作 K/V。
 
-- $`Q_{A}`$：当前动作 token 提出“我需要什么信息”；
-- $`K_{P},V_{P}`$：来自当前层 prefix 的条件信息；
-- $`K_{A},V_{A}`$：来自同层其他动作位置的信息；
-- $`M`$：mask，禁止访问无效位置；
-- $`d_{h}`$：单个 attention head 的维度。
+**推理时的执行顺序是：先运行完 Gemma 的 18 层并保存所有层的 prefix K/V，再运行 action expert。** 图上的连线不要求两边交替执行。这个顺序成立，是因为 prefix 的 attention 不读取动作 token，见 4.4。
 
-所以，action expert 在**每一层**都能读取视觉与语言条件，也能协调动作块内不同未来时刻的动作。
+#### 4.3.3 Gemma 怎样得到每一层的缓存
 
-两分支宽度不同没有问题，因为各自的 Q/K/V 投影会映射到兼容的 attention head 空间。固定代码使用 8 个 query heads、1 个 KV head、head dimension 256；两分支均为 18 层。参数与公式以 [gemma.py](https://github.com/Physical-Intelligence/openpi/blob/215abfb217dbac7d5f1273282331b9b1866c0479/src/openpi/models/gemma.py) 为准。
+“图像与 instruction 变成一串 tensor，Gemma 每一层产生并保存 K/V”这个理解是对的；需要补上：**Gemma 本身还计算 Q、attention 和 FFN，才能得到下一层的输入。**
 
-这也解释了“expert”的含义：这里是**按 token 模态使用不同权重的动作专用 Transformer 分支**，没有必要想象成先由 router 从很多机器人技能中选择一个专家。
+忽略 batch，设 prefix 有 $`L_{P}`$ 个 token，初始表示为 $`P^{(0)}\in\mathbb{R}^{L_{P}\times2048}`$。第 $`r`$ 层的过程是：
+
+1. 对上一层的表示 $`P^{(r-1)}`$ 做归一化，得到该层 attention 的输入。
+2. 使用该层自己的投影权重计算 $`Q_{P}^{(r)},K_{P}^{(r)},V_{P}^{(r)}`$；Q/K 还要加入 RoPE 位置信息。
+3. Prefix 的 Q 读取 prefix 的 K/V，经过 attention 输出投影、残差、FFN 等运算，得到 $`P^{(r)}`$，交给下一层。
+4. 推理时保存本层供 expert 使用的 $`K_{P}^{(r)},V_{P}^{(r)}`$；K 保存的是应用 RoPE 后的结果。
+
+因此缓存在概念上是：
+
+```text
+prefix_cache[1]  = (Gemma 第 1 层的 K,  Gemma 第 1 层的 V)
+prefix_cache[2]  = (Gemma 第 2 层的 K,  Gemma 第 2 层的 V)
+...
+prefix_cache[18] = (Gemma 第 18 层的 K, Gemma 第 18 层的 V)
+```
+
+这里为了方便阅读从 1 开始编号；实际代码将层维度堆叠在缓存张量中。**缓存里保留的是每个 prefix token 的 K/V 向量，不是把整个图像和指令压成一个向量。** 各层的表示也不同，所以 expert 不能把最后一层的 K/V 复制给所有层使用。
+
+还要区分两类东西：$`W_{K},W_{V}`$ 是训练得到、推理时固定的模型参数；$`K,V`$ 是当前图像与文字经过这些参数计算出的中间张量。更换观测或指令，就需要重新计算 prefix cache。Gemma 的 Q 用来完成它自己的前向计算；expert 读缓存时使用自己的 Q，因此无须复用 prefix 的 Q。
+
+#### 4.3.4 Action expert 自己也计算 Q/K/V
+
+以本项目 $`H=10,D=32`$ 为例，省略 batch，某个生成时间的动作块为 $`X_{t}\in\mathbb{R}^{10\times32}`$。第一次采样时它是高斯噪声，后续积分步则是逐渐改进的动作样本。`action_in_proj` 把它变成 $`Z^{(0)}\in\mathbb{R}^{10\times1024}`$，这就是 expert 第 1 层的输入。
+
+在 expert 第 $`r`$ 层，上一层的动作表示 $`Z^{(r-1)}`$ 先经过由生成时间调制的归一化，再由**expert 这一层自己的参数**投影成 $`Q_{A}^{(r)},K_{A}^{(r)},V_{A}^{(r)}`$。随后取出 Gemma 对应层的缓存，组成 attention 的输入：
+
+```math
+Q=Q_{A}^{(r)},\qquad
+K=[K_{P}^{(r)};K_{A}^{(r)}],\qquad
+V=[V_{P}^{(r)};V_{A}^{(r)}].
+```
+
+分号表示**沿 token 位置维度拼接**。每个动作 token 的 Q 都可以查询图像、文字 token，也可以查询同一个动作块内的动作 token，包括自身。省略 batch、多个 head 和位置编码细节，该层动作 attention 为：
+
+```math
+\mathrm{Attn}_{A}^{(r)}
+=\mathrm{softmax}\left(
+\frac{Q_{A}^{(r)}[K_{P}^{(r)};K_{A}^{(r)}]^{\top}}{\sqrt{d_{h}}}+M
+\right)[V_{P}^{(r)};V_{A}^{(r)}].
+```
+
+可以把 Q 理解为“当前动作位置需要什么信息”，K 用来计算匹配程度，V 提供实际被加权读取的信息。$`M`$ 是加性 mask：允许的位置为 0，禁止的位置在数学上为负无穷；$`d_{h}=256`$ 是每个 attention head 的维度。公式输出还要经过 expert 自己的 attention 输出投影、残差连接、FFN 等运算，才成为下一层的动作表示 $`Z^{(r)}`$：
+
+```text
+上一层的动作表示 Z^(r-1)                  [H, 1024]
+    ↓ 时间条件归一化，expert 自己的 Q/K/V 投影
+动作 Q 读取：该层 prefix K/V + 当前动作 K/V
+    ↓ attention 输出投影 + 门控残差
+    ↓ 时间条件归一化 + FFN + 门控残差
+这一层的动作表示 Z^(r)                    [H, 1024]
+```
+
+**2048 和 1024 的隐藏宽度不同，仍然可以做 attention**，因为两边都投影到兼容的 head 空间。保留 batch 时，实际形状是：
+
+| 张量 | Prefix 分支 | Action expert 分支 |
+|---|---|---|
+| 层输入 | `[B, L_P, 2048]` | `[B, H, 1024]` |
+| Q | `[B, L_P, 8, 256]` | `[B, H, 8, 256]` |
+| K 和 V，各自 | `[B, L_P, 1, 256]` | `[B, H, 1, 256]` |
+
+拼接后的 K 和 V 各为 `[B, L_P + H, 1, 256]`，8 个 query heads 共享这 1 个 KV head。Action attention 得到 `[B, H, 8, 256]` 的结果，再由 expert 的输出投影变回 `[B, H, 1024]`。可以沿着 [Attention](https://github.com/Physical-Intelligence/openpi/blob/215abfb217dbac7d5f1273282331b9b1866c0479/src/openpi/models/gemma.py#L158) 中的投影、拼接和输出投影逐项核对。
+
+经过 18 层和最终归一化，再通过 `action_out_proj`，得到 `[B, H, 32]` 的**速度场预测**。它会用于更新当前动作样本，见下一小节。
+
+#### 4.3.5 推理时，哪些只算一次，哪些反复计算
+
+对一次固定观测下的动作块生成，代码先计算 prefix cache；随后每个积分步都重新把当前 $`X_{t}`$ 投影成动作 token，从 expert 第 1 层完整运行到第 18 层，并使用当前生成时间的归一化条件。下面是教学伪代码，函数名用于表达流程，省略了 batch、mask 和位置编码：
+
+```python
+# observation 中的图像与指令固定；state 是否进入 prefix 取决于配置。
+prefix_tokens = encode_observation(observation)
+prefix_cache = run_gemma_and_cache_all_layers(prefix_tokens)  # 18 层，只运行一次
+
+H, D = 10, 32     # 动作块长度与内部动作维度
+N = 10           # ODE 积分步数
+x = randn(H, D)  # t = 1，从高斯噪声开始
+dt = -1.0 / N
+for n in range(N):
+    t = 1.0 - n / N
+    # 内含动作输入投影、完整的 18 层 expert、最终归一化和动作输出投影。
+    velocity = run_action_expert(x, t, prefix_cache)
+    x = x + dt * velocity
+
+normalized_action_chunk = x  # t = 0；还需反归一化等输出变换
+```
+
+这里有两套完全不同的编号：**网络层号**从 1 到 18；**积分步号**从 0 到 $`N-1`$。每一个积分步都会走完 expert 的全部 18 层，而每层读取的始终是 Gemma 对应层的 prefix K/V。$`H`$ 是一次生成多少条动作，$`N`$ 是把整个动作块更新多少次；例子里都取 10，只是数值相同。
+
+因为 $`X_{t}`$ 和 $`t`$ 每步改变，expert 自己各层的动作 Q/K/V 也要重新计算；同一次生成中的 prefix K/V 则可以反复使用。它不会把上一个积分步的动作 K/V 当成历史 token 追加进去。机器人执行动作、拿到新观测后，下一次生成会重新建立 prefix cache。实际实现见 [sample_actions](https://github.com/Physical-Intelligence/openpi/blob/215abfb217dbac7d5f1273282331b9b1866c0479/src/openpi/models/pi0.py#L217)。
+
+上面的“先缓存，再重复读取”是**推理时的计算安排**。公开训练代码通常把 prefix 与动作 suffix 一起送入这套 Transformer，按相同的逐层 attention 关系计算损失。两条分支参数各自独立，以及推理时使用缓存，都不等于训练时冻结 Gemma；哪些参数接收梯度，要结合训练配置和第 9.3 节的 knowledge insulation 来看。
 
 ### 4.4 Attention mask 决定信息流
 
