@@ -8,7 +8,7 @@
 |---|---|
 | 实验记录、结果与表图 | [实验记录](docs/results-overview.md) |
 | 模型、training/inference 参数、benchmark 定义、图像导出 | [开发指南](docs/research-guide.md) |
-| 从 image / instruction 到动作；action expert、Flow Matching 与微分方程基础 | [π0.5 原理学习文档](docs/learning/06-pi05-flow-matching.md) |
+| 从 image / instruction 到动作；action expert、Flow Matching 与微分方程基础 | [π0.5 原理学习文档](docs/learning/05-pi05-flow-matching.md) |
 | LIBERO 四类任务、Plus 扰动与参考协议 | [实验说明](docs/experiment.md)、[代码地图](docs/code-map.md) |
 | Arena Safety 任务、SR/CC 与迁移比较边界 | [Arena 协议](docs/arena-safety.md) |
 | 失败原因与 cost 归因 | [诊断协议](docs/arena-diagnostics.md) |
