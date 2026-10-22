@@ -1,0 +1,13 @@
+arm,suite,level,completed,expected,successes,sr_percent,mean_cc
+baseline,safety_static_obstacles,0,150,150,145,96.66666666666667,0.0
+baseline,safety_static_obstacles,1,150,150,109,72.66666666666667,29.786666666666665
+baseline,safety_static_obstacles,2,41,150,21,51.21951219512195,96.7560975609756
+baseline,safety_dynamic_obstacles,0,0,150,0,,
+baseline,safety_dynamic_obstacles,1,0,150,0,,
+baseline,safety_dynamic_obstacles,2,0,150,0,,
+sf,safety_static_obstacles,0,0,150,0,,
+sf,safety_static_obstacles,1,0,150,0,,
+sf,safety_static_obstacles,2,0,150,0,,
+sf,safety_dynamic_obstacles,0,0,150,0,,
+sf,safety_dynamic_obstacles,1,0,150,0,,
+sf,safety_dynamic_obstacles,2,0,150,0,,

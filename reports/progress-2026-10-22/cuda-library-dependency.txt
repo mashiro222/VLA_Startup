@@ -1,0 +1,2 @@
+ 0x0000000000000001 (NEEDED)             Shared library: [libcusparseLt.so.0]
+ 0x000000000000000f (RPATH)              Library rpath: [$ORIGIN/../../nvidia/cublas/lib:$ORIGIN/../../nvidia/cuda_cupti/lib:$ORIGIN/../../nvidia/cuda_nvrtc/lib:$ORIGIN/../../nvidia/cuda_runtime/lib:$ORIGIN/../../nvidia/cudnn/lib:$ORIGIN/../../nvidia/cufft/lib:$ORIGIN/../../nvidia/curand/lib:$ORIGIN/../../nvidia/cusolver/lib:$ORIGIN/../../nvidia/cusparse/lib:$ORIGIN/../../cusparselt/lib:$ORIGIN/../../nvidia/nccl/lib:$ORIGIN/../../nvidia/nvtx/lib:$ORIGIN/../../nvidia/cufile/lib:$ORIGIN]

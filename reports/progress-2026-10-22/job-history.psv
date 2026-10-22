@@ -1,0 +1,42 @@
+JobID|JobName|Account|Partition|State|ExitCode|Elapsed|Start|End|AllocTRES
+13965730|pi05-smoke-clean-001|gts-jli741-paid|gpu-a100|COMPLETED|0:0|00:13:02|2026-10-11T19:49:59|2026-10-11T20:03:01|billing=10261,cpu=8,gres/gpu:a100=1,gres/gpu=1,mem=64G,node=1
+13966505|pi05-smoke-plus-001|gts-jli741-paid|gpu-a100,gpu-a100|CANCELLED by 3571051|0:0|00:00:00|None|2026-10-11T20:52:49|
+13966508|pi05-smoke-plus-001|gts-jli741-paid|gpu-a100,gpu-a100|CANCELLED by 3571051|0:0|00:00:00|None|2026-10-11T20:47:53|
+13966714|pi05-smoke-plus-001|gts-jli741-paid|gpu-a100|COMPLETED|0:0|00:14:32|2026-10-11T21:07:39|2026-10-11T21:22:11|billing=10261,cpu=8,gres/gpu:a100=1,gres/gpu=1,mem=64G,node=1
+13967217_0|pi05-fullplus-4gpu-001|gts-jli741-paid|gpu-a100|COMPLETED|0:0|14:07:09|2026-10-12T08:45:50|2026-10-12T22:52:59|billing=10261,cpu=8,gres/gpu:a100=1,gres/gpu=1,mem=64G,node=1
+13967217_1|pi05-fullplus-4gpu-001|gts-jli741-paid|gpu-a100|COMPLETED|0:0|14:20:26|2026-10-12T08:45:50|2026-10-12T23:06:16|billing=10261,cpu=8,gres/gpu:a100=1,gres/gpu=1,mem=64G,node=1
+13967217_2|pi05-fullplus-4gpu-001|gts-jli741-paid|gpu-a100|COMPLETED|0:0|13:35:11|2026-10-12T08:51:37|2026-10-12T22:26:48|billing=10261,cpu=8,gres/gpu:a100=1,gres/gpu=1,mem=64G,node=1
+13967217_3|pi05-fullplus-4gpu-001|gts-jli741-paid|gpu-a100|COMPLETED|0:0|13:52:33|2026-10-12T08:51:37|2026-10-12T22:44:10|billing=10261,cpu=8,gres/gpu:a100=1,gres/gpu=1,mem=64G,node=1
+13974531_0|pi05-fullclean-4gpu-001|gts-jli741-paid|gpu-h100|COMPLETED|0:0|00:57:55|2026-10-12T08:55:13|2026-10-12T09:53:08|billing=24940,cpu=8,gres/gpu:h100=1,gres/gpu=1,mem=64G,node=1
+13974531_1|pi05-fullclean-4gpu-001|gts-jli741-paid|gpu-h100|COMPLETED|0:0|01:11:33|2026-10-12T09:53:25|2026-10-12T11:04:58|billing=24940,cpu=8,gres/gpu:h100=1,gres/gpu=1,mem=64G,node=1
+13974531_2|pi05-fullclean-4gpu-001|gts-jli741-paid|gpu-h100|FAILED|1:0|00:15:07|2026-10-12T16:09:56|2026-10-12T16:25:03|billing=24940,cpu=8,gres/gpu:h100=1,gres/gpu=1,mem=64G,node=1
+13974531_3|pi05-fullclean-4gpu-001|gts-jli741-paid|gpu-h100|COMPLETED|0:0|01:15:17|2026-10-12T16:25:10|2026-10-12T17:40:27|billing=24940,cpu=8,gres/gpu:h100=1,gres/gpu=1,mem=64G,node=1
+13988230_2|pi05-fullclean-4gpu-001|gts-jli741-paid|gpu-h100|FAILED|1:0|00:15:08|2026-10-15T08:26:46|2026-10-15T08:41:54|billing=35160,cpu=8,gres/gpu:h100=1,gres/gpu=1,mem=64G,node=1
+14016239_0|pi05-arena-smoke-001|gts-jli741-paid|gpu-a100|FAILED|1:0|00:15:52|2026-10-14T01:10:10|2026-10-14T01:26:02|billing=18587,cpu=8,gres/gpu:a100=1,gres/gpu=1,mem=64G,node=1
+14020266_0|pi05-arena-full-001|gts-jli741-paid|gpu-a100|FAILED|1:0|00:15:27|2026-10-14T02:22:29|2026-10-14T02:37:56|billing=18587,cpu=8,gres/gpu:a100=1,gres/gpu=1,mem=64G,node=1
+14020266_1|pi05-arena-full-001|gts-jli741-paid|gpu-a100|FAILED|1:0|00:10:06|2026-10-14T02:27:50|2026-10-14T02:37:56|billing=18587,cpu=8,gres/gpu:a100=1,gres/gpu=1,mem=64G,node=1
+14020266_2|pi05-arena-full-001|gts-jli741-paid|gpu-a100|FAILED|1:0|00:13:16|2026-10-14T02:32:31|2026-10-14T02:45:47|billing=18587,cpu=8,gres/gpu:a100=1,gres/gpu=1,mem=64G,node=1
+14020266_3|pi05-arena-full-001|gts-jli741-paid|gpu-a100|FAILED|1:0|00:13:16|2026-10-14T02:32:31|2026-10-14T02:45:47|billing=18587,cpu=8,gres/gpu:a100=1,gres/gpu=1,mem=64G,node=1
+14074038_0|pi05-arena-smoke-002|gts-jli741-paid|gpu-a100|COMPLETED|0:0|00:21:21|2026-10-15T16:36:46|2026-10-15T16:58:07|billing=18587,cpu=8,gres/gpu:a100=1,gres/gpu=1,mem=64G,node=1
+14126130_0|pi05-arena-smoke-003|gts-jli741-paid|gpu-a100|COMPLETED|0:0|00:17:16|2026-10-17T00:02:25|2026-10-17T00:19:41|billing=18587,cpu=8,gres/gpu:a100=1,gres/gpu=1,mem=64G,node=1
+14127618|sf-arena-sf-train-smoke-001-smoke|gts-jli741-paid|gpu-a100|COMPLETED|0:0|00:17:53|2026-10-17T12:32:40|2026-10-17T12:50:33|billing=37174,cpu=16,gres/gpu:a100=2,gres/gpu=2,mem=96G,node=1
+14127636|sf-arena-sf-train-full-001-baseline|gts-jli741-paid|gpu-a100|CANCELLED by 3571051|0:0|06:41:12|2026-10-17T12:50:37|2026-10-17T19:31:49|billing=37174,cpu=16,gres/gpu:a100=2,gres/gpu=2,mem=96G,node=1
+14127637|sf-arena-sf-train-full-001-sf|gts-jli741-paid|gpu-a100|CANCELLED by 3571051|0:0|04:26:16|2026-10-17T15:05:33|2026-10-17T19:31:49|billing=37174,cpu=16,gres/gpu:a100=2,gres/gpu=2,mem=96G,node=1
+14143493_0|pi05-arena-balanced1500-001|gts-jli741-paid|gpu-a100|COMPLETED|0:0|01:22:11|2026-10-17T20:34:42|2026-10-17T21:56:53|billing=18587,cpu=8,gres/gpu:a100=1,gres/gpu=1,mem=64G,node=1
+14143493_1|pi05-arena-balanced1500-001|gts-jli741-paid|gpu-a100|COMPLETED|0:0|01:21:39|2026-10-17T20:36:18|2026-10-17T21:57:57|billing=18587,cpu=8,gres/gpu:a100=1,gres/gpu=1,mem=64G,node=1
+14143493_2|pi05-arena-balanced1500-001|gts-jli741-paid|gpu-a100|COMPLETED|0:0|01:20:35|2026-10-17T20:36:18|2026-10-17T21:56:53|billing=18587,cpu=8,gres/gpu:a100=1,gres/gpu=1,mem=64G,node=1
+14143493_3|pi05-arena-balanced1500-001|gts-jli741-paid|gpu-a100|COMPLETED|0:0|01:23:18|2026-10-17T20:37:22|2026-10-17T22:00:40|billing=18587,cpu=8,gres/gpu:a100=1,gres/gpu=1,mem=64G,node=1
+14143587|sf-arena-sf-train-full-002-baseline|gts-jli741-paid|gpu-a100|COMPLETED|0:0|23:52:47|2026-10-18T20:07:39|2026-10-19T20:00:26|billing=37174,cpu=16,gres/gpu:a100=2,gres/gpu=2,mem=96G,node=1
+14143602|sf-arena-sf-train-full-002-sf|gts-jli741-paid|gpu-a100|FAILED|1:0|17:32:07|2026-10-19T20:00:29|2026-10-20T13:32:36|billing=37174,cpu=16,gres/gpu:a100=2,gres/gpu=2,mem=96G,node=1
+14171051|sf-mb2-calibration|gts-jli741-paid|gpu-a100|TIMEOUT|0:0|01:00:31|2026-10-18T23:51:05|2026-10-19T00:51:36|billing=37174,cpu=16,gres/gpu:a100=2,gres/gpu=2,mem=96G,node=1
+14171052|sf-followup-watch|gts-jli741-paid|cpu-small|CANCELLED by 3571051|0:0|00:15:30|2026-10-18T23:26:59|2026-10-18T23:42:29|billing=304,cpu=1,mem=2G,node=1
+14171526|sf-followup-watch|gts-jli741-paid|cpu-small|CANCELLED|0:15|00:09:49|2026-10-18T23:47:19|2026-10-18T23:57:08|billing=304,cpu=1,mem=2G,node=1
+14179857|sf-mb2-only|gts-jli741-paid|gpu-a100|COMPLETED|0:0|00:59:46|2026-10-20T02:15:23|2026-10-20T03:15:09|billing=37174,cpu=16,gres/gpu:a100=2,gres/gpu=2,mem=96G,node=1
+14199187|sf-24h-eval-baseline|gts-jli741-paid|gpu-a100|FAILED|1:0|02:54:47|2026-10-21T02:52:49|2026-10-21T05:47:36|billing=18587,cpu=8,gres/gpu:a100=1,gres/gpu=1,mem=96G,node=1
+14217601|sf-24h-continue-baseline|gts-jli741-paid|gpu-a100,gpu-a100|PENDING|0:0|00:00:00|Unknown|Unknown|
+14229255|sf-3000-restore-audit|gts-jli741-paid|cpu-medium|TIMEOUT|0:0|00:30:19|2026-10-20T16:18:54|2026-10-20T16:49:13|billing=734,cpu=2,mem=24G,node=1
+14229813|sf-3000-restore-local|gts-jli741-paid|cpu-medium|CANCELLED by 3571051|0:0|00:00:00|None|2026-10-20T16:56:47|
+14229891|sf-3000-restore-staged|gts-jli741-paid|cpu-medium|COMPLETED|0:0|00:02:31|2026-10-20T16:56:51|2026-10-20T16:59:22|billing=734,cpu=2,mem=24G,node=1
+14230443|sf-recover-3000-continue|gts-jli741-paid|gpu-a100,gpu-a100|PENDING|0:0|00:00:00|Unknown|Unknown|
+14230444|sf-recover-3000-eval|gts-jli741-paid|gpu-a100|FAILED|1:0|00:02:03|2026-10-22T08:25:20|2026-10-22T08:27:23|billing=18587,cpu=8,gres/gpu:a100=1,gres/gpu=1,mem=96G,node=1
+14252522|baseline-5952-eval-resume|gts-jli741-paid|gpu-a100,gpu-a100|PENDING|0:0|00:00:00|Unknown|Unknown|

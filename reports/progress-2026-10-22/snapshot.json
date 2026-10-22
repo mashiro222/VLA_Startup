@@ -1,0 +1,94 @@
+{
+  "observed_at": "2026-10-22T10:20:12.663474-04:00",
+  "timezone": "America/New_York",
+  "training": [
+    {
+      "arm": "baseline",
+      "last_logged_step": 5952,
+      "last_checkpoint_step": 5952,
+      "last_logged_flow_mse": 0.009483825415372849,
+      "last_logged_alignment": 0.0,
+      "last100_flow_mse_median": 0.009244032204151154,
+      "last100_alignment_median": 0.0,
+      "checkpoint_step_flow_mse": 0.009483825415372849,
+      "checkpoint_step_alignment": 0.0,
+      "peak_allocated_gib": 16.792283058166504,
+      "finite_loss_and_gradients": true,
+      "world": 2,
+      "micro_batch": 1,
+      "accumulation": 16,
+      "global_batch": 32,
+      "gpu": "NVIDIA A100-PCIE-40GB"
+    },
+    {
+      "arm": "sf",
+      "last_logged_step": 3460,
+      "last_checkpoint_step": 3000,
+      "last_logged_flow_mse": 0.01410435326397419,
+      "last_logged_alignment": 0.039294637739658356,
+      "last100_flow_mse_median": 0.013087682891637087,
+      "last100_alignment_median": 0.03787609934806824,
+      "checkpoint_step_flow_mse": 0.01600860431790352,
+      "checkpoint_step_alignment": 0.039997078478336334,
+      "peak_allocated_gib": 20.372146606445312,
+      "finite_loss_and_gradients": true,
+      "world": 2,
+      "micro_batch": 1,
+      "accumulation": 16,
+      "global_batch": 32,
+      "gpu": "NVIDIA A100-PCIE-40GB"
+    }
+  ],
+  "evaluations": [
+    {
+      "arm": "baseline",
+      "checkpoint_step": 5952,
+      "run": "arena-after24h-20261019-001-baseline-eval",
+      "expected": 900,
+      "completed": 341,
+      "successes": 275,
+      "sr_percent": 80.64516129032258,
+      "mean_cc": 24.73607038123167,
+      "complete": false,
+      "plan_sha256": "573feeeb1bbee8834aa4568621a3cb853f87886eb983b37e3a310a21157db86e"
+    },
+    {
+      "arm": "sf",
+      "checkpoint_step": 3000,
+      "run": "arena-sf-recovery-20261020-001-sf-eval900",
+      "expected": 900,
+      "completed": 0,
+      "successes": 0,
+      "sr_percent": null,
+      "mean_cc": null,
+      "complete": false,
+      "plan_sha256": "c40f4cbe2c0a42a4de0d8558d55244eb21bdd636c38f5dd73a7be8b813eecaa6"
+    }
+  ],
+  "baseline_cost_attribution": [
+    {
+      "category": "fall",
+      "total_cc": 680.0,
+      "mean_cc": 1.9941348973607038,
+      "percent_total_cc": 8.061647895672792
+    },
+    {
+      "category": "gripper_contact",
+      "total_cc": 2476.0,
+      "mean_cc": 7.26099706744868,
+      "percent_total_cc": 29.35388263189093
+    },
+    {
+      "category": "object_contact",
+      "total_cc": 5279.0,
+      "mean_cc": 15.480938416422287,
+      "percent_total_cc": 62.584469472436275
+    }
+  ],
+  "caveats": [
+    "Baseline evaluation is incomplete and covers only Static obstacles.",
+    "SF has no scored episodes: SR and CC are null, not zero.",
+    "SF updates 3001-3460 are logged but not retained in its last checkpoint.",
+    "Loss curves cannot establish a safety improvement or replace an equal-step SR/CC comparison."
+  ]
+}

@@ -1,0 +1,12 @@
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/storage/scratch1/1/gliu386/VLA_Startup/src/sf_followup/evaluation.py", line 354, in <module>
+    elif a.command == 'server': server(a.run, a.port)
+                                ^^^^^^^^^^^^^^^^^^^^^
+  File "/storage/scratch1/1/gliu386/VLA_Startup/src/sf_followup/evaluation.py", line 136, in server
+    import torch
+  File "/tmp/vla-recovery-eval-3571051-14230444/site/torch/__init__.py", line 409, in <module>
+    from torch._C import *  # noqa: F403
+    ^^^^^^^^^^^^^^^^^^^^^^
+ImportError: libcusparseLt.so.0: cannot open shared object file: No such file or directory

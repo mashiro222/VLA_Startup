@@ -1,0 +1,3 @@
+arm,last_logged_step,last_checkpoint_step,last_logged_flow_mse,last_logged_alignment,last100_flow_mse_median,last100_alignment_median,checkpoint_step_flow_mse,checkpoint_step_alignment,peak_allocated_gib,finite_loss_and_gradients,world,micro_batch,accumulation,global_batch,gpu
+baseline,5952,5952,0.009483825415372849,0.0,0.009244032204151154,0.0,0.009483825415372849,0.0,16.792283058166504,True,2,1,16,32,NVIDIA A100-PCIE-40GB
+sf,3460,3000,0.01410435326397419,0.039294637739658356,0.013087682891637087,0.03787609934806824,0.01600860431790352,0.039997078478336334,20.372146606445312,True,2,1,16,32,NVIDIA A100-PCIE-40GB

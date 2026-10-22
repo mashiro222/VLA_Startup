@@ -1,0 +1,20 @@
+{
+  "runs/arena-after24h-20261019-001-baseline-eval/plan.json": "9614f7c839622c783145e7969f9150cce6f4514c0681841ddfde6528feb03318",
+  "runs/arena-after24h-20261019-001-baseline-eval/units/safety_static_obstacles-L0-t0-s7/episodes.jsonl": "9a23fb495c2f2331873e0f4d38f4b2a87d084144ca24893af2d83220ce7665c1",
+  "runs/arena-after24h-20261019-001-baseline-eval/units/safety_static_obstacles-L0-t1-s7/episodes.jsonl": "40c9402688c985894629212f13564111571d540c2243ab2fd026546ccb772655",
+  "runs/arena-after24h-20261019-001-baseline-eval/units/safety_static_obstacles-L0-t2-s7/episodes.jsonl": "3e11e47d15450e3385b50d926cf58bf72f799c2530646fb857647cb38c5f4bb6",
+  "runs/arena-after24h-20261019-001-baseline-eval/units/safety_static_obstacles-L0-t3-s7/episodes.jsonl": "4d3641ef4aec87e00dd12fd5099c4f4a9ee2d6bd083d89341b72a19d2b01d347",
+  "runs/arena-after24h-20261019-001-baseline-eval/units/safety_static_obstacles-L0-t4-s7/episodes.jsonl": "209746da5d2b90c162d3cfb95f700dc7f0504864377e8bd6c521e20626b0f0ca",
+  "runs/arena-after24h-20261019-001-baseline-eval/units/safety_static_obstacles-L1-t0-s7/episodes.jsonl": "acdb6aeb40b1072d32b290cba9ea783af9b46b48b174dd900ecef6e9bf358e60",
+  "runs/arena-after24h-20261019-001-baseline-eval/units/safety_static_obstacles-L1-t1-s7/episodes.jsonl": "0c444f7e5b0c097898f6394aa6e85c5f314f7d604bfffd47670000214380293b",
+  "runs/arena-after24h-20261019-001-baseline-eval/units/safety_static_obstacles-L1-t2-s7/episodes.jsonl": "06c52e13586a41d99cdb2760774ec714edacb02b88a50a55f34f579c0eca997f",
+  "runs/arena-after24h-20261019-001-baseline-eval/units/safety_static_obstacles-L1-t3-s7/episodes.jsonl": "0557137a9a927ae0dbe0bd34a315a0a047e25b440c660718621e05cc8469c049",
+  "runs/arena-after24h-20261019-001-baseline-eval/units/safety_static_obstacles-L1-t4-s7/episodes.jsonl": "c4c7ad682688c9cfbf48323f5519dbd7ab89c8bfbf69cb0ec372b22e65de6783",
+  "runs/arena-after24h-20261019-001-baseline-eval/units/safety_static_obstacles-L2-t0-s7/episodes.jsonl": "1c866f7b2f76921a067bda795d6235de8ac7e8d0a9618143e94cb04c1e3753c0",
+  "runs/arena-after24h-20261019-001-baseline-eval/units/safety_static_obstacles-L2-t1-s7/episodes.jsonl": "9b5662d1ec17f3ae53648edbc6d0c53e2cd286bfd697dc458bd33aecfdfbfd0a",
+  "runs/arena-sf-recovery-20261020-001-sf-eval900/plan.json": "aedbb5aec274dbe2f6f30b9c69ba4b91300a8bef3ca8767a12dacb02799106a9",
+  "runs/arena-sf-train-full-002/baseline/metrics.jsonl": "9e62598de53c46432707358f96bfb88f12b8511201d9c146242ffd746aeaf71a",
+  "runs/arena-sf-train-full-002/baseline/runtime.json": "c12ca477f358c8f810eb03c6e9d88f7ed544792f6e3473e364ac1a2892a88016",
+  "runs/arena-sf-train-full-002/sf/metrics.jsonl": "bcde663688c7b2fca8f36c3682b303766fdadd22d7a35ff3ef0d4e3ded39501e",
+  "runs/arena-sf-train-full-002/sf/runtime.json": "1fc19e699b05baad9a47133fd0cbb5ef84b62918a3b06fbf93720b42b57b5202"
+}

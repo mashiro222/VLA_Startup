@@ -7,7 +7,11 @@
 | LIBERO-Plus | 10,030 / 10,030 episodes | SR **84.52%** |
 | LIBERO clean | 1,500 / 2,000 episodes | 已完成部分 SR **96.40%**；停止补跑缺失分片 |
 | Arena Safety balanced1500 | 1,500 / 1,500 episodes | SR **11.47%**，平均 CC **60.24** |
-| Arena LoRA / LoRA+SF | 两组各 900 episodes；四卡续训；保留两组 18k 权重 | baseline 5,952 步评测与续训排队；SF 同步超时后从 3,000 步恢复，续训与评测已提交 |
+| Arena LoRA baseline，5,952 步 | **341 / 900 episodes，仅 Static** | 部分结果 SR **80.65%**，平均 CC **24.74**；其余 559 条补跑排队 |
+| Arena LoRA+SF，3,000 步 | **0 / 900 episodes** | 10/22 策略服务导入 CUDA 运行库失败；SR / CC **未测得** |
+| Arena 四卡续训 | baseline 5,952 → 20,952；SF 3,000 → 18,000 | 两组仍排队，尚无新增训练步数；18k 等步数对照尚未形成 |
+
+**最新检查：2026-10-22 10:20 EDT。** SF 评测已启动并失败，不能再记为排队；运行库复制遗漏 `cusparselt` 的问题尚未修复，SF 续训与 baseline 补跑复用该路径，也存在同类启动风险。当前未获得 SF 的有效评测分数，不能判断其相对 baseline 的 SR / CC 改善。[最新结果、训练曲线与故障详情](#2026-10-22最新结果与-sf-评测启动故障) · [机器可读快照与表图](../reports/progress-2026-10-22/README.md)。
 
 ## 2026-10-11：LIBERO 环境与 smoke
 
@@ -178,6 +182,48 @@ Baseline 四卡续训 **14217601**、SF 四卡续训 **14230443**、SF 900 条�
 **提交：** 补跑作业 **14252522** 已提交至 `gts-jli741-paid`，申请 **1 张 A100、24 小时时限**，初始状态 `PENDING (Priority)`。完成后在原 baseline 报告目录汇总全部 900 条。
 
 [故障、测试与提交证据](../reports/baseline-eval-resume-2026-10-21/README.md) · [恢复机制与操作说明](run/baseline-eval-resume-2026-10-21.md)
+
+## 2026-10-22：最新结果与 SF 评测启动故障
+
+### 训练结果
+
+| 训练条件 | 最后日志步数 | 最后保存 checkpoint | 最近 100 步 FM MSE 中位数 | 最近 100 步 alignment 中位数 | 状态 |
+|---|---:|---:|---:|---:|---|
+| `pi05_base` + Arena LoRA | 5,952 | **5,952** | 0.00924 | 不适用 | 首段正常结束；四卡续训排队 |
+| `pi05_base` + Arena LoRA + SF | 3,460 | **3,000** | 0.01309 | 0.03788 | 首段 NCCL 超时；3,001–3,460 步未保存；四卡续训排队 |
+
+两组原始训练均为 2 张 A100 40 GB、每卡 micro-batch 1、梯度累积 16、global batch 32。已记录 loss 和梯度均有限；这仅说明故障前的数值状态，不能证明训练收敛或安全性改善。两组四卡续训仍无新日志或 checkpoint。[完整训练数据](../reports/progress-2026-10-22/training-summary.csv) · [训练曲线](../reports/progress-2026-10-22/training-curves.png)。
+
+### Baseline 部分评测
+
+5,952 步 checkpoint 已完成 **341/900**，成功 **275**，SR **80.65%**，平均 CC **24.74**。剩余 **559 条**包含 Static 109 条和 Dynamic 450 条；已完成结果不会重复评测。
+
+| Suite / 难度 | 完成 / 计划 | 成功 | SR | 平均 CC |
+|---|---:|---:|---:|---:|
+| Static L0 | 150 / 150 | 145 | 96.67% | 0.00 |
+| Static L1 | 150 / 150 | 109 | 72.67% | 29.79 |
+| Static L2 | **41 / 150** | 21 | 51.22% | 96.76 |
+| Dynamic L0 / L1 / L2 | **0 / 450** | — | 未测得 | 未测得 |
+
+当前 341 条是按任务顺序运行所得的非均衡子集，不能代表完整 Static、完整 900 条或五个 Safety suite 的总分，也不能直接与 `pi05_libero` 的五-suite 1,500 条总分相减来量化提升。
+
+**失败与 cost：** 66 条失败均达到 300 步上限；这是停止条件，尚不能据此区分抓取、规划等物理原因。341 条均具有诊断记录，逐谓词 CC 总和与 episode 总分一致。物体接触 `incontact` 累计 CC **5,279**、夹爪接触 **2,476**、`fall` 谓词 **680**，合计 **8,435**；按全部 341 条平均，贡献分别为 **15.48 / 7.26 / 1.99**。这些数值是 benchmark cost，不是独立碰撞次数。51 条成功 episode 仍有正 cost，22 条失败 episode 为零 cost。
+
+[部分结果图](../reports/progress-2026-10-22/baseline-partial.png) · [逐 episode 表](../reports/progress-2026-10-22/baseline-partial-episodes.csv) · [终止原因](../reports/progress-2026-10-22/baseline-termination.csv) · [cost 归因图](../reports/progress-2026-10-22/baseline-cost-attribution.png) · [逐谓词明细](../reports/progress-2026-10-22/baseline-cost-components.csv)
+
+### SF 评测启动故障与未完成事项
+
+SF 3,000 步评测 **14230444** 于 **08:25:20 EDT** 启动，**08:27:23** 失败，退出码 `1:0`，运行 **2 分 3 秒**。策略服务在 `import torch` 时报告 `ImportError: libcusparseLt.so.0: cannot open shared object file`，尚未加载 checkpoint、执行策略推理或启动 rollout。因此有效 episode 为 **0/900**，SR 和 CC 均为**未测得，不记为 0**。这次失败不构成 SF 模型性能或 checkpoint 损坏的证据。
+
+**原因与影响范围：** 节点本地运行库复制仅覆盖 `torch/` 和 `nvidia/`，遗漏位于同级 `cusparselt/lib/` 的 CUDA 动态库；源环境中该库存在，`libtorch_cuda.so` 也明确依赖它。SF 续训 **14230443** 和 baseline 补跑 **14252522** 复用这一复制逻辑，存在相同启动风险，尚未实际验证。Baseline 续训 **14217601** 使用另一条启动路径，不因这一证据判定为同类故障。当前复制问题**未修复**，也未取消、更换或重新提交现有作业。
+
+截至本次快照，baseline 四卡续训 **14217601** 为 `PENDING (Resources)`；SF 四卡续训 **14230443** 和 baseline 剩余 559 条补跑 **14252522** 为 `PENDING (Priority)`。候选启动时间是可变估计，不是完成承诺。[队列快照](../reports/progress-2026-10-22/queue.txt) · [完整作业历史](../reports/progress-2026-10-22/job-history.psv) · [故障与依赖证据](run/progress-2026-10-22.md)
+
+**后续工作：** 补全节点本地 CUDA 运行库复制，增加实际目录结构及动态库加载检查，核对受影响的冻结清单，再执行 SF 评测恢复与 baseline 剩余评测。四卡跨节点训练尚未实际运行；两组 18,000 步等更新次数评测尚未产生。
+
+### 总结
+
+`pi05_libero` 已完成 LIBERO-Plus 和 Arena Safety 迁移评测；Arena LoRA baseline 已保存 5,952 步权重并产生部分 Static 评测结果。SF 已完成有限值训练记录和 3,000 步 checkpoint 的 CPU 恢复验证，但 GPU 评测被运行库遗漏阻断。当前结果支持继续分析跨 benchmark 的任务完成与安全 cost 差异，**尚不支持 SF 优于 baseline 或改善安全性的结论**。
 
 ## 阅读与证据索引
 

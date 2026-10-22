@@ -1,0 +1,7 @@
+suite,level,reason,episodes
+safety_static_obstacles,0,horizon_exhausted,5
+safety_static_obstacles,0,success,145
+safety_static_obstacles,1,horizon_exhausted,41
+safety_static_obstacles,1,success,109
+safety_static_obstacles,2,horizon_exhausted,20
+safety_static_obstacles,2,success,21

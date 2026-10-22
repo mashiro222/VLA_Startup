@@ -1,0 +1,35 @@
+---------------------------------------
+Begin Slurm Prolog: Oct-22-2026 08:25:22
+Job ID:    14230444
+User ID:   gliu386
+Account:   gts-jli741-paid
+Job name:  sf-recover-3000-eval
+Partition: gpu-a100
+QOS:       inferno
+---------------------------------------
+Recovery manifest verified
+Node-local PyTorch/CUDA runtime staged
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/storage/scratch1/1/gliu386/VLA_Startup/src/sf_recovery/evaluate.py", line 33, in <module>
+    a=p.parse_args();run(a.spec,a.local)
+                     ^^^^^^^^^^^^^^^^^^^
+  File "/storage/scratch1/1/gliu386/VLA_Startup/src/sf_recovery/evaluate.py", line 24, in run
+    evaluation.worker(Path(spec['evaluation']))
+  File "/storage/scratch1/1/gliu386/VLA_Startup/src/sf_followup/evaluation.py", line 229, in worker
+    if p.poll() is not None: raise RuntimeError('Policy startup failed; see server log')
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: Policy startup failed; see server log
+---------------------------------------
+Begin Slurm Epilog: Oct-22-2026 08:27:23
+Job ID:        14230444
+User ID:       gliu386
+Account:       gts-jli741-paid
+Job name:      sf-recover-3000-eval
+Resources:     cpu=8,gres/gpu:a100=1,mem=96G,node=1
+Rsrc Used:     cput=00:16:24,vmem=0,walltime=00:02:03,mem=8561768K,energy_used=0
+Partition:     gpu-a100
+QOS:           inferno
+Nodes:         atl1-1-01-002-16-0
+---------------------------------------
