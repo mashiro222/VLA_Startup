@@ -1,0 +1,46 @@
+schema: cbf-static-v1
+arena_commit: babe582ebffc82b979b77964a7e56417d02f63a4
+checkpoint: .runtime/checkpoints/pi05_vla_arena
+policy_config: pi05_vla_arena
+norm_stats: assets/VLA_Arena_L0_L_lerobot_openpi/VLA_Arena/norm_stats.json
+profiles:
+  calibration: {levels: [0], tasks: [0, 1, 2, 3, 4], conditions: [C0], init_states: 2, repeats: [0]}
+  smoke: {levels: [0, 1, 2], tasks: [0], conditions: [C0, C1, C2], init_states: 5, repeats: [0]}
+  main: {levels: [1, 2], tasks: [0, 1, 2, 3, 4], conditions: [C0, C1, C2], init_states: 50, repeats: [0, 1]}
+  sanity: {levels: [0], tasks: [0, 1, 2, 3, 4], conditions: [C0, C2], init_states: 50, repeats: [0, 1]}
+  gamma: {levels: [2], tasks: [0, 1, 2, 3, 4], conditions: [C1, C2], gammas: [0.1, 0.6], init_states: 50, repeats: [0, 1]}
+evaluation:
+  horizon: 300
+  num_steps: 10
+  replan_steps: 5
+  settle_steps: 10
+  render_size: 256
+  policy_size: 224
+  hz: 20
+  policy_timeout_seconds: 1800
+  episode_timeout_seconds: 3600
+  startup_timeout_seconds: 1800
+  video_first: 10
+filter:
+  gamma: 0.3
+  gripper_radius_m: 0.05
+  margin_m: 0.01
+  mvee_tolerance: 0.001
+  active_tolerance: 0.000001
+  qp_tolerance: 0.00000001
+  action_scale_m: 0.05
+  scale_source: controller_nominal_pending_empirical_calibration
+diagnostics:
+  window_seconds: 3
+  radius_m: 0.03
+  near_distance_m: 0.10
+  intervention_m: 0.005
+  intervention_fraction: 0.5
+  gripper_width_tolerance_m: 0.005
+calibration:
+  max_relative_rmse: 0.5
+  min_samples: 100
+  min_axis_samples: 20
+  max_axis_scale_relative_deviation: 0.5
+  min_scale_m: 0.001
+  max_scale_m: 0.10

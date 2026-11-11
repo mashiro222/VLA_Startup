@@ -23,3 +23,5 @@ PACE 工作目录：`/storage/scratch1/1/gliu386/VLA_Startup`。VS Code 建议�
 Python 环境由 uv 管理；上游版本、依赖和资产校验信息随仓库保存。结果输出为本地表格和图，不使用 W&B。GitHub 保存代码、说明与小型报告；模型、训练数据、场景、环境和视频保留在本地，不上传。
 
 已有实验无需重复提交。重建或开展新实验时，从对应运行手册开始；修改被冻结的代码、参数或数据后使用新的 run ID。
+
+Static Obstacles 的官方 π0.5 + GT-CBF 对照实验：[协议、参数、诊断与手动提交](docs/cbf-static-obstacles.md)。当前仅完成准备，未提交作业。

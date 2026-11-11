@@ -1,0 +1,102 @@
+{
+  "date": "2026-11-11",
+  "jobs_submitted": false,
+  "real_policy_episodes": 0,
+  "runs": [
+    {
+      "run": "cbf-calibration-001",
+      "episodes": 10,
+      "units": 1,
+      "plan_sha256": "81507b519cc1cda5f34410f00cb98d59acb5ef100de6e802d16e350332689063",
+      "execution_ready": true
+    },
+    {
+      "run": "cbf-smoke-draft-001",
+      "episodes": 40,
+      "units": 1,
+      "plan_sha256": "888458c1507c9d9f549ca798c40e4546b49f5472865ab51d1731b4e2f929f9c0",
+      "execution_ready": false
+    },
+    {
+      "run": "cbf-main-draft-001",
+      "episodes": 3000,
+      "units": 30,
+      "plan_sha256": "5d82e886ae04fa12b4039efc384197c79712ff8fe3f7e04ec27f16cad558ba65",
+      "execution_ready": false
+    },
+    {
+      "run": "cbf-l0-draft-001",
+      "episodes": 1000,
+      "units": 10,
+      "plan_sha256": "271b7b14bf304ff413d8c5e43a5bdf5398771855a73e2925421bdd153d6eb8ad",
+      "execution_ready": false
+    },
+    {
+      "run": "cbf-gamma-draft-001",
+      "episodes": 2000,
+      "units": 20,
+      "plan_sha256": "54a554b8730bf8cb310cace39c169e4c3f26ee8ac56d70942e7030fb1bda613f",
+      "execution_ready": false
+    }
+  ],
+  "checkpoint_revision": "31bbab4bcdeee70c99797ef50c083d24f1def528",
+  "checkpoint_bytes": 12439994645,
+  "checkpoint_files": 17,
+  "checkpoint_verified_receipt_sha256": "dfdc221c6c7986235d3c503a4b53b7a9fd8c9a3b31a8b9fe4d51e6d3d2dbaeba",
+  "tests_passed": 15,
+  "representative_scene_levels": [
+    0,
+    1,
+    2
+  ],
+  "task_definitions_checked": 15,
+  "versions": {
+    "numpy": "1.26.4",
+    "scipy": "1.14.1",
+    "osqp": "1.0.5",
+    "mujoco": "3.5.0",
+    "robosuite": "1.5.1",
+    "torch": "2.5.1+cpu",
+    "websockets": "14.2",
+    "PyYAML": "6.0.2"
+  },
+  "pending": [
+    "GPU checkpoint restoration and inference",
+    "EGL rendering",
+    "empirical action scale",
+    "real paired smoke"
+  ],
+  "source_sha256": {
+    "src/cbf_static/rollout.py": "bdadc40831bfb576fc249094831f9991ec0b95d132fbb0e6acb1e1aca1a42657",
+    "src/cbf_static/geometry.py": "75f5a2f9a171f7d9d29d648502484e8ab2457a9987033d42a2c3002545d694f9",
+    "src/cbf_static/audit.py": "75ac6c1e563e3e284f5c6e3b11921a427a20c8c0723a2bebee6eff44385a8b64",
+    "src/cbf_static/plan.py": "3e7b88f5df32bda8ab306c21559a357fe9c4546a630a53a4262fea26f1a5d19c",
+    "src/cbf_static/report.py": "02547dc205ea5cdf9ebdbed78aa66f5f9c7d79634138e6f441e3d0674ef6f9d5",
+    "src/cbf_static/server.py": "8b10bbc7ccbad3c8ef5db53b8df8b5fbe23d1d6c0efd8230b3cd10cbaea75de4",
+    "src/cbf_static/scene.py": "f959716b0e9dfaad3418d60e3da8f256393a4c8e82bc571a76f8bff616c05ade",
+    "src/cbf_static/common.py": "2f6b16b364f65d9317971e364c569765bf1fbd039b4870dd5bd7eb9be88ff1e9",
+    "src/cbf_static/__init__.py": "ac0bc891572626c39cbb2a116770844e64f8edd807cfcea699d6e7aa19e23cf6",
+    "src/cbf_static/metrics.py": "9c374b51a6e40108ecda2292b3a64127472f65a1053717f42a0dc27aaaae0d29",
+    "src/cbf_static/filter.py": "8bc97ebfce69abc9a2a3436f868040e0e2d16284d97c455589eea02a4faed7f2",
+    "src/cbf_static/runtime.py": "78a7e4dfbaab624b793a68acc6d763c312e9001edd99c54c05e7b08c6ddef4e7",
+    "config/cbf_static/experiment.yaml": "d373f6ba1db21637b3b1b4ff7e4a6d9c9aaf5fbf0f68d19820f7d82c581e0f8d",
+    "config/cbf_static/checkpoint.json": "dfdc221c6c7986235d3c503a4b53b7a9fd8c9a3b31a8b9fe4d51e6d3d2dbaeba",
+    "scripts/cbf_static.py": "6b242f503e8814ebc822382108aafa12d25e116e4d583ae4c2b6fc67e277de72",
+    "slurm/cbf-static.sbatch": "924734a7abe1bef5378e1b98b4d73621301eaf2705f0f90f8615ce75a382c279",
+    "scripts/setup_cbf_static.sh": "1e78ea4c9fe3e68339e406a57321e21a3bccfebfd1d861b86c3aaec32377bd97",
+    "scripts/download_cbf_checkpoint.py": "961610326c42cac9eb6357c04e293b02543cb7aa1ae579b00b99dd5aef4e7148",
+    "requirements/cbf-static.txt": "6e2d05945ffafa910c1601e015689271e3be6942d60c0c065b48fbd055889263",
+    "requirements/cbf-static-server.txt": "8a71468ea8e97c2db3e9f33ae10b531aa4971c22d6357ae1a4db241c214c4488",
+    "src/arena_startup/adapter.py": "bb83ced8ceddae77ade12f96d1046bf9120ca2d62357152a5dd8916e61b8a2ab",
+    "src/arena_startup/transport.py": "79c38b8ae8d19ac6768cdd286313a11ff4323724e3c76c4a25c140fb2c16e467",
+    "src/arena_startup/diagnostics.py": "38084bb948d2d217a34c4615a4d4060a14b1c401cf59a311f3ff11967018150f",
+    "src/arena_startup/runtime.py": "379927fccde8a18800a061d764d9b6e7a27696932b285351f22cfd962e44d4a9",
+    "src/vla_startup/evaluate.py": "0cb87bf6e02a03bcaea34437f1a292572e6d0a0025bea1c7d619ca1c17245028"
+  },
+  "submission_previews": {
+    "a100-calibration": "sbatch --account=gts-jli741-paid --partition=gpu-a100 --qos=inferno --gres=gpu:a100:1 --nodes=1 --ntasks=1 --cpus-per-task=8 --mem=64G --time=3:00:00 --array=0-0%1 --job-name=cbf-calibration --chdir=/storage/scratch1/1/gliu386/VLA_Startup --output=/storage/scratch1/1/gliu386/VLA_Startup/runs/cbf-calibration-001/slurm-%A_%a.out /storage/scratch1/1/gliu386/VLA_Startup/slurm/cbf-static.sbatch /storage/scratch1/1/gliu386/VLA_Startup/runs/cbf-calibration-001\nPreview only. No job submitted. GPU choice and --submit are explicit.\n",
+    "a100-main": "sbatch --account=gts-jli741-paid --partition=gpu-a100 --qos=inferno --gres=gpu:a100:1 --nodes=1 --ntasks=1 --cpus-per-task=8 --mem=64G --time=12:00:00 --array=0-29%4 --job-name=cbf-main --chdir=/storage/scratch1/1/gliu386/VLA_Startup --output=/storage/scratch1/1/gliu386/VLA_Startup/runs/cbf-main-draft-001/slurm-%A_%a.out /storage/scratch1/1/gliu386/VLA_Startup/slurm/cbf-static.sbatch /storage/scratch1/1/gliu386/VLA_Startup/runs/cbf-main-draft-001\nPreview only. No job submitted. GPU choice and --submit are explicit.\n",
+    "h100-calibration": "sbatch --account=gts-jli741-paid --partition=gpu-h100 --qos=inferno --gres=gpu:h100:1 --nodes=1 --ntasks=1 --cpus-per-task=8 --mem=64G --time=3:00:00 --array=0-0%1 --job-name=cbf-calibration --chdir=/storage/scratch1/1/gliu386/VLA_Startup --output=/storage/scratch1/1/gliu386/VLA_Startup/runs/cbf-calibration-001/slurm-%A_%a.out /storage/scratch1/1/gliu386/VLA_Startup/slurm/cbf-static.sbatch /storage/scratch1/1/gliu386/VLA_Startup/runs/cbf-calibration-001\nPreview only. No job submitted. GPU choice and --submit are explicit.\n",
+    "h100-main": "sbatch --account=gts-jli741-paid --partition=gpu-h100 --qos=inferno --gres=gpu:h100:1 --nodes=1 --ntasks=1 --cpus-per-task=8 --mem=64G --time=12:00:00 --array=0-29%4 --job-name=cbf-main --chdir=/storage/scratch1/1/gliu386/VLA_Startup --output=/storage/scratch1/1/gliu386/VLA_Startup/runs/cbf-main-draft-001/slurm-%A_%a.out /storage/scratch1/1/gliu386/VLA_Startup/slurm/cbf-static.sbatch /storage/scratch1/1/gliu386/VLA_Startup/runs/cbf-main-draft-001\nPreview only. No job submitted. GPU choice and --submit are explicit.\n"
+  }
+}

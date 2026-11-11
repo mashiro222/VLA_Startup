@@ -1,0 +1,91 @@
+{
+  "repo": "VLA-Arena/pi05-vla-arena-finetuned",
+  "revision": "31bbab4bcdeee70c99797ef50c083d24f1def528",
+  "files": [
+    {
+      "path": "_CHECKPOINT_METADATA",
+      "bytes": 454,
+      "sha256": "c432ce59c88366ca26d3546c68f07898e1c42a22d1b83d8b5aaaff1c7db52ca1"
+    },
+    {
+      "path": "assets/VLA_Arena_L0_L_lerobot_openpi/VLA_Arena/norm_stats.json",
+      "bytes": 1948,
+      "sha256": "493863de57fd3bf73359be2c4f75128e652e35c304e941986ad55f4d26dce514"
+    },
+    {
+      "path": "params/_METADATA",
+      "bytes": 23497,
+      "sha256": "6d5a6eefc73215c59bea485f1e480cef98dd6f07583e41ff1ae0d6ca35effd7e"
+    },
+    {
+      "path": "params/_sharding",
+      "bytes": 18152,
+      "sha256": "0aa89c2ac0ba6f33fd71c0a934a1b0e30b2a223619ef8ed916dfdf82f0899ae1"
+    },
+    {
+      "path": "params/array_metadatas/process_0",
+      "bytes": 9070,
+      "sha256": "a2d2013a511ccb4e3a0fc6fdd05d324aa526aebb96db94d3fea723bf9f1509fe"
+    },
+    {
+      "path": "params/d/ac3b887f69d93ce3c57fcf63e3a37832",
+      "bytes": 43186,
+      "sha256": "8bd6d08cf562665f3ffddf98381c6b2e66f2e6d9e76ad5e99dab56d0ab6c9cf8"
+    },
+    {
+      "path": "params/manifest.ocdbt",
+      "bytes": 120,
+      "sha256": "75af0467616eb4673c7270a97d189dd6e4b5688599b3d417eb06c498293ef802"
+    },
+    {
+      "path": "params/ocdbt.process_0/d/2a9e81dc6c5961907c7f5aedd7671314",
+      "bytes": 1679856000,
+      "sha256": "0bea68a84d85e32083b67f877bb1bb449184f157d47a32e359a5794ddafd5742"
+    },
+    {
+      "path": "params/ocdbt.process_0/d/3a74b1b886f0b634e9e41e06a274cbb9",
+      "bytes": 2484952709,
+      "sha256": "b999c070736d24d0782492e91885d41f5a3b09c66b6e9617800fa99f4bb8491b"
+    },
+    {
+      "path": "params/ocdbt.process_0/d/4dbf013ffa0c6dd24f8b1b7c6b2fc7b2",
+      "bytes": 1835021486,
+      "sha256": "fb19bb47896748a343ac88bade91c29ffa93639f8722066f27f2cb85cd8aea18"
+    },
+    {
+      "path": "params/ocdbt.process_0/d/6c8735054d8bef939029784508a2e8cd",
+      "bytes": 2272443185,
+      "sha256": "86a82609c0b784b66f84de4ce5dfe7c982d0333a440d0085eebd6f5ad10b42c1"
+    },
+    {
+      "path": "params/ocdbt.process_0/d/b3a517ba2330826f2b80ec574aeeca45",
+      "bytes": 297367674,
+      "sha256": "bb9c0289a6b39c8f18e8a64a3762ce47f76c1b4fab43d7d274e501b2806b4544"
+    },
+    {
+      "path": "params/ocdbt.process_0/d/cd77ccaedf1b562d1dc098409035fb03",
+      "bytes": 1068,
+      "sha256": "0fb6346b0d487be74f6524f4dd331a2f69e89c8eb6a12c5192aca4ff052b84be"
+    },
+    {
+      "path": "params/ocdbt.process_0/d/d7a270aa79abbd57bc4b315de46729a4",
+      "bytes": 2239768994,
+      "sha256": "15fc886b31651f89545d06cece42e766b608de5a1baf17ac768bc6d6a6bf42ad"
+    },
+    {
+      "path": "params/ocdbt.process_0/d/e5fce47cda9934429d14b0bf959c4079",
+      "bytes": 1630485593,
+      "sha256": "4af1d7ac895316c64ac7304500e09e8c1d0f6fc12c47766d3c1374e42b573371"
+    },
+    {
+      "path": "params/ocdbt.process_0/d/e7bab3ad3aafd0283c4b7bd9a137e949",
+      "bytes": 1083,
+      "sha256": "db2f16cc58d2f6741a647e0c8b3981b5022a2f933220a6ac2e28321559bf6f1c"
+    },
+    {
+      "path": "params/ocdbt.process_0/manifest.ocdbt",
+      "bytes": 426,
+      "sha256": "8a8804a442344d894ed8e77e9a5e55dd2f395a5e8be63dd06df1bc6f42e62a1a"
+    }
+  ]
+}

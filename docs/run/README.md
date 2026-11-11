@@ -22,3 +22,5 @@
 | Arena 1,500 条分组结果与 cost 明细 | [2026-10-17 详细报告](arena-results-2026-10-17.md) |
 
 模型、训练目标、任务与指标的长期说明保留在 `docs/`；可核对的数值、图和机器可读证据保留在 `reports/`。
+
+[2026-11-11：Static Obstacles GT-CBF 准备与校验](cbf-static-preparation-2026-11-11.md)

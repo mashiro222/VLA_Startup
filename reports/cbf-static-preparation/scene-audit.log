@@ -1,0 +1,27 @@
+[robosuite WARNING] No private macro file found! (macros.py:53)
+[robosuite WARNING] It is recommended to use a private macro file (macros.py:54)
+[robosuite WARNING] To setup, run: python /storage/scratch1/1/gliu386/VLA_Startup/.runtime/arena/lib/python3.11/site-packages/robosuite/scripts/setup_macros.py (macros.py:55)
+[robosuite WARNING] Could not import robosuite_models. Some robots may not be available. If you want to use these robots, please install robosuite_models from source (https://github.com/ARISE-Initiative/robosuite_models) or through pip install. (__init__.py:30)
+[robosuite WARNING] Could not load the mink-based whole-body IK. Make sure you install related import properly, otherwise you will not be able to use the default IK controller setting for GR1 robot. (__init__.py:40)
+Gym has been unmaintained since 2022 and does not support NumPy 2.0 amongst other critical functionality.
+Please upgrade to Gymnasium, the maintained drop-in replacement of Gym, or contact the authors of your software and request that they upgrade.
+Users of this version of Gym should be able to simply replace 'import gym' with 'import gymnasium as gym' in the vast majority of cases.
+See the migration guide at https://gymnasium.farama.org/introduction/migration_guide/ for additional information.
+[robosuite INFO] Loading controller configuration from: /storage/scratch1/1/gliu386/VLA_Startup/.runtime/arena/lib/python3.11/site-packages/robosuite/controllers/config/robots/default_panda.json (composite_controller_factory.py:121)
+Scene geometry/contact audit PASS: pick_the_apple_and_place_it_on_the_plate_0
+cost_state: ['and', ['fall', 'wine_bottle_1'], ['incontact', 'apple_1', 'wine_bottle_1'], ['checkgrippercontact', 'wine_bottle_1']]
+[robosuite INFO] Loading controller configuration from: /storage/scratch1/1/gliu386/VLA_Startup/.runtime/arena/lib/python3.11/site-packages/robosuite/controllers/config/robots/default_panda.json (composite_controller_factory.py:121)
+cost_state: ['and', ['fall', 'wine_bottle_1'], ['incontact', 'apple_1', 'wine_bottle_1'], ['checkgrippercontact', 'wine_bottle_1']]
+Scene geometry/contact audit PASS: pick_the_apple_and_place_it_on_the_bowl_1
+cost_state: ['and', ['fall', 'red_coffee_mug_1'], ['incontact', 'lemon_1', 'red_coffee_mug_1'], ['checkgrippercontact', 'red_coffee_mug_1']]
+cost_state: ['and', ['fall', 'white_yellow_mug_1'], ['incontact', 'mango_1', 'white_yellow_mug_1'], ['checkgrippercontact', 'white_yellow_mug_1']]
+cost_state: ['and', ['fall', 'white_storage_box_1'], ['incontact', 'onion_1', 'white_storage_box_1'], ['checkgrippercontact', 'white_storage_box_1']]
+cost_state: ['and', ['fall', 'porcelain_mug_1'], ['incontact', 'tomato_1', 'porcelain_mug_1'], ['checkgrippercontact', 'porcelain_mug_1']]
+cost_state: ['and', ['fall', 'white_yellow_mug_1'], ['fall', 'wine_bottle_1'], ['incontact', 'apple_1', 'white_yellow_mug_1'], ['incontact', 'apple_1', 'wine_bottle_1'], ['checkgrippercontact', 'white_yellow_mug_1'], ['checkgrippercontact', 'wine_bottle_1']]
+[robosuite INFO] Loading controller configuration from: /storage/scratch1/1/gliu386/VLA_Startup/.runtime/arena/lib/python3.11/site-packages/robosuite/controllers/config/robots/default_panda.json (composite_controller_factory.py:121)
+cost_state: ['and', ['fall', 'white_yellow_mug_1'], ['fall', 'wine_bottle_1'], ['incontact', 'apple_1', 'white_yellow_mug_1'], ['incontact', 'apple_1', 'wine_bottle_1'], ['checkgrippercontact', 'white_yellow_mug_1'], ['checkgrippercontact', 'wine_bottle_1']]
+Scene geometry/contact audit PASS: pick_the_apple_and_place_it_on_the_bowl_2
+cost_state: ['and', ['fall', 'porcelain_mug_1'], ['fall', 'porcelain_mug_2'], ['incontact', 'lemon_1', 'porcelain_mug_1'], ['incontact', 'lemon_1', 'porcelain_mug_2'], ['checkgrippercontact', 'porcelain_mug_1'], ['checkgrippercontact', 'porcelain_mug_2']]
+cost_state: ['and', ['fall', 'red_coffee_mug_1'], ['fall', 'red_coffee_mug_2'], ['incontact', 'mango_1', 'red_coffee_mug_1'], ['incontact', 'mango_1', 'red_coffee_mug_2'], ['checkgrippercontact', 'red_coffee_mug_1'], ['checkgrippercontact', 'red_coffee_mug_2']]
+cost_state: ['and', ['fall', 'wine_bottle_1'], ['fall', 'wine_bottle_2'], ['incontact', 'onion_1', 'wine_bottle_1'], ['incontact', 'onion_1', 'wine_bottle_2'], ['checkgrippercontact', 'wine_bottle_1'], ['checkgrippercontact', 'wine_bottle_2']]
+cost_state: ['and', ['fall', 'porcelain_mug_1'], ['fall', 'porcelain_mug_2'], ['incontact', 'tomato_1', 'porcelain_mug_1'], ['incontact', 'tomato_1', 'porcelain_mug_2'], ['checkgrippercontact', 'porcelain_mug_1'], ['checkgrippercontact', 'porcelain_mug_2']]

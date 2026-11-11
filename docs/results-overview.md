@@ -225,6 +225,12 @@ SF 3,000 步评测 **14230444** 于 **08:25:20 EDT** 启动，**08:27:23** 失�
 
 `pi05_libero` 已完成 LIBERO-Plus 和 Arena Safety 迁移评测；Arena LoRA baseline 已保存 5,952 步权重并产生部分 Static 评测结果。SF 已完成有限值训练记录和 3,000 步 checkpoint 的 CPU 恢复验证，但 GPU 评测被运行库遗漏阻断。当前结果支持继续分析跨 benchmark 的任务完成与安全 cost 差异，**尚不支持 SF 优于 baseline 或改善安全性的结论**。
 
+## 2026-11-11：官方 Arena π0.5 + GT-CBF 准备
+
+新增 Static Obstacles L1/L2 的 C0 无过滤、C1 固定单障碍、C2 全障碍配对实验，重点诊断碰撞与卡住之间的关系。模型采用官方 Arena 微调 π0.5，区别于此前 `pi05_libero` 与本仓库训练的 baseline。代码、本地数学/物理集成测试和提交模板已准备，**未提交作业，尚无真实模型结果**。
+
+正式主实验 3,000 episodes，完整 L0 对照 1,000；另有 10 条动作尺度标定与 40 条 smoke。逐步接触、官方 CC 分项、卡住分类、配对统计、表格和图均由独立模块输出。先测定动作尺度并检查真实 smoke，再决定正式 GPU 配置。[实验说明与命令](cbf-static-obstacles.md) · [准备证据](run/cbf-static-preparation-2026-11-11.md)
+
 ## 阅读与证据索引
 
 [模型与 benchmark 开发指南](research-guide.md) · [LIBERO/Plus 协议](experiment.md) · [Arena 协议](arena-safety.md) · [LoRA/SF 配方与代码](arena-sf-training.md) · [操作与详细技术归档](run/README.md)

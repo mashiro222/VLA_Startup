@@ -1,0 +1,2 @@
+# Added to an isolated target directory; existing simulator/server environments stay intact.
+osqp==1.0.5

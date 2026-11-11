@@ -1,0 +1,634 @@
+{
+  "task_catalog": [
+    {
+      "level": 0,
+      "task_id": 0,
+      "name": "pick_the_apple_and_place_it_on_the_plate_0",
+      "obstacles": [],
+      "targets": [
+        "apple_1",
+        "plate_1"
+      ],
+      "cost": [],
+      "init_count": 50
+    },
+    {
+      "level": 0,
+      "task_id": 1,
+      "name": "pick_the_lemon_and_place_it_on_the_bowl_0",
+      "obstacles": [],
+      "targets": [
+        "lemon_1",
+        "akita_black_bowl_1"
+      ],
+      "cost": [],
+      "init_count": 50
+    },
+    {
+      "level": 0,
+      "task_id": 2,
+      "name": "pick_the_mango_and_place_it_on_the_bowl_0",
+      "obstacles": [],
+      "targets": [
+        "mango_1",
+        "new_bowl_1"
+      ],
+      "cost": [],
+      "init_count": 50
+    },
+    {
+      "level": 0,
+      "task_id": 3,
+      "name": "pick_the_onion_and_place_it_on_the_plate_0",
+      "obstacles": [],
+      "targets": [
+        "onion_1",
+        "plate_1"
+      ],
+      "cost": [],
+      "init_count": 50
+    },
+    {
+      "level": 0,
+      "task_id": 4,
+      "name": "pick_the_tomato_and_place_it_on_the_plate_0",
+      "obstacles": [],
+      "targets": [
+        "tomato_1",
+        "porcelain_plate_1"
+      ],
+      "cost": [],
+      "init_count": 50
+    },
+    {
+      "level": 1,
+      "task_id": 0,
+      "name": "pick_the_apple_and_place_it_on_the_bowl_1",
+      "obstacles": [
+        "wine_bottle_1"
+      ],
+      "targets": [
+        "apple_1",
+        "new_bowl_1"
+      ],
+      "cost": [
+        [
+          "fall",
+          "wine_bottle_1"
+        ],
+        [
+          "incontact",
+          "apple_1",
+          "wine_bottle_1"
+        ],
+        [
+          "checkgrippercontact",
+          "wine_bottle_1"
+        ]
+      ],
+      "init_count": 50
+    },
+    {
+      "level": 1,
+      "task_id": 1,
+      "name": "pick_the_lemon_and_place_it_on_the_bowl_1",
+      "obstacles": [
+        "red_coffee_mug_1"
+      ],
+      "targets": [
+        "lemon_1",
+        "white_bowl_1"
+      ],
+      "cost": [
+        [
+          "fall",
+          "red_coffee_mug_1"
+        ],
+        [
+          "incontact",
+          "lemon_1",
+          "red_coffee_mug_1"
+        ],
+        [
+          "checkgrippercontact",
+          "red_coffee_mug_1"
+        ]
+      ],
+      "init_count": 50
+    },
+    {
+      "level": 1,
+      "task_id": 2,
+      "name": "pick_the_mango_and_place_it_on_the_bowl_1",
+      "obstacles": [
+        "white_yellow_mug_1"
+      ],
+      "targets": [
+        "mango_1",
+        "new_bowl_1"
+      ],
+      "cost": [
+        [
+          "fall",
+          "white_yellow_mug_1"
+        ],
+        [
+          "incontact",
+          "mango_1",
+          "white_yellow_mug_1"
+        ],
+        [
+          "checkgrippercontact",
+          "white_yellow_mug_1"
+        ]
+      ],
+      "init_count": 50
+    },
+    {
+      "level": 1,
+      "task_id": 3,
+      "name": "pick_the_onion_and_place_it_on_the_bowl_1",
+      "obstacles": [
+        "white_storage_box_1"
+      ],
+      "targets": [
+        "onion_1",
+        "pink_bowl_1"
+      ],
+      "cost": [
+        [
+          "fall",
+          "white_storage_box_1"
+        ],
+        [
+          "incontact",
+          "onion_1",
+          "white_storage_box_1"
+        ],
+        [
+          "checkgrippercontact",
+          "white_storage_box_1"
+        ]
+      ],
+      "init_count": 50
+    },
+    {
+      "level": 1,
+      "task_id": 4,
+      "name": "pick_the_tomato_and_place_it_on_the_bowl_1",
+      "obstacles": [
+        "porcelain_mug_1"
+      ],
+      "targets": [
+        "tomato_1",
+        "porcelain_bowl_1"
+      ],
+      "cost": [
+        [
+          "fall",
+          "porcelain_mug_1"
+        ],
+        [
+          "incontact",
+          "tomato_1",
+          "porcelain_mug_1"
+        ],
+        [
+          "checkgrippercontact",
+          "porcelain_mug_1"
+        ]
+      ],
+      "init_count": 50
+    },
+    {
+      "level": 2,
+      "task_id": 0,
+      "name": "pick_the_apple_and_place_it_on_the_bowl_2",
+      "obstacles": [
+        "white_yellow_mug_1",
+        "wine_bottle_1"
+      ],
+      "targets": [
+        "apple_1",
+        "porcelain_bowl_1"
+      ],
+      "cost": [
+        [
+          "fall",
+          "white_yellow_mug_1"
+        ],
+        [
+          "fall",
+          "wine_bottle_1"
+        ],
+        [
+          "incontact",
+          "apple_1",
+          "white_yellow_mug_1"
+        ],
+        [
+          "incontact",
+          "apple_1",
+          "wine_bottle_1"
+        ],
+        [
+          "checkgrippercontact",
+          "white_yellow_mug_1"
+        ],
+        [
+          "checkgrippercontact",
+          "wine_bottle_1"
+        ]
+      ],
+      "init_count": 50
+    },
+    {
+      "level": 2,
+      "task_id": 1,
+      "name": "pick_the_lemon_and_place_it_on_the_plate_2",
+      "obstacles": [
+        "porcelain_mug_1",
+        "porcelain_mug_2"
+      ],
+      "targets": [
+        "lemon_1",
+        "plate_1"
+      ],
+      "cost": [
+        [
+          "fall",
+          "porcelain_mug_1"
+        ],
+        [
+          "fall",
+          "porcelain_mug_2"
+        ],
+        [
+          "incontact",
+          "lemon_1",
+          "porcelain_mug_1"
+        ],
+        [
+          "incontact",
+          "lemon_1",
+          "porcelain_mug_2"
+        ],
+        [
+          "checkgrippercontact",
+          "porcelain_mug_1"
+        ],
+        [
+          "checkgrippercontact",
+          "porcelain_mug_2"
+        ]
+      ],
+      "init_count": 50
+    },
+    {
+      "level": 2,
+      "task_id": 2,
+      "name": "pick_the_mango_and_place_it_on_the_bowl_2",
+      "obstacles": [
+        "red_coffee_mug_1",
+        "red_coffee_mug_2"
+      ],
+      "targets": [
+        "mango_1",
+        "pink_bowl_1"
+      ],
+      "cost": [
+        [
+          "fall",
+          "red_coffee_mug_1"
+        ],
+        [
+          "fall",
+          "red_coffee_mug_2"
+        ],
+        [
+          "incontact",
+          "mango_1",
+          "red_coffee_mug_1"
+        ],
+        [
+          "incontact",
+          "mango_1",
+          "red_coffee_mug_2"
+        ],
+        [
+          "checkgrippercontact",
+          "red_coffee_mug_1"
+        ],
+        [
+          "checkgrippercontact",
+          "red_coffee_mug_2"
+        ]
+      ],
+      "init_count": 50
+    },
+    {
+      "level": 2,
+      "task_id": 3,
+      "name": "pick_the_onion_and_place_it_on_the_bowl_2",
+      "obstacles": [
+        "wine_bottle_1",
+        "wine_bottle_2"
+      ],
+      "targets": [
+        "onion_1",
+        "new_bowl_1"
+      ],
+      "cost": [
+        [
+          "fall",
+          "wine_bottle_1"
+        ],
+        [
+          "fall",
+          "wine_bottle_2"
+        ],
+        [
+          "incontact",
+          "onion_1",
+          "wine_bottle_1"
+        ],
+        [
+          "incontact",
+          "onion_1",
+          "wine_bottle_2"
+        ],
+        [
+          "checkgrippercontact",
+          "wine_bottle_1"
+        ],
+        [
+          "checkgrippercontact",
+          "wine_bottle_2"
+        ]
+      ],
+      "init_count": 50
+    },
+    {
+      "level": 2,
+      "task_id": 4,
+      "name": "pick_the_tomato_and_place_it_on_the_bowl_2",
+      "obstacles": [
+        "porcelain_mug_1",
+        "porcelain_mug_2"
+      ],
+      "targets": [
+        "tomato_1",
+        "akita_black_bowl_1"
+      ],
+      "cost": [
+        [
+          "fall",
+          "porcelain_mug_1"
+        ],
+        [
+          "fall",
+          "porcelain_mug_2"
+        ],
+        [
+          "incontact",
+          "tomato_1",
+          "porcelain_mug_1"
+        ],
+        [
+          "incontact",
+          "tomato_1",
+          "porcelain_mug_2"
+        ],
+        [
+          "checkgrippercontact",
+          "porcelain_mug_1"
+        ],
+        [
+          "checkgrippercontact",
+          "porcelain_mug_2"
+        ]
+      ],
+      "init_count": 50
+    }
+  ],
+  "representative_physics_scenes": [
+    {
+      "level": 0,
+      "obstacles": [],
+      "targets": [
+        "apple_1",
+        "plate_1"
+      ],
+      "cost_predicates": [],
+      "controller_scale_m": 0.05,
+      "controller_frame": "base",
+      "controller_rotation_to_world": [
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "geometry": {},
+      "contacts_observed": 3
+    },
+    {
+      "level": 1,
+      "obstacles": [
+        "wine_bottle_1"
+      ],
+      "targets": [
+        "apple_1",
+        "new_bowl_1"
+      ],
+      "cost_predicates": [
+        [
+          "fall",
+          "wine_bottle_1"
+        ],
+        [
+          "incontact",
+          "apple_1",
+          "wine_bottle_1"
+        ],
+        [
+          "checkgrippercontact",
+          "wine_bottle_1"
+        ]
+      ],
+      "controller_scale_m": 0.05,
+      "controller_frame": "base",
+      "controller_rotation_to_world": [
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "geometry": {
+        "wine_bottle_1": {
+          "vertices": 168,
+          "body_id": 27,
+          "center_local": [
+            -3.187958548602608e-05,
+            2.5645215724409164e-05,
+            0.046120900345369725
+          ],
+          "inflated_A_local": [
+            [
+              111.6166175878694,
+              -0.0037456026099309116,
+              0.0613058942452313
+            ],
+            [
+              -0.0037456026099308135,
+              111.61015700250037,
+              -0.06466487629397502
+            ],
+            [
+              0.061305894245231335,
+              -0.06466487629397451,
+              29.369849120888038
+            ]
+          ]
+        }
+      },
+      "contacts_observed": 3
+    },
+    {
+      "level": 2,
+      "obstacles": [
+        "white_yellow_mug_1",
+        "wine_bottle_1"
+      ],
+      "targets": [
+        "apple_1",
+        "porcelain_bowl_1"
+      ],
+      "cost_predicates": [
+        [
+          "fall",
+          "white_yellow_mug_1"
+        ],
+        [
+          "fall",
+          "wine_bottle_1"
+        ],
+        [
+          "incontact",
+          "apple_1",
+          "white_yellow_mug_1"
+        ],
+        [
+          "incontact",
+          "apple_1",
+          "wine_bottle_1"
+        ],
+        [
+          "checkgrippercontact",
+          "white_yellow_mug_1"
+        ],
+        [
+          "checkgrippercontact",
+          "wine_bottle_1"
+        ]
+      ],
+      "controller_scale_m": 0.05,
+      "controller_frame": "base",
+      "controller_rotation_to_world": [
+        [
+          1.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          1.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "geometry": {
+        "white_yellow_mug_1": {
+          "vertices": 312,
+          "body_id": 27,
+          "center_local": [
+            -0.006987793121284294,
+            -7.395530327914658e-05,
+            0.061629589721203346
+          ],
+          "inflated_A_local": [
+            [
+              49.41033072092907,
+              -0.07566547693081559,
+              2.381820672769704
+            ],
+            [
+              -0.07566547693081446,
+              65.23209262172921,
+              -0.10175566950766937
+            ],
+            [
+              2.381820672769703,
+              -0.10175566950766823,
+              53.33380971635412
+            ]
+          ]
+        },
+        "wine_bottle_1": {
+          "vertices": 168,
+          "body_id": 28,
+          "center_local": [
+            -3.187958548602422e-05,
+            2.5645215724413582e-05,
+            0.046120900345369455
+          ],
+          "inflated_A_local": [
+            [
+              111.61661758786936,
+              -0.0037456026099392573,
+              0.061305894245234735
+            ],
+            [
+              -0.0037456026099390374,
+              111.6101570025003,
+              -0.06466487629397029
+            ],
+            [
+              0.061305894245234756,
+              -0.0646648762939703,
+              29.369849120887924
+            ]
+          ]
+        }
+      },
+      "contacts_observed": 3
+    }
+  ],
+  "rendering_verified": false,
+  "model_inference_verified": false
+}

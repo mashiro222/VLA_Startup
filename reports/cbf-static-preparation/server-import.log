@@ -1,0 +1,4 @@
+CONFIG Pi0Config(action_dim=32, action_horizon=10, max_token_len=200, dtype='bfloat16', paligemma_variant='gemma_2b', action_expert_variant='gemma_300m', pi05=True, discrete_state_input=False)
+NORM [('state', 8), ('actions', 7)]
+TRANSFORMS True Group(inputs=[LiberoInputs(model_type=<ModelType.PI05: 'pi05'>)], outputs=[LiberoOutputs()]) Group(inputs=[InjectDefaultPrompt(prompt=None), ResizeImages(height=224, width=224), TokenizePrompt(tokenizer=<vla_arena.models.openpi.src.openpi.models.tokenizer.PaligemmaTokenizer object at 0x7ffee2ab0250>, discrete_state_input=False), PadStatesAndActions(model_action_dim=32)], outputs=())
+SERVER_IMPORT_OK

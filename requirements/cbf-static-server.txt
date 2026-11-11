@@ -1,0 +1,5 @@
+# Arena's vendored PyTorch module imports pytest even for JAX configuration loading.
+pytest==8.3.5
+iniconfig==2.3.1
+packaging==26.3
+pluggy==1.7.0

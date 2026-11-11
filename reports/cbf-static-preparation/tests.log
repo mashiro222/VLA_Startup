@@ -1,0 +1,49 @@
+test_controller_frame_rotation_is_applied (test_cbf.FilterTests.test_controller_frame_rotation_is_applied) ... ok
+test_empty_and_C0_are_identity_including_outside_box (test_cbf.FilterTests.test_empty_and_C0_are_identity_including_outside_box) ... ok
+test_infeasible_is_explicit_and_zero_is_not_claimed_safe (test_cbf.FilterTests.test_infeasible_is_explicit_and_zero_is_not_claimed_safe) ... ok
+test_single_sphere_forward_invariance_and_mujoco_no_contact (test_cbf.FilterTests.test_single_sphere_forward_invariance_and_mujoco_no_contact) ... ok
+test_two_obstacles_feasible_gap (test_cbf.FilterTests.test_two_obstacles_feasible_gap) ... ok
+test_barrier_gradient (test_cbf.GeometryTests.test_barrier_gradient) ... ok
+test_fixed_obstacle_selection_distance_to_segment (test_cbf.GeometryTests.test_fixed_obstacle_selection_distance_to_segment) ... ok
+test_minkowski_outer_bound (test_cbf.GeometryTests.test_minkowski_outer_bound) ... ok
+test_mvee_encloses_mesh_and_is_rigid_transform_equivariant (test_cbf.GeometryTests.test_mvee_encloses_mesh_and_is_rigid_transform_equivariant) ... ok
+test_counts_and_pairing (test_cbf.ProtocolTests.test_counts_and_pairing) ... ok
+test_gripper_changes_and_wandering_exclude_stuck (test_cbf.ProtocolTests.test_gripper_changes_and_wandering_exclude_stuck) ... ok
+test_scale_fit_and_rejection (test_cbf.ProtocolTests.test_scale_fit_and_rejection) ... ok
+test_stuck_success_timeout_collision_are_independent (test_cbf.ProtocolTests.test_stuck_success_timeout_collision_are_independent) ... ok
+test_wilson_extremes_and_atomic_records (test_cbf.ProtocolTests.test_wilson_extremes_and_atomic_records) ... ok
+test_real_physics_cost_journal_resume_and_partial_reporting (test_rollout.RolloutIntegration.test_real_physics_cost_journal_resume_and_partial_reporting) ... [robosuite WARNING] No private macro file found! (macros.py:53)
+[robosuite WARNING] It is recommended to use a private macro file (macros.py:54)
+[robosuite WARNING] To setup, run: python /storage/scratch1/1/gliu386/VLA_Startup/.runtime/arena/lib/python3.11/site-packages/robosuite/scripts/setup_macros.py (macros.py:55)
+[robosuite WARNING] Could not import robosuite_models. Some robots may not be available. If you want to use these robots, please install robosuite_models from source (https://github.com/ARISE-Initiative/robosuite_models) or through pip install. (__init__.py:30)
+[robosuite WARNING] Could not load the mink-based whole-body IK. Make sure you install related import properly, otherwise you will not be able to use the default IK controller setting for GR1 robot. (__init__.py:40)
+/storage/scratch1/1/gliu386/VLA_Startup/.runtime/arena/lib/python3.11/site-packages/matplotlib/_fontconfig_pattern.py:64: PyparsingDeprecationWarning: 'oneOf' deprecated - use 'one_of'
+  prop = Group((name + Suppress("=") + comma_separated(value)) | oneOf(_CONSTANTS))
+/storage/scratch1/1/gliu386/VLA_Startup/.runtime/arena/lib/python3.11/site-packages/matplotlib/_fontconfig_pattern.py:85: PyparsingDeprecationWarning: 'parseString' deprecated - use 'parse_string'
+  parse = parser.parseString(pattern)
+/storage/scratch1/1/gliu386/VLA_Startup/.runtime/arena/lib/python3.11/site-packages/matplotlib/_fontconfig_pattern.py:89: PyparsingDeprecationWarning: 'resetCache' deprecated - use 'reset_cache'
+  parser.resetCache()
+Gym has been unmaintained since 2022 and does not support NumPy 2.0 amongst other critical functionality.
+Please upgrade to Gymnasium, the maintained drop-in replacement of Gym, or contact the authors of your software and request that they upgrade.
+Users of this version of Gym should be able to simply replace 'import gym' with 'import gymnasium as gym' in the vast majority of cases.
+See the migration guide at https://gymnasium.farama.org/introduction/migration_guide/ for additional information.
+[robosuite INFO] Loading controller configuration from: /storage/scratch1/1/gliu386/VLA_Startup/.runtime/arena/lib/python3.11/site-packages/robosuite/controllers/config/robots/default_panda.json (composite_controller_factory.py:121)
+cost_state: ['and', ['fall', 'wine_bottle_1'], ['incontact', 'apple_1', 'wine_bottle_1'], ['checkgrippercontact', 'wine_bottle_1']]
+L1 pick_the_apple_and_place_it_on_the_bowl_1 C0 init=0 seed=0 SR=0 CC=0 stuck=False
+[robosuite INFO] Loading controller configuration from: /storage/scratch1/1/gliu386/VLA_Startup/.runtime/arena/lib/python3.11/site-packages/robosuite/controllers/config/robots/default_panda.json (composite_controller_factory.py:121)
+cost_state: ['and', ['fall', 'wine_bottle_1'], ['incontact', 'apple_1', 'wine_bottle_1'], ['checkgrippercontact', 'wine_bottle_1']]
+L1 pick_the_apple_and_place_it_on_the_bowl_1 C2 init=0 seed=0 SR=0 CC=0 stuck=False
+/storage/scratch1/1/gliu386/VLA_Startup/.runtime/arena/lib/python3.11/site-packages/matplotlib/_mathtext.py:45: PyparsingDeprecationWarning: 'enablePackrat' deprecated - use 'enable_packrat'
+  ParserElement.enablePackrat()
+In /storage/scratch1/1/gliu386/VLA_Startup/.runtime/arena/lib/python3.11/site-packages/matplotlib/mpl-data/stylelib/classic.mplstyle: 'parseString' deprecated - use 'parse_string'
+In /storage/scratch1/1/gliu386/VLA_Startup/.runtime/arena/lib/python3.11/site-packages/matplotlib/mpl-data/stylelib/classic.mplstyle: 'resetCache' deprecated - use 'reset_cache'
+/tmp/cbf-test-e8il5dqp/summary
+/storage/scratch1/1/gliu386/VLA_Startup/tests/cbf_static/test_rollout.py:65: ResourceWarning: unclosed file <_io.TextIOWrapper name='/tmp/cbf-test-e8il5dqp/summary/paired-summary.csv' mode='r' encoding='UTF-8'>
+  self.assertEqual(len(list(csv.DictReader((root/'summary/paired-summary.csv').open()))),1)
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+ok
+
+----------------------------------------------------------------------
+Ran 15 tests in 14.488s
+
+OK
