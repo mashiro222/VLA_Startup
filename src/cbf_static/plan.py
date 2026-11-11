@@ -34,6 +34,9 @@ def config_check(cfg):
 
 
 def episodes(profile, catalog, cfg):
+    if profile == 'full':
+        # Exact original protocol, with the main comparison preceding the L0 control.
+        return episodes('main', catalog, cfg) + episodes('sanity', catalog, cfg)
     result = []
     spec = cfg['profiles'][profile]
     for row in catalog:
@@ -77,7 +80,7 @@ def prepare(profile, run, calibration=None):
             if digest(ROOT / e[key]) != e[sha]: raise ValueError('Task data hash changed')
     groups = {}
     for e in eps:
-        key = 'all' if profile in ('calibration', 'smoke') else f"L{e['level']}-t{e['task_id']}-{e['condition']}-g{e['gamma']:g}"
+        key = 'all' if profile in ('calibration', 'smoke', 'full') else f"L{e['level']}-t{e['task_id']}-{e['condition']}-g{e['gamma']:g}"
         groups.setdefault(key, []).append(e)
     manifest = {'schema': 'cbf-static-v1', 'profile': profile, 'config': copy.deepcopy(cfg),
                 'calibration': calibration_data, 'expected_episodes': len(eps),

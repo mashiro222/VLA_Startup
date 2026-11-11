@@ -236,3 +236,8 @@ SF 3,000 步评测 **14230444** 于 **08:25:20 EDT** 启动，**08:27:23** 失�
 [模型与 benchmark 开发指南](research-guide.md) · [LIBERO/Plus 协议](experiment.md) · [Arena 协议](arena-safety.md) · [LoRA/SF 配方与代码](arena-sf-training.md) · [操作与详细技术归档](run/README.md)
 
 `reports/` 保存可核对的 CSV、图表、配置和小型诊断；`runs/` 保存本地逐步日志、checkpoint 与视频。GitHub 备份代码、文档和小型报告，不上传权重或场景资产；scratch 中的 checkpoint 不等于长期备份。
+
+
+## Static Obstacles GT-CBF：单卡验证与正式评测（2026-11-11）
+
+使用官方 Arena 微调 π0.5，已提交两份独立单卡 A100 80GB 作业：50 条验证 **15488897**，时限 2 小时；4,000 条正式评测 **15488898**，时限 24 小时。无调度依赖，正式先启动时自行完成动作尺度标定。尚无本实验的真实结果。[运行记录](run/cbf-single-gpu-2026-11-11.md)。

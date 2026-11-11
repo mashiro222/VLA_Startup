@@ -45,6 +45,7 @@ def record_path(run, episode):
 def source_files():
     files = list((ROOT / 'src/cbf_static').glob('*.py')) + list((ROOT / 'config/cbf_static').glob('*'))
     files += [ROOT / x for x in ['scripts/cbf_static.py', 'slurm/cbf-static.sbatch',
+              'scripts/cbf_sequence.py', 'slurm/cbf-sequence.sbatch',
               'scripts/setup_cbf_static.sh', 'scripts/download_cbf_checkpoint.py',
               'requirements/cbf-static.txt', 'requirements/cbf-static-server.txt',
               'src/arena_startup/adapter.py', 'src/arena_startup/transport.py',

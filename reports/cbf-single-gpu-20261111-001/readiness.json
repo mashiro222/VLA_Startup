@@ -1,0 +1,30 @@
+{
+  "tests": {
+    "suite": "tests/cbf_static",
+    "passed": 23,
+    "seconds": 317.158,
+    "extra_sequence_regressions": 8,
+    "test_gpu_policy": "not executed; real-physics tests use a fake policy"
+  },
+  "syntax_checks": [
+    "Python compileall passed",
+    "bash -n passed",
+    "git diff --check passed"
+  ],
+  "formal_protocol": {
+    "episodes": 4000,
+    "main": 3000,
+    "L0_control": 1000,
+    "units": 1
+  },
+  "validation": {
+    "episodes": 50,
+    "calibration": 10,
+    "smoke": 40
+  },
+  "dependency": null,
+  "gpu": "A100-80GB",
+  "validation_hours": 2,
+  "full_hours": 24,
+  "runtime_guarantee": false
+}

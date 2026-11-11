@@ -14,7 +14,7 @@ from cbf_static.common import environment, record_path
 
 def main():
     p = argparse.ArgumentParser(description=__doc__); commands = p.add_subparsers(dest='cmd', required=True)
-    prep = commands.add_parser('prepare'); prep.add_argument('profile', choices=['calibration', 'smoke', 'main', 'sanity', 'gamma']); prep.add_argument('run', type=Path); prep.add_argument('--calibration', type=Path)
+    prep = commands.add_parser('prepare'); prep.add_argument('profile', choices=['calibration', 'smoke', 'main', 'sanity', 'full', 'gamma']); prep.add_argument('run', type=Path); prep.add_argument('--calibration', type=Path)
     sub = commands.add_parser('submit'); sub.add_argument('run', type=Path); sub.add_argument('--gpu', required=True, choices=['a100', 'h100']); sub.add_argument('--parallel', required=True, type=int); sub.add_argument('--hours', type=int, default=12); sub.add_argument('--submit', action='store_true')
     sub.add_argument('--indices', help='Explicit incomplete array indices, e.g. 2,5,8-10. Default: all units')
     st = commands.add_parser('status'); st.add_argument('run', type=Path)

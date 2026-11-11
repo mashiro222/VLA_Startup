@@ -1,0 +1,43 @@
+{
+  "checked_at": "2026-11-11T13:35:10.347032-05:00",
+  "jobs": {
+    "15488897": {
+      "JobId": "15488897",
+      "JobName": "cbf-validation-single",
+      "Account": "gts-jli741-paid",
+      "QOS": "inferno",
+      "JobState": "PENDING",
+      "Reason": "Priority",
+      "Dependency": "(null)",
+      "TimeLimit": "02:00:00",
+      "Features": "A100-80GB",
+      "NumNodes": "1-1",
+      "NumCPUs": "8",
+      "ReqTRES": "cpu=8,mem=64G,node=1,billing=18587,gres/gpu=1,gres/gpu:a100=1",
+      "TresPerNode": "gres/gpu:a100:1",
+      "Partition": "gpu-a100",
+      "StartTime": "Unknown",
+      "SubmitTime": "2026-11-11T13:34:28",
+      "EligibleTime": "2026-11-11T13:34:28"
+    },
+    "15488898": {
+      "JobId": "15488898",
+      "JobName": "cbf-full-single",
+      "Account": "gts-jli741-paid",
+      "QOS": "inferno",
+      "JobState": "PENDING",
+      "Reason": "Priority",
+      "Dependency": "(null)",
+      "TimeLimit": "1-00:00:00",
+      "Features": "A100-80GB",
+      "NumNodes": "1-1",
+      "NumCPUs": "8",
+      "ReqTRES": "cpu=8,mem=64G,node=1,billing=18587,gres/gpu=1,gres/gpu:a100=1",
+      "TresPerNode": "gres/gpu:a100:1",
+      "Partition": "gpu-a100",
+      "StartTime": "Unknown",
+      "SubmitTime": "2026-11-11T13:34:28",
+      "EligibleTime": "2026-11-11T13:34:28"
+    }
+  }
+}
